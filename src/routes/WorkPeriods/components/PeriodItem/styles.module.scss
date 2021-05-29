@@ -1,0 +1,45 @@
+@import "styles/mixins";
+
+.container {
+  td {
+    padding-left: 17px;
+    padding-right: 17px;
+    background: #fff;
+  }
+
+  &:nth-child(even) {
+    td {
+      background: #f9f9f9;
+    }
+  }
+}
+
+td.toggle {
+  padding: 12px 20px 12px 30px;
+  line-height: 15px;
+}
+
+.userHandle {
+  a {
+    @include roboto-bold;
+  }
+  span {
+    display: block;
+    max-width: 20em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.teamName {
+  @include roboto-medium;
+}
+
+td.workingDays {
+  padding: 5px 10px;
+}
+
+.workingDaysControl {
+  width: 100px;
+}

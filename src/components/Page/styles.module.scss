@@ -1,0 +1,11 @@
+@import "styles/mixins";
+
+.container {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+
+  @include desktop {
+    flex-direction: row;
+  }
+}

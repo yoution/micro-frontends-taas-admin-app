@@ -1,0 +1,16 @@
+@import "styles/mixins";
+@import "styles/variables";
+
+.container {
+  padding: 27px 24px;
+  width: $sidebar-width;
+  background-color: #fff;
+
+  @include desktop {
+    padding: 27px 20px;
+  }
+}
+
+.menu {
+  margin-bottom: 45px;
+}
