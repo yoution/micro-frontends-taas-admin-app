@@ -1,6 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
-import { Router } from "@reach/router";
+import { Router, Redirect } from "@reach/router";
 import ReduxToastr from "react-redux-toastr";
 import store from "store";
 import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
@@ -17,7 +17,12 @@ export default function Root() {
   return (
     <Provider store={store}>
       <Router>
-        <WorkPeriods path={APP_BASE_PATH} />
+        <Redirect
+          from={APP_BASE_PATH}
+          to={`${APP_BASE_PATH}/work-periods`}
+          exact
+        />
+        <WorkPeriods path={`${APP_BASE_PATH}/work-periods`} />
         <Freelancers path={`${APP_BASE_PATH}/freelancers`} />
       </Router>
       {/* <ReduxToastr

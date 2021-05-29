@@ -28,7 +28,11 @@ Sidebar.propTypes = {
 };
 
 const NAV_ITEMS = [
-  { icon: WorkPeriods, label: "Working Periods", path: APP_BASE_PATH },
+  {
+    icon: WorkPeriods,
+    label: "Working Periods",
+    path: `${APP_BASE_PATH}/work-periods`,
+  },
   {
     icon: Freelancers,
     label: "Freelancers",
