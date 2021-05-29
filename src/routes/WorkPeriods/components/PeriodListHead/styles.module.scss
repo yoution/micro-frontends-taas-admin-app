@@ -5,24 +5,52 @@
     text-align: left;
     background: #f4f4f4;
 
+    &:first-child,
     &:last-child {
       .colHead {
-        padding-left: 10px;
-        padding-right: 10px;
+        position: relative;
+
+        &::before {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          background: #f4f4f4;
+        }
+      }
+    }
+
+    &:first-child {
+      .colHead {
+        padding: 9px 20px 9px 15px;
+
+        &::before {
+          left: -15px;
+          width: 15px;
+        }
+      }
+    }
+
+    &:last-child {
+      .colHead {
+        padding: 12px 10px;
+
+        &::before {
+          right: -20px;
+          width: 20px;
+        }
       }
     }
   }
-}
-
-.colHeadSelect {
-  padding: 9px 20px 9px 30px;
 }
 
 .colHead {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 9px 17px;
+  padding: 12px 17px;
+  height: 40px;
 }
 
 .colLabel {

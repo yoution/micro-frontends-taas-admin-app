@@ -50,7 +50,7 @@ export default function withAuthentication(Component) {
       return () => {
         isUnmount = true;
       };
-    }, [isLoggedIn]);
+    }, [isLoggedIn, dispatch]);
 
     return (
       <>

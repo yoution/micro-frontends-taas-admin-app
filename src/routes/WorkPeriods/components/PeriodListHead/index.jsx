@@ -24,16 +24,18 @@ const PeriodListHead = () => {
 
   const onSortingChange = useCallback((sorting) => {
     dispatch(setWorkPeriodsSorting(sorting));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onToggleVisible = useCallback(() => {
     dispatch(toggleWorkingPeriodsVisible());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <tr className={styles.container}>
       <th>
-        <div className={styles.colHeadSelect}>
+        <div className={styles.colHead}>
           <Checkbox
             size="small"
             name={"visible_periods_selected"}

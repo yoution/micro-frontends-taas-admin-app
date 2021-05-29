@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
 import { Router } from "@reach/router";
 import ReduxToastr from "react-redux-toastr";
@@ -10,8 +10,13 @@ import { APP_BASE_PATH } from "./constants";
 import "styles/global.scss";
 
 export default function Root() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     disableSidebarForRoute(`${APP_BASE_PATH}/*`);
+    document.documentElement.classList.add("taas-admin");
+
+    return () => {
+      document.documentElement.classList.remove("taas-admin");
+    };
   }, []);
 
   return (

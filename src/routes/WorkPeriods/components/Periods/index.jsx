@@ -21,6 +21,7 @@ const Periods = () => {
   // only if sorting changes.
   useEffect(() => {
     dispatch(loadWorkPeriodsPage(1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
 
   return (

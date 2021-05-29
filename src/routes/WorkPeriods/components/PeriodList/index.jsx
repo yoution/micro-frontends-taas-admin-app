@@ -28,29 +28,36 @@ const PeriodList = ({ className }) => {
 
   const onTogglePeriod = useCallback((periodId) => {
     dispatch(toggleWorkPeriod(periodId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onWorkingDaysChange = useCallback((payload) => {
     dispatch(setWorkPeriodWorkingDays(payload));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <table className={cn(styles.container, className)}>
-      <thead>
-        <PeriodListHead />
-      </thead>
-      <tbody>
-        {periods.map((period) => (
-          <PeriodItem
-            key={period.id}
-            isSelected={period.id in periodsSelected}
-            item={period}
-            onToggle={onTogglePeriod}
-            onWorkingDaysChange={onWorkingDaysChange}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className={cn(styles.container, className)}>
+      <table className={styles.table}>
+        <thead>
+          <PeriodListHead />
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={8} className={styles.listTopMargin}></td>
+          </tr>
+          {periods.map((period) => (
+            <PeriodItem
+              key={period.id}
+              isSelected={period.id in periodsSelected}
+              item={period}
+              onToggle={onTogglePeriod}
+              onWorkingDaysChange={onWorkingDaysChange}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

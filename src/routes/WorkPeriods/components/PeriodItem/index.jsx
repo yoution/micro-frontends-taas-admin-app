@@ -8,14 +8,17 @@ import { formatUserHandleLink } from "utils/formatters";
 import styles from "./styles.module.scss";
 
 const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
-  const onToggleItem = useCallback((event) => {
-    onToggle(event.target.value);
-  }, []);
+  const onToggleItem = useCallback(
+    (event) => {
+      onToggle(event.target.value);
+    },
+    [onToggle]
+  );
   const onDaysChange = useCallback(
     (workingDays) => {
       onWorkingDaysChange({ periodId: item.id, workingDays });
     },
-    [item]
+    [item, onWorkingDaysChange]
   );
   return (
     <tr className={styles.container}>
@@ -30,7 +33,10 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
       </td>
       <td className={styles.userHandle}>
         <span>
-          <a href={formatUserHandleLink(item.projectId, item.id)}>
+          <a
+            href={formatUserHandleLink(item.projectId, item.id)}
+            target="_blank"
+          >
             {item.userHandle}
           </a>
         </span>

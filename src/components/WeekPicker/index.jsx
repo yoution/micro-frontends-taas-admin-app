@@ -27,41 +27,46 @@ const WeekPicker = ({
   onNextWeekSelect,
   onPreviousWeekSelect,
 }) => {
-  const onDateChange = useCallback((date) => {
-    onWeekSelect(date);
+  const isOpenRef = useRef(false);
+  const wasInputClickedRef = useRef(false);
+
+  const onCalendarOpen = useCallback(() => {
+    isOpenRef.current = true;
+    wasInputClickedRef.current = false;
   }, []);
 
-  const onBtnPrevClick = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      onPreviousWeekSelect();
-    },
-    [onPreviousWeekSelect]
-  );
+  const onCalendarClose = useCallback(() => {
+    isOpenRef.current = false;
+  }, []);
 
-  const onBtnNextClick = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      onNextWeekSelect();
-    },
-    [onNextWeekSelect]
-  );
-
+  // @ts-ignore
   const CustomInput = forwardRef(({ value, onClick }, ref) => (
     <div
       ref={ref}
       className={styles.customInput}
-      onClick={onClick}
+      onMouseDown={() => {
+        if (isOpenRef.current) {
+          wasInputClickedRef.current = true;
+        }
+      }}
+      onClick={() => {
+        if (!isOpenRef.current && !wasInputClickedRef.current) {
+          onClick();
+        }
+        wasInputClickedRef.current = false;
+      }}
       tabIndex={0}
       role="button"
     >
       <Button
-        color="primary-dark"
         size="small"
         style="circle"
-        onClick={onBtnPrevClick}
+        onClick={(event) => {
+          wasInputClickedRef.current = false;
+          event.stopPropagation();
+          event.preventDefault();
+          onPreviousWeekSelect();
+        }}
       >
         <IconArrowLeft />
       </Button>
@@ -69,10 +74,14 @@ const WeekPicker = ({
         {formatDateRange(startDate, endDate)}
       </span>
       <Button
-        color="primary-dark"
         size="small"
         style="circle"
-        onClick={onBtnNextClick}
+        onClick={(event) => {
+          wasInputClickedRef.current = false;
+          event.stopPropagation();
+          event.preventDefault();
+          onNextWeekSelect();
+        }}
       >
         <IconArrowRight />
       </Button>
@@ -82,10 +91,12 @@ const WeekPicker = ({
   return (
     <div className={cn(styles.container, className)}>
       <DatePicker
-        selected={new Date()}
+        selected={startDate.toDate()}
         startDate={startDate.toDate()}
         endDate={endDate.toDate()}
-        onChange={onDateChange}
+        onChange={onWeekSelect}
+        onCalendarOpen={onCalendarOpen}
+        onCalendarClose={onCalendarClose}
         showMonthDropdown
         showYearDropdown
         formatWeekDay={formatWeekDay}

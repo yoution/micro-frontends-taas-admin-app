@@ -25,9 +25,12 @@ const SearchField = ({
   placeholder,
   value,
 }) => {
-  const onInputChange = useCallback((event) => {
-    onChange(event.target.value);
-  }, []);
+  const onInputChange = useCallback(
+    (event) => {
+      onChange(event.target.value);
+    },
+    [onChange]
+  );
 
   return (
     <div className={cn(styles.container, styles[size], className)}>

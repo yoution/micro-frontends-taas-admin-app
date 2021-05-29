@@ -165,7 +165,10 @@ const actionHandlers = {
     for (let i = 0, len = oldPeriods.length; i < len; i++) {
       let period = oldPeriods[i];
       if (period.id === periodId) {
-        period = { ...period, workingDays: Math.max(workingDays, 0) };
+        period = {
+          ...period,
+          workingDays: Math.min(Math.max(workingDays, 0), 7),
+        };
       }
       periods.push(period);
     }
@@ -175,16 +178,22 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PERIOD]: (state, periodId) => {
+    let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
+    let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
     const periodsSelected = { ...state.periodsSelected };
     const isSelected = !periodsSelected[periodId];
     if (isSelected) {
       periodsSelected[periodId] = true;
     } else {
+      isSelectedPeriodsAll = false;
+      isSelectedPeriodsVisible = false;
       delete periodsSelected[periodId];
     }
     return {
       ...state,
       periodsSelected,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PERIODS_ALL]: (state) => {

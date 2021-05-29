@@ -25,21 +25,24 @@ import SearchField from "components/SearchField";
  * @param {string} [props.className] optional class name added to root element
  * @returns {JSX.Element}
  */
-const Filters = ({ className }) => {
+const PeriodFilters = ({ className }) => {
   const dispatch = useDispatch();
   const filters = useSelector(getWorkPeriodsFilters);
   const { paymentStatuses, userHandle } = filters;
 
   const onUserHandleChange = useCallback((value) => {
     dispatch(setWorkPeriodsUserHandle(value));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPaymentStatusesChange = useCallback((statuses) => {
     dispatch(setWorkPeriodsPaymentStatuses(statuses));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadWorkingPeriodsFirstPage = useCallback(
@@ -47,13 +50,13 @@ const Filters = ({ className }) => {
       () => {
         dispatch(loadWorkingPeriodsPage(1));
       },
-      200,
+      300,
       { leading: false }
     ),
     []
   );
 
-  // Load challenges' first page when any filter option changes.
+  // Load working periods' first page when any filter option changes.
   useUpdateEffect(loadWorkingPeriodsFirstPage, [filters]);
 
   return (
@@ -76,12 +79,7 @@ const Filters = ({ className }) => {
         />
       </SidebarSection>
       <div className={styles.buttons}>
-        <Button
-          className={styles.button}
-          size="small"
-          color="primary-dark"
-          onClick={onClearFilter}
-        >
+        <Button className={styles.button} size="small" onClick={onClearFilter}>
           Clear Filter
         </Button>
       </div>
@@ -89,7 +87,7 @@ const Filters = ({ className }) => {
   );
 };
 
-Filters.propTypes = {
+PeriodFilters.propTypes = {
   className: PT.string,
 };
 
@@ -99,4 +97,4 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
 ];
 
-export default Filters;
+export default PeriodFilters;

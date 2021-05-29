@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback } from "react";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,18 +25,22 @@ const PeriodsPagination = ({ className, id }) => {
 
   const onPageNumberClick = useCallback((pageNumber) => {
     dispatch(setWorkPeriodsPageNumber(+pageNumber));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onPageSizeChange = useCallback((pageSize) => {
     dispatch(setWorkPeriodsPageSize(+pageSize));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadWorkPeriodsFirstPage = useCallback(() => {
     dispatch(loadWorkPeriodsPage(1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadWorkPeriodsNewPage = useCallback(() => {
     dispatch(loadWorkPeriodsPage());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load challenges' first page if page size changes.
@@ -49,6 +52,7 @@ const PeriodsPagination = ({ className, id }) => {
   return (
     <Pagination
       id={id}
+      label={"Records/Page"}
       className={cn(styles.pagination, className)}
       pageSizeClassName={styles.pageSize}
       pagination={pagination}

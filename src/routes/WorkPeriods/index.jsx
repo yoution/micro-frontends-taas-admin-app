@@ -7,7 +7,7 @@ import ContentBlock from "components/ContentBlock";
 import Button from "components/Button";
 import Page from "components/Page";
 import PageTitle from "components/PageTitle";
-import Filters from "./components/Filters";
+import PeriodFilters from "./components/PeriodFilters";
 import Periods from "./components/Periods";
 import PeriodCount from "./components/PeriodCount";
 import PeriodsPagination from "./components/PeriodsPagination";
@@ -17,12 +17,12 @@ import PeriodWeekPicker from "./components/PeriodWeekPicker";
 const WorkPeriods = () => (
   <Page className={styles.container}>
     <Sidebar>
-      <Filters />
+      <PeriodFilters />
     </Sidebar>
     <Content>
       <ContentHeader className={styles.contentHeader}>
         <PageTitle text="Working Periods" />
-        <Button color="primary-dark" variant="contained" onClick={() => {}}>
+        <Button variant="contained" onClick={() => {}}>
           Process Day
         </Button>
       </ContentHeader>
@@ -31,7 +31,7 @@ const WorkPeriods = () => (
           <PeriodCount className={styles.periodCount} />
           <PeriodWeekPicker className={styles.periodWeekPicker} />
           <PeriodsPagination
-            className={styles.periodPagination}
+            className={styles.periodsPagination}
             id="periods-pagination-top"
           />
         </div>

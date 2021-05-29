@@ -30,14 +30,18 @@
 
 .pageButton {
   flex: 0 0 auto;
-  margin-right: 10px;
+  margin-left: 10px;
+
+  &:first-child {
+    margin-left: 0;
+  }
 }
 
 .buttonPrev {
+  flex: 0 0 auto;
   // position: absolute;
   // top: auto;
   // right: 100%;
-  margin-right: 10px;
 }
 
 .buttonNext {
@@ -58,22 +62,15 @@
   display: inline-block;
   width: 7px;
   height: 12px;
-  background-size: 7px 12px;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .iconArrowLeft {
-  background-image: url("./../../assets/images/icon-arrow-left-green.png");
-
   @include desktop {
     margin-right: 3px;
   }
 }
 
 .iconArrowRight {
-  background-image: url("./../../assets/images/icon-arrow-right-green.png");
-
   @include desktop {
     margin-left: 3px;
   }

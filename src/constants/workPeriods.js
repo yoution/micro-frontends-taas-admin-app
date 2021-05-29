@@ -1,5 +1,5 @@
 // @ts-ignore
-import { API } from "../config";
+import { API } from "../../config";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
 import * as SORT_BY from "./workPeriods/sortBy";
@@ -59,6 +59,7 @@ export const PAYMENT_STATUS_LABELS = {
   [PAYMENT_STATUS.PAID]: "Paid",
   [PAYMENT_STATUS.PENDING]: "Pending",
   [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
+  [PAYMENT_STATUS.UNDEFINED]: "Undefined",
 };
 
 export const PAYMENT_STATUS_MAP = {
