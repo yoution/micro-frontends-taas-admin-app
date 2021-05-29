@@ -9,14 +9,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./styles.module.scss";
 
 /**
+ * Displays a control which allows to select a specific date using dropdown calendar
+ * or "next" and "previous" buttons. This control is used for week selection.
  *
  * @param {Object} props
- * @param {string} [props.className]
- * @param {Object} props.startDate
- * @param {Object} props.endDate
- * @param {() => void} props.onWeekSelect
- * @param {() => void} props.onNextWeekSelect
- * @param {() => void} props.onPreviousWeekSelect
+ * @param {string} [props.className] class name to be added to root element
+ * @param {Object} props.startDate momentjs object describing selection's start date
+ * @param {Object} props.endDate momentjs object describing selection's end date
+ * @param {() => void} props.onWeekSelect function called on date select
+ * @param {() => void} props.onNextWeekSelect function called on next week button click
+ * @param {() => void} props.onPreviousWeekSelect function called on previous week button click
  * @returns {JSX.Element}
  */
 const WeekPicker = ({

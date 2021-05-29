@@ -6,6 +6,11 @@ import IconArrowDown from "components/Icons/ArrowDown";
 import { getOptionByValue } from "utils/misc";
 import styles from "./styles.module.scss";
 
+/**
+ * Custom dropdown indicator.
+ *
+ * @returns {JSX.Element}
+ */
 const DropdownIndicator = () => (
   <IconArrowDown className={styles.dropdownIndicator} />
 );

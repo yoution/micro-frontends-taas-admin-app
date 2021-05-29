@@ -14,6 +14,11 @@ import PeriodsPagination from "./components/PeriodsPagination";
 import styles from "./styles.module.scss";
 import PeriodWeekPicker from "./components/PeriodWeekPicker";
 
+/**
+ * Displays route component for Working Days' route.
+ *
+ * @returns {JSX.Element}
+ */
 const WorkPeriods = () => (
   <Page className={styles.container}>
     <Sidebar>

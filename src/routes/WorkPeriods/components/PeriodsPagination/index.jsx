@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import PT from "prop-types";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import Pagination from "components/Pagination";
@@ -12,7 +13,7 @@ import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
 
 /**
- * Displays challenges' pagination and a menu to choose page size.
+ * Displays working periods' pagination and a menu to choose page size.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name added to root element
@@ -63,6 +64,11 @@ const PeriodsPagination = ({ className, id }) => {
       pageSizeOptions={PAGE_SIZE_OPTIONS}
     />
   );
+};
+
+PeriodsPagination.propTypes = {
+  className: PT.string,
+  id: PT.string.isRequired,
 };
 
 export default PeriodsPagination;

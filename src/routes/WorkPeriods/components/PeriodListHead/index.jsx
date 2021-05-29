@@ -16,6 +16,12 @@ import {
 import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
+/**
+ * Displays working period list column heads with sorting controls to be used
+ * in PeriodList component.
+ *
+ * @returns {JSX.Element}
+ */
 const PeriodListHead = () => {
   const sorting = useSelector(getWorkPeriodsSorting);
   const isSelectedVisible = useSelector(getWorkPeriodsIsSelectedVisible);

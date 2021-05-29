@@ -19,7 +19,8 @@ import styles from "./styles.module.scss";
 import SearchField from "components/SearchField";
 
 /**
- * Displays challenges' and gigs' menu and challenge filters.
+ * Displays working periods' filters like user handle search control or
+ * payment status checkboxes.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] optional class name added to root element
@@ -63,7 +64,7 @@ const PeriodFilters = ({ className }) => {
   useUpdateEffect(loadWorkingPeriodsFirstPage, [filters]);
 
   return (
-    <form className={styles.container} action="#">
+    <form className={cn(styles.container, className)} action="#">
       <div className={styles.handleSection}>
         <SearchField
           id="topcoder-handle"

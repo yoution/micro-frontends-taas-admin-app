@@ -7,6 +7,17 @@ import PaymentStatus from "../PaymentStatus";
 import { formatUserHandleLink } from "utils/formatters";
 import styles from "./styles.module.scss";
 
+/**
+ * Displays the working period data row to be used in PeriodList component.
+ *
+ * @param {Object} props component properties
+ * @param {boolean} props.isSelected whether the item is selected
+ * @param {Object} props.item object describing a working period
+ * @param {(v: string) => void} props.onToggle function called when working period checkbox is clicked
+ * @param {(v: { periodId: string, workingDays: number }) => void} props.onWorkingDaysChange
+ * function called when the number of working days is changed
+ * @returns {JSX.Element}
+ */
 const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
   const onToggleItem = useCallback(
     (event) => {

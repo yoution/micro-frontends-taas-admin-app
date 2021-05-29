@@ -4,7 +4,7 @@ import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
- * Displays search input field field.
+ * Displays search input field.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name added to root element

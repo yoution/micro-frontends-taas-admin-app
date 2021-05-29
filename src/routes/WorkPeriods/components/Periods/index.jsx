@@ -11,7 +11,7 @@ import {
 import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
 
 /**
- * Displays working periods' list or an info or an error message.
+ * Displays working periods' list or a "Loading..." message or an error message.
  *
  * @returns {JSX.Element}
  */

@@ -4,7 +4,7 @@ import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
- * Display input field for inputing numbers with plus and minus buttons.
+ * Displays input field for inputing integer numbers with plus and minus buttons.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element
