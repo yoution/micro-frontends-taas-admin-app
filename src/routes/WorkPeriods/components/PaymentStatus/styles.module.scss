@@ -1,7 +1,12 @@
+@import "styles/mixins";
+
 .container {
   display: inline-block;
   padding: 3px 8px 1px;
+  @include roboto-medium;
+  font-size: 12px;
   line-height: 16px;
+  letter-spacing: 0.5px;
   border-radius: 5px;
   background: #aaa;
   color: #fff;

@@ -167,7 +167,7 @@ const actionHandlers = {
       if (period.id === periodId) {
         period = {
           ...period,
-          workingDays: Math.min(Math.max(workingDays, 0), 7),
+          workingDays: Math.min(Math.max(workingDays, 0), 5),
         };
       }
       periods.push(period);
