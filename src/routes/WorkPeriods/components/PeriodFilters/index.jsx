@@ -30,20 +30,23 @@ const PeriodFilters = ({ className }) => {
   const filters = useSelector(getWorkPeriodsFilters);
   const { paymentStatuses, userHandle } = filters;
 
-  const onUserHandleChange = useCallback((value) => {
-    dispatch(setWorkPeriodsUserHandle(value));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onUserHandleChange = useCallback(
+    (value) => {
+      dispatch(setWorkPeriodsUserHandle(value));
+    },
+    [dispatch]
+  );
 
-  const onPaymentStatusesChange = useCallback((statuses) => {
-    dispatch(setWorkPeriodsPaymentStatuses(statuses));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onPaymentStatusesChange = useCallback(
+    (statuses) => {
+      dispatch(setWorkPeriodsPaymentStatuses(statuses));
+    },
+    [dispatch]
+  );
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const loadWorkingPeriodsFirstPage = useCallback(
     debounce(
@@ -53,7 +56,7 @@ const PeriodFilters = ({ className }) => {
       300,
       { leading: false }
     ),
-    []
+    [dispatch]
   );
 
   // Load working periods' first page when any filter option changes.

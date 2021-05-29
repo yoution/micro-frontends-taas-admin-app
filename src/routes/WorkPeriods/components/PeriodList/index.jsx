@@ -15,10 +15,10 @@ import {
 import styles from "./styles.module.scss";
 
 /**
- * Displays the main content of the challenges' page.
+ * Displays the list of the working periods with column headers.
  *
  * @param {Object} props component properties
- * @param {string} [props.className]
+ * @param {string} [props.className] class name to be added to root element
  * @returns {JSX.Element}
  */
 const PeriodList = ({ className }) => {
@@ -26,15 +26,19 @@ const PeriodList = ({ className }) => {
   const periodsSelected = useSelector(getWorkPeriodsSelected);
   const dispatch = useDispatch();
 
-  const onTogglePeriod = useCallback((periodId) => {
-    dispatch(toggleWorkPeriod(periodId));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onTogglePeriod = useCallback(
+    (periodId) => {
+      dispatch(toggleWorkPeriod(periodId));
+    },
+    [dispatch]
+  );
 
-  const onWorkingDaysChange = useCallback((payload) => {
-    dispatch(setWorkPeriodWorkingDays(payload));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onWorkingDaysChange = useCallback(
+    (payload) => {
+      dispatch(setWorkPeriodWorkingDays(payload));
+    },
+    [dispatch]
+  );
 
   return (
     <div className={cn(styles.container, className)}>

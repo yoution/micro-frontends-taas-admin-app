@@ -22,15 +22,16 @@ const PeriodListHead = () => {
   const dispatch = useDispatch();
   const { criteria, order } = sorting;
 
-  const onSortingChange = useCallback((sorting) => {
-    dispatch(setWorkPeriodsSorting(sorting));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onSortingChange = useCallback(
+    (sorting) => {
+      dispatch(setWorkPeriodsSorting(sorting));
+    },
+    [dispatch]
+  );
 
   const onToggleVisible = useCallback(() => {
     dispatch(toggleWorkingPeriodsVisible());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   return (
     <tr className={styles.container}>

@@ -23,30 +23,32 @@ const PeriodsPagination = ({ className, id }) => {
   const pagination = useSelector(getWorkPeriodsPagination);
   const dispatch = useDispatch();
 
-  const onPageNumberClick = useCallback((pageNumber) => {
-    dispatch(setWorkPeriodsPageNumber(+pageNumber));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onPageNumberClick = useCallback(
+    (pageNumber) => {
+      dispatch(setWorkPeriodsPageNumber(+pageNumber));
+    },
+    [dispatch]
+  );
 
-  const onPageSizeChange = useCallback((pageSize) => {
-    dispatch(setWorkPeriodsPageSize(+pageSize));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const onPageSizeChange = useCallback(
+    (pageSize) => {
+      dispatch(setWorkPeriodsPageSize(+pageSize));
+    },
+    [dispatch]
+  );
 
   const loadWorkPeriodsFirstPage = useCallback(() => {
     dispatch(loadWorkPeriodsPage(1));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
   const loadWorkPeriodsNewPage = useCallback(() => {
     dispatch(loadWorkPeriodsPage());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
-  // Load challenges' first page if page size changes.
+  // Load working periods' first page if page size changes.
   useUpdateEffect(loadWorkPeriodsFirstPage, [pagination.pageSize]);
 
-  // Load challenges' new page if page number changes.
+  // Load working periods' new page if page number changes.
   useUpdateEffect(loadWorkPeriodsNewPage, [pagination.pageNumber]);
 
   return (

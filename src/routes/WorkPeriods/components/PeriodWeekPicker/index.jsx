@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import cn from "classnames";
@@ -12,17 +11,20 @@ const PeriodWeekPicker = ({ className }) => {
   const [startDate, endDate] = useSelector(getWorkPeriodsDateRange);
   const dispatch = useDispatch();
 
-  const onWeekSelect = useCallback((date) => {
-    dispatch(setWorkPeriodsDateRange(moment(date)));
-  }, []);
+  const onWeekSelect = useCallback(
+    (date) => {
+      dispatch(setWorkPeriodsDateRange(moment(date)));
+    },
+    [dispatch]
+  );
 
   const onNextWeekSelect = useCallback(() => {
     dispatch(setWorkPeriodsDateRange(startDate.clone().add(1, "week")));
-  }, [startDate]);
+  }, [startDate, dispatch]);
 
   const onPreviousWeekSelect = useCallback(() => {
     dispatch(setWorkPeriodsDateRange(startDate.clone().add(-1, "week")));
-  }, [startDate]);
+  }, [startDate, dispatch]);
 
   return (
     <WeekPicker

@@ -10,6 +10,11 @@ import {
 } from "store/selectors/workPeriods";
 import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
 
+/**
+ * Displays working periods' list or an info or an error message.
+ *
+ * @returns {JSX.Element}
+ */
 const Periods = () => {
   const sorting = useSelector(getWorkPeriodsSorting);
   const count = useSelector(getWorkPeriodsTotalCount);
@@ -21,8 +26,7 @@ const Periods = () => {
   // only if sorting changes.
   useEffect(() => {
     dispatch(loadWorkPeriodsPage(1));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sorting]);
+  }, [sorting, dispatch]);
 
   return (
     <>
