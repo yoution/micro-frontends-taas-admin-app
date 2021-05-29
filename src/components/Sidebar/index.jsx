@@ -8,7 +8,7 @@ import Freelancers from "components/Icons/Freelancers";
 import { APP_BASE_PATH } from "../../constants";
 
 /**
- * Displays challenges' and gigs' menu and challenge filters.
+ * Positions sidebar contents like filters and displays navigation menu.
  *
  * @param {Object} props component properties
  * @param {Object} props.children component children
@@ -16,10 +16,10 @@ import { APP_BASE_PATH } from "../../constants";
  * @returns {JSX.Element}
  */
 const Sidebar = ({ className, children }) => (
-  <div className={cn(styles.container, className)}>
+  <aside className={cn(styles.container, className)}>
     <NavMenu className={styles.menu} items={NAV_ITEMS} />
     {children}
-  </div>
+  </aside>
 );
 
 Sidebar.propTypes = {

@@ -12,11 +12,6 @@ import "styles/global.scss";
 export default function Root() {
   useLayoutEffect(() => {
     disableSidebarForRoute(`${APP_BASE_PATH}/*`);
-    document.documentElement.classList.add("taas-admin");
-
-    return () => {
-      document.documentElement.classList.remove("taas-admin");
-    };
   }, []);
 
   return (

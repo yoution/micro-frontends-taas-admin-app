@@ -3,11 +3,13 @@
 
 .container {
   padding: 27px 24px;
-  width: $sidebar-width;
   background-color: #fff;
 
   @include desktop {
+    flex: 0 0 auto;
     padding: 27px 20px;
+    width: $sidebar-width;
+    min-height: calc(100vh - 60px);
   }
 }
 
