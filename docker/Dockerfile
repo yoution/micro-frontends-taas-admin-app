@@ -8,10 +8,10 @@ ENV APPMODE=$APPMODE
 ENV APPENV=$APPENV
 
 # Copy the current directory into the Docker image
-COPY . /taas-admin
+COPY . /micro-frontends-taas-admin-app
 
 # Set working directory for future use
-WORKDIR /taas-admin
+WORKDIR /micro-frontends-taas-admin-app
 
 # Install the dependencies from package.json
 RUN npm install
