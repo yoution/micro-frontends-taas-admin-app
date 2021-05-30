@@ -38,7 +38,7 @@ builddeploy_steps: &builddeploy_steps
       name: Running build-var.
       command: |
         source buildenvvar
-        chmod +x ./build.sh ${APPNAME}
+        ./build.sh ${APPNAME}
   #- save_cache: *save_cache_settings
   - deploy:
       name: Running MasterScript.
