@@ -72,7 +72,7 @@ export const PAYMENT_STATUS_MAP = {
 export const API_PAYMENT_STATUS_MAP = (function () {
   const obj = {};
   for (let key in PAYMENT_STATUS_MAP) {
-    if (PAYMENT_STATUS_MAP.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(PAYMENT_STATUS_MAP, key)) {
       obj[PAYMENT_STATUS_MAP[key]] = key;
     }
   }

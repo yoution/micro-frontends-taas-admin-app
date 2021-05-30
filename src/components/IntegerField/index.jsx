@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import styles from "./styles.module.scss";
@@ -39,6 +39,8 @@ const IntegerField = ({
 IntegerField.propTypes = {
   className: PT.string,
   name: PT.string.isRequired,
+  maxValue: PT.number,
+  minValue: PT.string,
   onChange: PT.func.isRequired,
   value: PT.number.isRequired,
 };

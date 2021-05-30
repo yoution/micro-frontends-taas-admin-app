@@ -48,6 +48,7 @@ const SortingControl = ({ className, onChange, sortBy, value }) => {
 SortingControl.propTypes = {
   className: PT.string,
   onChange: PT.func.isRequired,
+  sortBy: PT.string.isRequired,
   value: PT.oneOf([SORT_ORDER.ASC, SORT_ORDER.DESC, null, undefined])
     .isRequired,
 };

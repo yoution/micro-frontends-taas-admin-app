@@ -107,9 +107,13 @@ const Pagination = ({
 
 Pagination.propTypes = {
   className: PT.string,
+  pageSizeClassName: PT.string,
+  id: PT.string.isRequired,
+  label: PT.string,
+  pageSizeLabel: PT.string,
   onPageNumberClick: PT.func.isRequired,
   onPageSizeChange: PT.func.isRequired,
-  options: PT.arrayOf(
+  pageSizeOptions: PT.arrayOf(
     PT.shape({
       value: PT.oneOfType([PT.number, PT.string]).isRequired,
       label: PT.string.isRequired,

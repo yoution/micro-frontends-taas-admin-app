@@ -9,7 +9,7 @@ import styles from "./styles.module.scss";
  *
  * @param {Object} props component props
  * @param {string} [props.className] class name added to root element
- * @param {() => void} props.onClick click handler
+ * @param {() => void} [props.onClick] click handler
  * @param {boolean} props.isActive whether the icon is in active state
  * @param {'up'|'down'} [props.direction] arrow direction
  * @returns {JSX.Element}
@@ -27,6 +27,9 @@ const ArrowSmall = ({ className, onClick, isActive, direction = "down" }) => (
 
 ArrowSmall.propTypes = {
   className: PT.string,
+  isActive: PT.bool.isRequired,
+  direction: PT.oneOf(["down", "up"]),
+  onClick: PT.func,
 };
 
 export default ArrowSmall;

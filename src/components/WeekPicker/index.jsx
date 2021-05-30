@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useRef, useState } from "react";
+import React, { forwardRef, useCallback, useRef } from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import DatePicker from "react-datepicker";
@@ -42,7 +42,7 @@ const WeekPicker = ({
   }, []);
 
   // @ts-ignore
-  const CustomInput = forwardRef(({ value, onClick }, ref) => (
+  const CustomInput = forwardRef(({ onClick }, ref) => (
     <div
       ref={ref}
       className={styles.customInput}
@@ -89,6 +89,11 @@ const WeekPicker = ({
       </Button>
     </div>
   ));
+  CustomInput.displayName = "CustomInput";
+  CustomInput.propTypes = {
+    // @ts-ignore
+    onClick: PT.func,
+  };
 
   return (
     <div className={cn(styles.container, className)}>

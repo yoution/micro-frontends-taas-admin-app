@@ -50,6 +50,8 @@ const SearchField = ({
 
 SearchField.propTypes = {
   className: PT.string,
+  id: PT.string.isRequired,
+  size: PT.oneOf(["medium", "small"]),
   name: PT.string.isRequired,
   onChange: PT.func.isRequired,
   placeholder: PT.string,

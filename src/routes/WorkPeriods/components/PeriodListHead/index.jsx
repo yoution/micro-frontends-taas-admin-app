@@ -4,7 +4,6 @@ import cn from "classnames";
 import Checkbox from "components/Checkbox";
 import SortingControl from "components/SortingControl";
 import { SORT_BY } from "constants/workPeriods";
-import { useUpdateEffect } from "utils/hooks";
 import {
   getWorkPeriodsIsSelectedVisible,
   getWorkPeriodsSorting,
@@ -13,7 +12,6 @@ import {
   setWorkPeriodsSorting,
   toggleWorkingPeriodsVisible,
 } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**

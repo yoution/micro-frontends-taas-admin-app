@@ -58,7 +58,7 @@ export function replaceItems(array, map) {
 export function updateOptionMap(oldOptions, newOptions) {
   oldOptions = { ...oldOptions };
   for (let key in newOptions) {
-    if (newOptions.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(newOptions, key)) {
       let value = newOptions[key];
       if (value) {
         oldOptions[key] = true;

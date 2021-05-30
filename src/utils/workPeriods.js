@@ -1,9 +1,5 @@
 import moment from "moment";
-import {
-  API_PAYMENT_STATUS_MAP,
-  PAYMENT_STATUS,
-  PAYMENT_STATUS_LABELS,
-} from "constants/workPeriods";
+import { API_PAYMENT_STATUS_MAP, PAYMENT_STATUS } from "constants/workPeriods";
 
 const DATE_FORMAT_UI = "MMM DD, YYYY";
 

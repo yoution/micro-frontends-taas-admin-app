@@ -58,6 +58,7 @@ Button.propTypes = {
   children: PT.node,
   className: PT.string,
   color: PT.oneOf(["primary"]),
+  isSelected: PT.bool,
   name: PT.string,
   onClick: PT.func,
   size: PT.oneOf(["medium"]),

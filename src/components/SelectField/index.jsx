@@ -92,6 +92,7 @@ SelectField.propTypes = {
   className: PT.string,
   id: PT.string.isRequired,
   label: PT.string,
+  size: PT.oneOf(["medium", "small"]),
   onChange: PT.func.isRequired,
   options: PT.arrayOf(
     PT.shape({

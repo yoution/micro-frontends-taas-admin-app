@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
 import { Router, Redirect } from "@reach/router";
-import ReduxToastr from "react-redux-toastr";
+// import ReduxToastr from "react-redux-toastr";
 import store from "store";
 import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
 import WorkPeriods from "routes/WorkPeriods";

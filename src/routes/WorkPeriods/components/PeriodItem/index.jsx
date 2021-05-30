@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from "react";
 import PT from "prop-types";
-import cn from "classnames";
 import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
 import PaymentStatus from "../PaymentStatus";
@@ -47,6 +46,7 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
           <a
             href={formatUserHandleLink(item.projectId, item.id)}
             target="_blank"
+            rel="noreferrer"
           >
             {item.userHandle}
           </a>
@@ -78,6 +78,8 @@ PeriodItem.propTypes = {
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
+    rbId: PT.string.isRequired,
+    projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
     startDate: PT.string.isRequired,
@@ -86,6 +88,8 @@ PeriodItem.propTypes = {
     paymentStatus: PT.string.isRequired,
     workingDays: PT.number.isRequired,
   }),
+  onToggle: PT.func.isRequired,
+  onWorkingDaysChange: PT.func.isRequired,
 };
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
