@@ -1,0 +1,30 @@
+.container {
+}
+
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.periodsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 13px 13px 32px;
+}
+
+.periodsFooter {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 13px 13px 13px 32px;
+}
+
+.periodCount {
+
+}
+
+.periodWeekPicker {
+  margin-left: 40px;
+}

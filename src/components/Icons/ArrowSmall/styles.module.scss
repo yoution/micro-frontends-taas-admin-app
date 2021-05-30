@@ -1,0 +1,26 @@
+.arrow {
+  display: inline-block;
+
+  svg {
+    display: block;
+    width: 100%;
+
+    polygon {
+      fill: #aaa;
+    }
+  }
+
+  &.isActive {
+    svg {
+      polygon {
+        fill: #000;
+      }
+    }
+  }
+
+  &.up {
+    svg {
+      transform: rotate(180deg);
+    }
+  }
+}
