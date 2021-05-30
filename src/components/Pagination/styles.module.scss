@@ -21,7 +21,7 @@
 .pageButtons {
   position: relative;
   display: flex;
-  margin-left: auto;
+  margin-left: 20px;
 
   @include desktop {
     margin-left: 40px;
