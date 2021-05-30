@@ -2,10 +2,11 @@ import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import IconWrapper from "components/IconWrapper";
+import IconArrowDownSmall from "../../../assets/images/icon-arrow-down-small.svg";
 import styles from "./styles.module.scss";
 
 /**
- * Displays small down-arrow.
+ * Displays a small narrow arrow pointing down or up.
  *
  * @param {Object} props component props
  * @param {string} [props.className] class name added to root element
@@ -21,7 +22,7 @@ const ArrowSmall = ({ className, onClick, isActive, direction = "down" }) => (
       [styles.isActive]: isActive,
     })}
   >
-    {jsx}
+    <IconArrowDownSmall />
   </IconWrapper>
 );
 
@@ -33,24 +34,3 @@ ArrowSmall.propTypes = {
 };
 
 export default ArrowSmall;
-
-const jsx = (
-  <svg
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    x="0px"
-    y="0px"
-    viewBox="0 0 11 7"
-    enableBackground="new 0 0 11 7"
-    xmlSpace="preserve"
-  >
-    <polygon
-      fillRule="evenodd"
-      clipRule="evenodd"
-      fill="#FFFFFF"
-      points="5.5,6.9 0.1,1.5 1.5,0.1 5.5,4.1 9.5,0.1
-	10.9,1.5 "
-    />
-  </svg>
-);

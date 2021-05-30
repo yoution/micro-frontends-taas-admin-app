@@ -46,6 +46,7 @@ module.exports = function (api) {
         //     "module-resolver",
         //     {
         //       alias: {
+        //         assets: "./src/assets",
         //         styles: "./src/styles",
         //         components: "./src/components",
         //         hooks: "./src/hooks",

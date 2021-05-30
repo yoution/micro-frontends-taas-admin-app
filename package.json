@@ -94,6 +94,7 @@
     "single-spa-react": "^2.14.0",
     "style-loader": "^2.0.0",
     "systemjs-webpack-interop": "^2.1.2",
+    "url-loader": "^4.1.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
     "webpack-config-single-spa-react": "^1.0.3",
