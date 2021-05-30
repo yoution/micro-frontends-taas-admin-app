@@ -44,7 +44,7 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
       <td className={styles.userHandle}>
         <span>
           <a
-            href={formatUserHandleLink(item.projectId, item.id)}
+            href={formatUserHandleLink(item.projectId, item.rbId)}
             target="_blank"
             rel="noreferrer"
           >
