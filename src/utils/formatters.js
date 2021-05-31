@@ -31,5 +31,5 @@ export function formatPaymentStatus(status) {
  * @returns {string}
  */
 export function formatUserHandleLink(rbProjectId, rbId) {
-  return `${PLATFORM_WEBSITE_URL}${TAAS_BASE_PATH}/${rbProjectId}/rb/${rbId}`;
+  return `${PLATFORM_WEBSITE_URL}${TAAS_BASE_PATH}/myteams/${rbProjectId}/rb/${rbId}`;
 }
