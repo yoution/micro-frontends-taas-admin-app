@@ -43,8 +43,9 @@ const Pagination = ({
   );
 
   const pageButtons = [];
-  let pageEnd = Math.min(pageNumber + 2, pageCount);
-  let pageStart = Math.max(pageEnd - 2, 1);
+  let pageStart = pageNumber > 2 ? pageNumber - 1 : 1;
+  pageStart = Math.max(Math.min(pageStart, pageCount - 2), 1);
+  let pageEnd = Math.min(pageStart + 2, pageCount);
   if (pageStart > 1) {
     pageButtons.push(
       <Button
