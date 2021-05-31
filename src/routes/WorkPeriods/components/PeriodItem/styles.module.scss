@@ -43,6 +43,14 @@ td.endDate {
   white-space: nowrap;
 }
 
+td.weeklyRate {
+  span {
+    display: inline-block;
+    width: 50px;
+    text-align: right;
+  }
+}
+
 td.workingDays {
   padding: 5px 10px;
 }
