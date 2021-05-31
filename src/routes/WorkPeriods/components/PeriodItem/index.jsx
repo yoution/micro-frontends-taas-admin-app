@@ -4,6 +4,7 @@ import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
 import PaymentStatus from "../PaymentStatus";
 import { formatUserHandleLink } from "utils/formatters";
+import _ from "lodash";
 import styles from "./styles.module.scss";
 
 /**
@@ -55,7 +56,7 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
       <td className={styles.teamName}>{item.projectId}</td>
       <td className={styles.startDate}>{item.startDate}</td>
       <td className={styles.endDate}>{item.endDate}</td>
-      <td>{currencyFormatter.format(item.weeklyRate)}</td>
+      <td>{_.isNumber(item.weeklyRate) ? currencyFormatter.format(item.weeklyRate) : '-'}</td>
       <td>
         <PaymentStatus status={item.paymentStatus} />
       </td>
