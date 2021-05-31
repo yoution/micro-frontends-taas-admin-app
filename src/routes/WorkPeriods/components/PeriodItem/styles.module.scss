@@ -33,8 +33,14 @@ td.toggle {
   }
 }
 
-.teamName {
+td.teamName {
   @include roboto-medium;
+  white-space: nowrap;
+}
+
+td.startDate,
+td.endDate {
+  white-space: nowrap;
 }
 
 td.workingDays {

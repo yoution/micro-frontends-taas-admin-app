@@ -52,9 +52,9 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
           </a>
         </span>
       </td>
-      <td>{item.projectId}</td>
-      <td>{item.startDate}</td>
-      <td>{item.endDate}</td>
+      <td className={styles.teamName}>{item.projectId}</td>
+      <td className={styles.startDate}>{item.startDate}</td>
+      <td className={styles.endDate}>{item.endDate}</td>
       <td>{currencyFormatter.format(item.weeklyRate)}</td>
       <td>
         <PaymentStatus status={item.paymentStatus} />
