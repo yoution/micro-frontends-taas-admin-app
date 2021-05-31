@@ -5,10 +5,11 @@ import { formatPaymentStatus } from "utils/formatters";
 import styles from "./styles.module.scss";
 
 /**
+ * Displays payment status for working period.
  *
  * @param {Object} props component properties
- * @param {string} [props.className]
- * @param {string} props.status
+ * @param {string} [props.className] class name to be added to root element
+ * @param {string} props.status one of PAYMENT_STATUS enum constants
  * @returns {JSX.Element}
  */
 const PaymentStatus = ({ className, status }) => (

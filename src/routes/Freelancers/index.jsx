@@ -7,6 +7,11 @@ import Page from "components/Page";
 import PageTitle from "components/PageTitle";
 import Sidebar from "components/Sidebar";
 
+/**
+ * Displays route component for Freelancers' route.
+ *
+ * @returns {JSX.Element}
+ */
 const Freelancers = () => (
   <Page>
     <Sidebar></Sidebar>

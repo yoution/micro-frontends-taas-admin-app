@@ -6,7 +6,7 @@ import { getWorkPeriodsTotalCount } from "store/selectors/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
- * Displays the total number of working periods.
+ * Displays the total number of working periods for current filters.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element

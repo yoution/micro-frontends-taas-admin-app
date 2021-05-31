@@ -20,7 +20,7 @@ import LoadingIndicator from "components/LoadingIndicator";
 import { authUserSuccess, authUserError } from "./actions";
 
 export default function withAuthentication(Component) {
-  return (props) => {
+  return function AuthenticatedComponent(props) {
     const dispatch = useDispatch();
     const { isLoggedIn, authError } = useSelector((state) => state.authUser);
     /*
@@ -33,7 +33,7 @@ export default function withAuthentication(Component) {
       if (!isLoggedIn) {
         getAuthUserTokens()
           .then(({ tokenV3 }) => {
-            if (!!tokenV3) {
+            if (tokenV3) {
               const tokenData = decodeToken(tokenV3);
               dispatch(
                 authUserSuccess(
@@ -50,7 +50,7 @@ export default function withAuthentication(Component) {
       return () => {
         isUnmount = true;
       };
-    }, [isLoggedIn]);
+    }, [isLoggedIn, dispatch]);
 
     return (
       <>

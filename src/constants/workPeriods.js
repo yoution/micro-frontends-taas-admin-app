@@ -1,5 +1,5 @@
 // @ts-ignore
-import { API } from "../config";
+import { API } from "../../config";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
 import * as SORT_BY from "./workPeriods/sortBy";
@@ -19,13 +19,12 @@ export const REQUIRED_FIELDS = [
   "projectId",
   "startDate",
   "endDate",
-  "customerRate",
+  "memberRate",
   "workPeriods.id",
   "workPeriods.projectId",
   "workPeriods.userHandle",
   "workPeriods.startDate",
   "workPeriods.endDate",
-  "workPeriods.customerRate",
   "workPeriods.paymentStatus",
   "workPeriods.daysWorked",
 ];
@@ -59,6 +58,7 @@ export const PAYMENT_STATUS_LABELS = {
   [PAYMENT_STATUS.PAID]: "Paid",
   [PAYMENT_STATUS.PENDING]: "Pending",
   [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
+  [PAYMENT_STATUS.UNDEFINED]: "Undefined",
 };
 
 export const PAYMENT_STATUS_MAP = {
@@ -71,7 +71,7 @@ export const PAYMENT_STATUS_MAP = {
 export const API_PAYMENT_STATUS_MAP = (function () {
   const obj = {};
   for (let key in PAYMENT_STATUS_MAP) {
-    if (PAYMENT_STATUS_MAP.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(PAYMENT_STATUS_MAP, key)) {
       obj[PAYMENT_STATUS_MAP[key]] = key;
     }
   }

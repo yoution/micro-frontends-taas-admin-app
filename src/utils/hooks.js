@@ -16,5 +16,5 @@ export const useUpdateEffect = (effect, deps) => {
       isMountedRef.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effect, ...deps]);
+  }, deps);
 };

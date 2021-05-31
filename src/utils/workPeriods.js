@@ -20,11 +20,11 @@ export function normalizePeriodItems(items) {
         ? moment(item.startDate).format(DATE_FORMAT_UI)
         : "",
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
-      weeklyRate: +workPeriod.customerRate || 0,
+      weeklyRate: item.memberRate,
       paymentStatus: paymentStatus
         ? API_PAYMENT_STATUS_MAP[paymentStatus] || paymentStatus.toUpperCase()
         : PAYMENT_STATUS.UNDEFINED,
-      workingDays: daysWorked === null ? 5 : +daysWorked || 5,
+      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
     });
   }
   return periods;

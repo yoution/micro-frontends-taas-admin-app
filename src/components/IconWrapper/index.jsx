@@ -1,4 +1,5 @@
 import React, { memo } from "react";
+import PT from "prop-types";
 import cn from "classnames";
 import styles from "./styles.module.scss";
 
@@ -14,5 +15,9 @@ import styles from "./styles.module.scss";
 const IconWrapper = (props) => (
   <span {...props} className={cn(styles.iconWrapper, props.className)} />
 );
+
+IconWrapper.propTypes = {
+  className: PT.string,
+};
 
 export default memo(IconWrapper);

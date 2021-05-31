@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import PT from "prop-types";
 import cn from "classnames";
-import SidebarSection from "components/SidebarSection";
+// import SidebarSection from "components/SidebarSection";
 import Button from "components/Button";
-import CheckboxList from "components/CheckboxList";
-import { PAYMENT_STATUS } from "constants/workPeriods";
+// import CheckboxList from "components/CheckboxList";
+// import { PAYMENT_STATUS } from "constants/workPeriods";
 import { getWorkPeriodsFilters } from "store/selectors/workPeriods";
 import {
   resetWorkPeriodsFilters,
-  setWorkPeriodsPaymentStatuses,
+  // setWorkPeriodsPaymentStatuses,
   setWorkPeriodsUserHandle,
 } from "store/actions/workPeriods";
 import { loadWorkPeriodsPage as loadWorkingPeriodsPage } from "store/thunks/workPeriods";
@@ -19,45 +19,52 @@ import styles from "./styles.module.scss";
 import SearchField from "components/SearchField";
 
 /**
- * Displays challenges' and gigs' menu and challenge filters.
+ * Displays working periods' filters like user handle search control or
+ * payment status checkboxes.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] optional class name added to root element
  * @returns {JSX.Element}
  */
-const Filters = ({ className }) => {
+const PeriodFilters = ({ className }) => {
   const dispatch = useDispatch();
   const filters = useSelector(getWorkPeriodsFilters);
-  const { paymentStatuses, userHandle } = filters;
+  const { /*paymentStatuses,*/ userHandle } = filters;
 
-  const onUserHandleChange = useCallback((value) => {
-    dispatch(setWorkPeriodsUserHandle(value));
-  }, []);
+  const onUserHandleChange = useCallback(
+    (value) => {
+      dispatch(setWorkPeriodsUserHandle(value));
+    },
+    [dispatch]
+  );
 
-  const onPaymentStatusesChange = useCallback((statuses) => {
-    dispatch(setWorkPeriodsPaymentStatuses(statuses));
-  }, []);
+  // const onPaymentStatusesChange = useCallback(
+  //   (statuses) => {
+  //     dispatch(setWorkPeriodsPaymentStatuses(statuses));
+  //   },
+  //   [dispatch]
+  // );
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
-  }, []);
+  }, [dispatch]);
 
   const loadWorkingPeriodsFirstPage = useCallback(
     debounce(
       () => {
         dispatch(loadWorkingPeriodsPage(1));
       },
-      200,
+      300,
       { leading: false }
     ),
-    []
+    [dispatch]
   );
 
-  // Load challenges' first page when any filter option changes.
+  // Load working periods' first page when any filter option changes.
   useUpdateEffect(loadWorkingPeriodsFirstPage, [filters]);
 
   return (
-    <form className={styles.container} action="#">
+    <form className={cn(styles.container, className)} action="#">
       <div className={styles.handleSection}>
         <SearchField
           id="topcoder-handle"
@@ -67,21 +74,16 @@ const Filters = ({ className }) => {
           value={userHandle}
         />
       </div>
-      <SidebarSection label="Payment Status">
+      {/* <SidebarSection label="Payment Status">
         <CheckboxList
           name="payment_status[]"
           onChange={onPaymentStatusesChange}
           options={PAYMENT_STATUS_OPTIONS}
           value={paymentStatuses}
         />
-      </SidebarSection>
+      </SidebarSection> */}
       <div className={styles.buttons}>
-        <Button
-          className={styles.button}
-          size="small"
-          color="primary-dark"
-          onClick={onClearFilter}
-        >
+        <Button className={styles.button} size="small" onClick={onClearFilter}>
           Clear Filter
         </Button>
       </div>
@@ -89,14 +91,14 @@ const Filters = ({ className }) => {
   );
 };
 
-Filters.propTypes = {
+PeriodFilters.propTypes = {
   className: PT.string,
 };
 
-const PAYMENT_STATUS_OPTIONS = [
-  { value: PAYMENT_STATUS.PENDING, label: "Pending" },
-  { value: PAYMENT_STATUS.PAID, label: "Paid" },
-  { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
-];
+// const PAYMENT_STATUS_OPTIONS = [
+//   { value: PAYMENT_STATUS.PENDING, label: "Pending" },
+//   { value: PAYMENT_STATUS.PAID, label: "Paid" },
+//   { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
+// ];
 
-export default Filters;
+export default PeriodFilters;

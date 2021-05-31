@@ -1,21 +1,35 @@
 import React, { memo, useCallback } from "react";
 import PT from "prop-types";
-import cn from "classnames";
 import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
 import PaymentStatus from "../PaymentStatus";
 import { formatUserHandleLink } from "utils/formatters";
+import _ from "lodash";
 import styles from "./styles.module.scss";
 
+/**
+ * Displays the working period data row to be used in PeriodList component.
+ *
+ * @param {Object} props component properties
+ * @param {boolean} props.isSelected whether the item is selected
+ * @param {Object} props.item object describing a working period
+ * @param {(v: string) => void} props.onToggle function called when working period checkbox is clicked
+ * @param {(v: { periodId: string, workingDays: number }) => void} props.onWorkingDaysChange
+ * function called when the number of working days is changed
+ * @returns {JSX.Element}
+ */
 const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
-  const onToggleItem = useCallback((event) => {
-    onToggle(event.target.value);
-  }, []);
+  const onToggleItem = useCallback(
+    (event) => {
+      onToggle(event.target.value);
+    },
+    [onToggle]
+  );
   const onDaysChange = useCallback(
     (workingDays) => {
       onWorkingDaysChange({ periodId: item.id, workingDays });
     },
-    [item]
+    [item, onWorkingDaysChange]
   );
   return (
     <tr className={styles.container}>
@@ -30,15 +44,19 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
       </td>
       <td className={styles.userHandle}>
         <span>
-          <a href={formatUserHandleLink(item.projectId, item.id)}>
+          <a
+            href={formatUserHandleLink(item.projectId, item.rbId)}
+            target="_blank"
+            rel="noreferrer"
+          >
             {item.userHandle}
           </a>
         </span>
       </td>
-      <td>{item.projectId}</td>
-      <td>{item.startDate}</td>
-      <td>{item.endDate}</td>
-      <td>{currencyFormatter.format(item.weeklyRate)}</td>
+      <td className={styles.teamName}>{item.projectId}</td>
+      <td className={styles.startDate}>{item.startDate}</td>
+      <td className={styles.endDate}>{item.endDate}</td>
+      <td>{_.isNumber(item.weeklyRate) ? currencyFormatter.format(item.weeklyRate) : '-'}</td>
       <td>
         <PaymentStatus status={item.paymentStatus} />
       </td>
@@ -61,6 +79,8 @@ PeriodItem.propTypes = {
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
+    rbId: PT.string.isRequired,
+    projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
     startDate: PT.string.isRequired,
@@ -69,6 +89,8 @@ PeriodItem.propTypes = {
     paymentStatus: PT.string.isRequired,
     workingDays: PT.number.isRequired,
   }),
+  onToggle: PT.func.isRequired,
+  onWorkingDaysChange: PT.func.isRequired,
 };
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {

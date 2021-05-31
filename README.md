@@ -20,7 +20,7 @@ This is a [single-spa](https://single-spa.js.org/) example React microapp.
 
 ## Config
 
-For available variables config which depend on the running environment (`APPENV=dev` or `APPENV=prod`), please refer to `config/development.js` and `config/production.js`.
+For available variables config which depend on the running environment (`APPENV=dev` or `APPENV=prod`), please refer to `config/dev.js` and `config/prod.js`.
 
 For application constants which don't depend on the running environment use `src/constants/index.js`.
 
@@ -59,14 +59,14 @@ Make sure you have [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli
 
 ## How to run Locally for Development
 
-TaaS App is done using Single SPA micro-frontend architecture https://single-spa.js.org/. So to start it, we would also have to run Frame App and Navbar App. Here I would show the steps to run locally everything we need.
+TaaS Admin App is done using Single SPA micro-frontend architecture https://single-spa.js.org/. So to start it, we would also have to run Frame App and Navbar App. Here I would show the steps to run locally everything we need.
 
 ### Local Authentication
 
 First of all, to authenticate locally we have to run a local authentication service.
 
 - Clone this repository into `taas-admin-app`.
-- Inside the folder `taas-admin-app/local/auth-local` run `npm start`.
+- Inside the folder `taas-admin-app/auth-local` run `npm start`.
 - You would need npm 5+ for it. This would start a local sever on port 5000 which could be used for local Authentication.
 
 ### Local Domain
@@ -115,7 +115,7 @@ Some config files are using domain `local.topcoder-dev.com`. You can change it t
    cd micro-frontends-navbar-app
    ```
 
-   Update in file `micro-frontends-navbar-app/blob/dev/config/dev.js` values for `ACCOUNTS_APP_CONNECTOR` and `AUTH` to `http://localhost:5000` so Navbar app which handles authentication uses our local Authentication service.
+   Update in file `micro-frontends-navbar-app/config/dev.js` values for `ACCOUNTS_APP_CONNECTOR` and `AUTH` to `http://localhost:5000` so Navbar app which handles authentication uses our local Authentication service.
 
    ```sh
    # inside folder "micro-frontends-navbar-app" run:
@@ -128,31 +128,31 @@ Some config files are using domain `local.topcoder-dev.com`. You can change it t
    # this host navbar app as http://localhost:3001/navbar/topcoder-micro-frontends-navbar-app.js
    ```
 
-3. Run **TaaS** micro-app:
+3. Run **TaaS Admin** micro-app:
 
    ```sh
-   # inside folder "taas-app" run:
+   # inside folder "taas-admin-app" run:
 
    nvm use # or make sure to use Node 10
    npm i   # to install dependencies
 
    npm run dev
 
-   # this host TaaS App as http://localhost:8501/taas-app/topcoder-micro-frontends-teams.js
+   # this hosts TaaS Admin App as http://localhost:8502/taas-admin-app/topcoder-micro-frontends-taas-admin-app.js
    ```
 
-4. Now we have to update the `micro-frontends-frame` app to show our local version of TaaS App, instead of remote one. Update file `micro-frontends-frame/config/micro-frontends-config-local.json`:
+4. Now we have to update the `micro-frontends-frame` app to show our local version of TaaS Admin App, instead of remote one. Update file `micro-frontends-frame/config/micro-frontends-config-local.json`:
 
    ```js
    // replace line
-   "@topcoder/micro-frontends-teams": "https://platform.topcoder-dev.com/taas-app/topcoder-micro-frontends-teams.js",
+   "@topcoder/micro-frontends-taas-admin-app": "https://platform.topcoder-dev.com/taas-admin-app/topcoder-micro-frontends-taas-admin-app.js",
 
    // with line:
-   "@topcoder/micro-frontends-teams": "http://localhost:8501/taas-app/topcoder-micro-frontends-teams.js",
+   "@topcoder/micro-frontends-taas-admin-app": "http://localhost:8502/taas-admin-app/topcoder-micro-frontends-taas-admin-app.js",
    ```
 
-- Now open in the browser http://localhost:8080/taas/myteams.
+- Now open in the browser http://localhost:8080/taas-admin.
 - If you are not logged-in yet, you should be redirected to the login page.
-- If you cannot see the application and redirect doesn't happen, make sure that file "http://local.topcoder-dev.com:8501/taas-app/topcoder-micro-frontends-teams.js" is loaded successfully in the Network tab.
+- If you cannot see the application and redirect doesn't happen, make sure that file "http://local.topcoder-dev.com:8502/taas-admin-app/topcoder-micro-frontends-taas-admin-app.js" is loaded successfully in the Network tab.
 
 Congratulations, you successfully run the project. If you had some issue, please, try to go through README of https://github.com/topcoder-platform/micro-frontends-frame and https://github.com/topcoder-platform/micro-frontends-navbar-app.

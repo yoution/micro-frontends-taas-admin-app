@@ -15,10 +15,10 @@ import {
 import styles from "./styles.module.scss";
 
 /**
- * Displays the main content of the challenges' page.
+ * Displays the list of the working periods with column headers.
  *
  * @param {Object} props component properties
- * @param {string} [props.className]
+ * @param {string} [props.className] class name to be added to root element
  * @returns {JSX.Element}
  */
 const PeriodList = ({ className }) => {
@@ -26,31 +26,42 @@ const PeriodList = ({ className }) => {
   const periodsSelected = useSelector(getWorkPeriodsSelected);
   const dispatch = useDispatch();
 
-  const onTogglePeriod = useCallback((periodId) => {
-    dispatch(toggleWorkPeriod(periodId));
-  }, []);
+  const onTogglePeriod = useCallback(
+    (periodId) => {
+      dispatch(toggleWorkPeriod(periodId));
+    },
+    [dispatch]
+  );
 
-  const onWorkingDaysChange = useCallback((payload) => {
-    dispatch(setWorkPeriodWorkingDays(payload));
-  }, []);
+  const onWorkingDaysChange = useCallback(
+    (payload) => {
+      dispatch(setWorkPeriodWorkingDays(payload));
+    },
+    [dispatch]
+  );
 
   return (
-    <table className={cn(styles.container, className)}>
-      <thead>
-        <PeriodListHead />
-      </thead>
-      <tbody>
-        {periods.map((period) => (
-          <PeriodItem
-            key={period.id}
-            isSelected={period.id in periodsSelected}
-            item={period}
-            onToggle={onTogglePeriod}
-            onWorkingDaysChange={onWorkingDaysChange}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className={cn(styles.container, className)}>
+      <table className={styles.table}>
+        <thead>
+          <PeriodListHead />
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={8} className={styles.listTopMargin}></td>
+          </tr>
+          {periods.map((period) => (
+            <PeriodItem
+              key={period.id}
+              isSelected={period.id in periodsSelected}
+              item={period}
+              onToggle={onTogglePeriod}
+              onWorkingDaysChange={onWorkingDaysChange}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
