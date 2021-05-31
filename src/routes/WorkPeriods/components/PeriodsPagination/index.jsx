@@ -8,8 +8,6 @@ import {
   setWorkPeriodsPageNumber,
   setWorkPeriodsPageSize,
 } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
-import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
 
 /**
@@ -37,20 +35,6 @@ const PeriodsPagination = ({ className, id }) => {
     },
     [dispatch]
   );
-
-  const loadWorkPeriodsFirstPage = useCallback(() => {
-    dispatch(loadWorkPeriodsPage(1));
-  }, [dispatch]);
-
-  const loadWorkPeriodsNewPage = useCallback(() => {
-    dispatch(loadWorkPeriodsPage());
-  }, [dispatch]);
-
-  // Load working periods' first page if page size changes.
-  useUpdateEffect(loadWorkPeriodsFirstPage, [pagination.pageSize]);
-
-  // Load working periods' new page if page number changes.
-  useUpdateEffect(loadWorkPeriodsNewPage, [pagination.pageNumber]);
 
   return (
     <Pagination

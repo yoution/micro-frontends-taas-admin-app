@@ -5,10 +5,11 @@ import PeriodList from "../PeriodList";
 import {
   getWorkPeriodsError,
   getWorkPeriodsIsLoading,
+  getWorkPeriodsPagination,
   getWorkPeriodsSorting,
-  getWorkPeriodsTotalCount,
 } from "store/selectors/workPeriods";
 import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
+import { useUpdateEffect } from "utils/hooks";
 
 /**
  * Displays working periods' list or a "Loading..." message or an error message.
@@ -16,17 +17,22 @@ import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
  * @returns {JSX.Element}
  */
 const Periods = () => {
+  const pagination = useSelector(getWorkPeriodsPagination);
   const sorting = useSelector(getWorkPeriodsSorting);
-  const count = useSelector(getWorkPeriodsTotalCount);
   const error = useSelector(getWorkPeriodsError);
   const isLoading = useSelector(getWorkPeriodsIsLoading);
   const dispatch = useDispatch();
 
   // Load working periods' first page once when page loads and then
-  // only if sorting changes.
+  // only if page size or sorting changes.
   useEffect(() => {
     dispatch(loadWorkPeriodsPage(1));
-  }, [sorting, dispatch]);
+  }, [dispatch, pagination.pageSize, sorting]);
+
+  // Load working periods' new page if page number changes.
+  useUpdateEffect(() => {
+    dispatch(loadWorkPeriodsPage());
+  }, [dispatch, pagination.pageNumber]);
 
   return (
     <>
@@ -35,7 +41,7 @@ const Periods = () => {
       {!isLoading && error && (
         <ContentMessage type="error">{error}</ContentMessage>
       )}
-      {!isLoading && !error && !count && (
+      {!isLoading && !error && !pagination.totalCount && (
         <ContentMessage>No resource bookings found.</ContentMessage>
       )}
     </>
