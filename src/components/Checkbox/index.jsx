@@ -48,7 +48,9 @@ const Checkbox = ({
 
 Checkbox.propTypes = {
   checked: PT.bool,
+  className: PT.string,
   name: PT.string.isRequired,
+  size: PT.oneOf(["medium", "small"]),
   onChange: PT.func.isRequired,
   option: PT.shape({
     value: PT.string.isRequired,

@@ -63,18 +63,21 @@ module.exports = (webpackConfigEnv) => {
             },
           ],
         },
-        // {
-        //   test: /\.svg$/,
-        //   exclude: /node_modules/,
-        //   use: {
-        //     loader: "babel-loader",
-        //   },
-        // },
+        {
+          test: /\.svg$/,
+          exclude: /node_modules/,
+          use: {
+            loader: "babel-loader",
+          },
+        },
         {
           test: /\.(gif|jpg|png|svg)$/,
           include: /.*assets[/\\]images.+/,
           use: {
-            loader: "file-loader",
+            loader: "url-loader",
+            options: {
+              limit: 4096,
+            },
           },
         },
       ],

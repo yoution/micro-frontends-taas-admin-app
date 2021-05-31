@@ -4,7 +4,7 @@ import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
- * Displays sidebar label.
+ * Displays sidebar section's label.
  *
  * @param {Object} props component props
  * @param {string} [props.className] class name added to root element

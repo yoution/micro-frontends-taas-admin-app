@@ -43,7 +43,12 @@
 
   &.primary {
     border-color: $primary-color;
-    color: $primary-color;
+    color: $primary-text-color;
+  }
+
+  &.primary-light {
+    border-color: $primary-light-color;
+    color: $primary-light-text-color;
   }
 
   &.primary-dark {
@@ -60,6 +65,11 @@
   &.primary {
     border-color: $primary-color;
     background-color: $primary-color;
+  }
+
+  &.primary-light {
+    border-color: $primary-light-color;
+    background-color: $primary-light-color;
   }
 
   &.primary-dark {

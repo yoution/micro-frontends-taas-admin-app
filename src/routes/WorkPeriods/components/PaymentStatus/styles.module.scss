@@ -1,7 +1,13 @@
+@import "styles/mixins";
+
 .container {
   display: inline-block;
   padding: 3px 8px 1px;
+  @include roboto-medium;
+  font-size: 12px;
   line-height: 16px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
   border-radius: 5px;
   background: #aaa;
   color: #fff;
@@ -24,5 +30,5 @@
 }
 
 .undefined {
-  background: #000;
+  background: #2a2a2a;
 }

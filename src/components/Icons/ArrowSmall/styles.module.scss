@@ -4,7 +4,9 @@
   svg {
     display: block;
     width: 100%;
+    height: auto;
 
+    path,
     polygon {
       fill: #aaa;
     }
@@ -12,6 +14,7 @@
 
   &.isActive {
     svg {
+      path,
       polygon {
         fill: #000;
       }

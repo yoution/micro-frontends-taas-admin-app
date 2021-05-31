@@ -6,6 +6,11 @@ import IconArrowDown from "components/Icons/ArrowDown";
 import { getOptionByValue } from "utils/misc";
 import styles from "./styles.module.scss";
 
+/**
+ * Custom dropdown indicator.
+ *
+ * @returns {JSX.Element}
+ */
 const DropdownIndicator = () => (
   <IconArrowDown className={styles.dropdownIndicator} />
 );
@@ -18,7 +23,7 @@ const selectComponents = { DropdownIndicator, IndicatorSeparator: () => null };
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element
  * @param {string} props.id control's id
- * @param {string} [props.label] control' label
+ * @param {string} [props.label] control's label
  * @param {(v: string) => void} props.onChange on change handler
  * @param {Object} props.options options for dropdown
  * @param {'medium'|'small'} [props.size] control's size
@@ -45,9 +50,12 @@ const SelectField = ({
     setIsOpen(false);
   }, []);
 
-  const onOptionChange = useCallback((option) => {
-    onChange(option.value);
-  }, []);
+  const onOptionChange = useCallback(
+    (option) => {
+      onChange(option.value);
+    },
+    [onChange]
+  );
 
   return (
     <div
@@ -84,6 +92,7 @@ SelectField.propTypes = {
   className: PT.string,
   id: PT.string.isRequired,
   label: PT.string,
+  size: PT.oneOf(["medium", "small"]),
   onChange: PT.func.isRequired,
   options: PT.arrayOf(
     PT.shape({

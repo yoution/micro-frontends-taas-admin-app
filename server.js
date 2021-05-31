@@ -22,7 +22,7 @@ app.get("/", (req, res) => {
   res.send("alive");
 });
 
-const PORT = process.env.PORT || 8501;
+const PORT = process.env.PORT || 8502;
 app.listen(PORT, () => {
   console.log(`App is hosted on port ${PORT}.`); // eslint-disable-line no-console
 });

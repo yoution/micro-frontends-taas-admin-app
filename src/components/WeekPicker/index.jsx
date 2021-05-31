@@ -1,4 +1,4 @@
-import React, { forwardRef, useCallback, useRef, useState } from "react";
+import React, { forwardRef, useCallback, useRef } from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import DatePicker from "react-datepicker";
@@ -9,14 +9,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./styles.module.scss";
 
 /**
+ * Displays a control which allows to select a specific date using dropdown calendar
+ * or "next" and "previous" buttons. This control is used for week selection.
  *
  * @param {Object} props
- * @param {string} [props.className]
- * @param {Object} props.startDate
- * @param {Object} props.endDate
- * @param {() => void} props.onWeekSelect
- * @param {() => void} props.onNextWeekSelect
- * @param {() => void} props.onPreviousWeekSelect
+ * @param {string} [props.className] class name to be added to root element
+ * @param {Object} props.startDate momentjs object describing selection's start date
+ * @param {Object} props.endDate momentjs object describing selection's end date
+ * @param {() => void} props.onWeekSelect function called on date select
+ * @param {() => void} props.onNextWeekSelect function called on next week button click
+ * @param {() => void} props.onPreviousWeekSelect function called on previous week button click
  * @returns {JSX.Element}
  */
 const WeekPicker = ({
@@ -27,41 +29,46 @@ const WeekPicker = ({
   onNextWeekSelect,
   onPreviousWeekSelect,
 }) => {
-  const onDateChange = useCallback((date) => {
-    onWeekSelect(date);
+  const isOpenRef = useRef(false);
+  const wasInputClickedRef = useRef(false);
+
+  const onCalendarOpen = useCallback(() => {
+    isOpenRef.current = true;
+    wasInputClickedRef.current = false;
   }, []);
 
-  const onBtnPrevClick = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      onPreviousWeekSelect();
-    },
-    [onPreviousWeekSelect]
-  );
+  const onCalendarClose = useCallback(() => {
+    isOpenRef.current = false;
+  }, []);
 
-  const onBtnNextClick = useCallback(
-    (event) => {
-      event.stopPropagation();
-      event.preventDefault();
-      onNextWeekSelect();
-    },
-    [onNextWeekSelect]
-  );
-
-  const CustomInput = forwardRef(({ value, onClick }, ref) => (
+  // @ts-ignore
+  const CustomInput = forwardRef(({ onClick }, ref) => (
     <div
       ref={ref}
       className={styles.customInput}
-      onClick={onClick}
+      onMouseDown={() => {
+        if (isOpenRef.current) {
+          wasInputClickedRef.current = true;
+        }
+      }}
+      onClick={() => {
+        if (!isOpenRef.current && !wasInputClickedRef.current) {
+          onClick();
+        }
+        wasInputClickedRef.current = false;
+      }}
       tabIndex={0}
       role="button"
     >
       <Button
-        color="primary-dark"
         size="small"
         style="circle"
-        onClick={onBtnPrevClick}
+        onClick={(event) => {
+          wasInputClickedRef.current = false;
+          event.stopPropagation();
+          event.preventDefault();
+          onPreviousWeekSelect();
+        }}
       >
         <IconArrowLeft />
       </Button>
@@ -69,23 +76,34 @@ const WeekPicker = ({
         {formatDateRange(startDate, endDate)}
       </span>
       <Button
-        color="primary-dark"
         size="small"
         style="circle"
-        onClick={onBtnNextClick}
+        onClick={(event) => {
+          wasInputClickedRef.current = false;
+          event.stopPropagation();
+          event.preventDefault();
+          onNextWeekSelect();
+        }}
       >
         <IconArrowRight />
       </Button>
     </div>
   ));
+  CustomInput.displayName = "CustomInput";
+  CustomInput.propTypes = {
+    // @ts-ignore
+    onClick: PT.func,
+  };
 
   return (
     <div className={cn(styles.container, className)}>
       <DatePicker
-        selected={new Date()}
+        selected={startDate.toDate()}
         startDate={startDate.toDate()}
         endDate={endDate.toDate()}
-        onChange={onDateChange}
+        onChange={onWeekSelect}
+        onCalendarOpen={onCalendarOpen}
+        onCalendarClose={onCalendarClose}
         showMonthDropdown
         showYearDropdown
         formatWeekDay={formatWeekDay}

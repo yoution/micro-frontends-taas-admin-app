@@ -1,5 +1,4 @@
 import axios from "axios";
-import moment from "moment";
 import * as actions from "store/actions/workPeriods";
 import * as selectors from "store/selectors/workPeriods";
 import * as services from "services/workPeriods";
@@ -16,13 +15,12 @@ import {
   replaceItems,
 } from "utils/misc";
 import { normalizePeriodItems } from "utils/workPeriods";
-import { USER_HANDLE } from "constants/workPeriods/apiSortBy";
 
 /**
- * Thunk that loads the specified challenges' page. If page number is not
+ * Thunk that loads the specified working periods' page. If page number is not
  * provided the current page number from current state is used. All relevant
- * challenge parameters are loaded from the current state to construct a request
- * query.
+ * working period filters are loaded from the current state to construct
+ * a request query.
  *
  * @param {number} [pageNumber] page number to load
  * @returns {function}
@@ -44,7 +42,7 @@ export const loadWorkPeriodsPage =
     const sortOrder = sorting.order;
     const sortBy = SORT_BY_MAP[sorting.criteria] || API_SORT_BY.USER_HANDLE;
 
-    const [startDate, endDate] = filters.dateRange;
+    const [startDate] = filters.dateRange;
     const paymentStatuses = replaceItems(
       Object.keys(filters.paymentStatuses),
       PAYMENT_STATUS_MAP
@@ -68,19 +66,19 @@ export const loadWorkPeriodsPage =
       // paymentStatuses,
     });
     dispatch(actions.loadWorkPeriodsPagePending(cancelSource, pageNumber));
-    let totalCount, periods, pageCount, pageSize;
+    let totalCount, periods, pageCount;
     try {
       const response = await promise;
-      ({ totalCount, pageNumber, pageCount, pageSize } =
+      ({ totalCount, pageNumber, pageCount } =
         extractResponsePagination(response));
       const data = extractResponseData(response);
       periods = normalizePeriodItems(data);
     } catch (error) {
+      // If request was cancelled by the next call to loadWorkPeriodsPage
+      // there's nothing more to do.
       if (!axios.isCancel(error)) {
         dispatch(actions.loadWorkPeriodsPageError(error.toString()));
       }
-      // If request was cancelled by the next call to loadWorkPeriodsPage
-      // there's nothing more to do.
       return;
     }
     dispatch(

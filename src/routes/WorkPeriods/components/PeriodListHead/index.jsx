@@ -4,7 +4,6 @@ import cn from "classnames";
 import Checkbox from "components/Checkbox";
 import SortingControl from "components/SortingControl";
 import { SORT_BY } from "constants/workPeriods";
-import { useUpdateEffect } from "utils/hooks";
 import {
   getWorkPeriodsIsSelectedVisible,
   getWorkPeriodsSorting,
@@ -13,27 +12,35 @@ import {
   setWorkPeriodsSorting,
   toggleWorkingPeriodsVisible,
 } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
+/**
+ * Displays working period list column heads with sorting controls to be used
+ * in PeriodList component.
+ *
+ * @returns {JSX.Element}
+ */
 const PeriodListHead = () => {
   const sorting = useSelector(getWorkPeriodsSorting);
   const isSelectedVisible = useSelector(getWorkPeriodsIsSelectedVisible);
   const dispatch = useDispatch();
   const { criteria, order } = sorting;
 
-  const onSortingChange = useCallback((sorting) => {
-    dispatch(setWorkPeriodsSorting(sorting));
-  }, []);
+  const onSortingChange = useCallback(
+    (sorting) => {
+      dispatch(setWorkPeriodsSorting(sorting));
+    },
+    [dispatch]
+  );
 
   const onToggleVisible = useCallback(() => {
     dispatch(toggleWorkingPeriodsVisible());
-  }, []);
+  }, [dispatch]);
 
   return (
     <tr className={styles.container}>
       <th>
-        <div className={styles.colHeadSelect}>
+        <div className={styles.colHead}>
           <Checkbox
             size="small"
             name={"visible_periods_selected"}

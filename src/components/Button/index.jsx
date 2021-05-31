@@ -9,7 +9,7 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @param {Object} props.children button text
  * @param {string} [props.className] class name added to root element
- * @param {'primary'|'primary-dark'} [props.color] button color
+ * @param {'primary'|'primary-dark'|'primary-light'} [props.color] button color
  * @param {boolean} [props.isSelected] if button is selected
  * @param {string} [props.name] button name
  * @param {(e: any) => void} props.onClick function called when button is clicked
@@ -58,6 +58,7 @@ Button.propTypes = {
   children: PT.node,
   className: PT.string,
   color: PT.oneOf(["primary"]),
+  isSelected: PT.bool,
   name: PT.string,
   onClick: PT.func,
   size: PT.oneOf(["medium"]),

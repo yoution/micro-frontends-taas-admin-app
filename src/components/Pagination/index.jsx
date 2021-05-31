@@ -1,6 +1,8 @@
 import React, { useCallback } from "react";
 import PT from "prop-types";
 import cn from "classnames";
+import IconArrowLeft from "components/Icons/ArrowLeft";
+import IconArrowRight from "components/Icons/ArrowRight";
 import SelectField from "components/SelectField";
 import styles from "./styles.module.scss";
 import Button from "components/Button";
@@ -12,6 +14,8 @@ import Button from "components/Button";
  * @param {string} [props.className] class name added to root element
  * @param {string} [props.pageSizeClassName] class name for page size select
  * @param {string} props.id id for input element
+ * @param {string} [props.label] label displayed to the left of page size dropdown
+ * @param {string} [props.pageSizeLabel] label displayed at the top of page size dropdown
  * @param {(v: number) => void} props.onPageNumberClick function called when page button is clicked
  * @param {() => void} props.onPageSizeChange function called when page size is changed
  * @param {Object} props.pageSizeOptions page size options object
@@ -22,6 +26,8 @@ const Pagination = ({
   className,
   pageSizeClassName,
   id,
+  label,
+  pageSizeLabel,
   onPageNumberClick,
   onPageSizeChange,
   pageSizeOptions,
@@ -48,7 +54,7 @@ const Pagination = ({
         size="small"
         value={pageNumber - 1}
       >
-        <span className={styles.iconArrowLeft} />
+        <IconArrowLeft className={styles.iconArrowLeft} />
         <span className={styles.buttonLabel}>Previous</span>
       </Button>
     );
@@ -78,15 +84,16 @@ const Pagination = ({
         value={pageNumber + 1}
       >
         <span className={styles.buttonLabel}>Next</span>
-        <span className={styles.iconArrowRight} />
+        <IconArrowRight className={styles.iconArrowRight} />
       </Button>
     );
   }
   return (
     <div className={cn(styles.pagination, className)}>
-      <span className={styles.label}>Records/Page</span>
+      {label && <span className={styles.label}>{label}</span>}
       <SelectField
         id={id}
+        label={pageSizeLabel}
         className={cn(styles.pageSize, pageSizeClassName)}
         onChange={onPageSizeChange}
         options={pageSizeOptions}
@@ -100,9 +107,13 @@ const Pagination = ({
 
 Pagination.propTypes = {
   className: PT.string,
+  pageSizeClassName: PT.string,
+  id: PT.string.isRequired,
+  label: PT.string,
+  pageSizeLabel: PT.string,
   onPageNumberClick: PT.func.isRequired,
   onPageSizeChange: PT.func.isRequired,
-  options: PT.arrayOf(
+  pageSizeOptions: PT.arrayOf(
     PT.shape({
       value: PT.oneOfType([PT.number, PT.string]).isRequired,
       label: PT.string.isRequired,

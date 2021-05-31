@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import { Link, useMatch } from "@reach/router";
@@ -30,10 +30,10 @@ const NavLink = ({ className, exact = false, icon: Icon, label, path }) => {
   );
 };
 
-NavLink.ptopTypes = {
+NavLink.propTypes = {
   className: PT.string,
   exact: PT.bool,
-  icon: PT.node.isRequired,
+  icon: PT.func.isRequired,
   label: PT.string.isRequired,
   path: PT.string.isRequired,
 };

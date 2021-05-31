@@ -4,7 +4,7 @@ import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
- * Displays search input field field.
+ * Displays search input field.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name added to root element
@@ -25,9 +25,12 @@ const SearchField = ({
   placeholder,
   value,
 }) => {
-  const onInputChange = useCallback((event) => {
-    onChange(event.target.value);
-  }, []);
+  const onInputChange = useCallback(
+    (event) => {
+      onChange(event.target.value);
+    },
+    [onChange]
+  );
 
   return (
     <div className={cn(styles.container, styles[size], className)}>
@@ -47,6 +50,8 @@ const SearchField = ({
 
 SearchField.propTypes = {
   className: PT.string,
+  id: PT.string.isRequired,
+  size: PT.oneOf(["medium", "small"]),
   name: PT.string.isRequired,
   onChange: PT.func.isRequired,
   placeholder: PT.string,

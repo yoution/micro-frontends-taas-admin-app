@@ -5,7 +5,7 @@ import SidebarSectionLabel from "components/SidebarSectionLabel";
 import styles from "./styles.module.scss";
 
 /**
- * Displays sidebar's section.
+ * Displays sidebar's section with optional label.
  *
  * @param {Object} props component properties
  * @param {Object} props.children component children

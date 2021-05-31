@@ -1,10 +1,10 @@
-import React, { useCallback } from "react";
+import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
- * Display input field for inputing numbers with plus and minus buttons.
+ * Displays input field for inputing integer numbers with plus and minus buttons.
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element
@@ -39,6 +39,8 @@ const IntegerField = ({
 IntegerField.propTypes = {
   className: PT.string,
   name: PT.string.isRequired,
+  maxValue: PT.number,
+  minValue: PT.string,
   onChange: PT.func.isRequired,
   value: PT.number.isRequired,
 };

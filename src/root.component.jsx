@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
-import { Router } from "@reach/router";
-import ReduxToastr from "react-redux-toastr";
+import { Router, Redirect } from "@reach/router";
+// import ReduxToastr from "react-redux-toastr";
 import store from "store";
 import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
 import WorkPeriods from "routes/WorkPeriods";
@@ -10,14 +10,19 @@ import { APP_BASE_PATH } from "./constants";
 import "styles/global.scss";
 
 export default function Root() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     disableSidebarForRoute(`${APP_BASE_PATH}/*`);
   }, []);
 
   return (
     <Provider store={store}>
       <Router>
-        <WorkPeriods path={APP_BASE_PATH} />
+        <Redirect
+          from={APP_BASE_PATH}
+          to={`${APP_BASE_PATH}/work-periods`}
+          exact
+        />
+        <WorkPeriods path={`${APP_BASE_PATH}/work-periods`} />
         <Freelancers path={`${APP_BASE_PATH}/freelancers`} />
       </Router>
       {/* <ReduxToastr

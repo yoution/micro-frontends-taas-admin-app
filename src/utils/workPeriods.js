@@ -24,7 +24,7 @@ export function normalizePeriodItems(items) {
       paymentStatus: paymentStatus
         ? API_PAYMENT_STATUS_MAP[paymentStatus] || paymentStatus.toUpperCase()
         : PAYMENT_STATUS.UNDEFINED,
-      workingDays: daysWorked === null ? 5 : +daysWorked || 5,
+      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
     });
   }
   return periods;

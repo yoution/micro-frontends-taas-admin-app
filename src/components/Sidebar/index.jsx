@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import NavMenu from "components/NavMenu";
@@ -8,7 +8,7 @@ import Freelancers from "components/Icons/Freelancers";
 import { APP_BASE_PATH } from "../../constants";
 
 /**
- * Displays challenges' and gigs' menu and challenge filters.
+ * Positions sidebar contents like filters and displays navigation menu.
  *
  * @param {Object} props component properties
  * @param {Object} props.children component children
@@ -16,10 +16,10 @@ import { APP_BASE_PATH } from "../../constants";
  * @returns {JSX.Element}
  */
 const Sidebar = ({ className, children }) => (
-  <div className={cn(styles.container, className)}>
+  <aside className={cn(styles.container, className)}>
     <NavMenu className={styles.menu} items={NAV_ITEMS} />
     {children}
-  </div>
+  </aside>
 );
 
 Sidebar.propTypes = {
@@ -28,7 +28,11 @@ Sidebar.propTypes = {
 };
 
 const NAV_ITEMS = [
-  { icon: WorkPeriods, label: "Working Periods", path: APP_BASE_PATH },
+  {
+    icon: WorkPeriods,
+    label: "Working Periods",
+    path: `${APP_BASE_PATH}/work-periods`,
+  },
   {
     icon: Freelancers,
     label: "Freelancers",
