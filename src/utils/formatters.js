@@ -1,4 +1,4 @@
-// @ts-ignore
+import isNumber from "lodash/isNumber";
 import { PAYMENT_STATUS_LABELS } from "constants/workPeriods";
 import { PLATFORM_WEBSITE_URL, TAAS_BASE_PATH } from "../constants";
 
@@ -33,3 +33,22 @@ export function formatPaymentStatus(status) {
 export function formatUserHandleLink(rbProjectId, rbId) {
   return `${PLATFORM_WEBSITE_URL}${TAAS_BASE_PATH}/myteams/${rbProjectId}/rb/${rbId}`;
 }
+
+/**
+ * Formats working period's weekly rate.
+ *
+ * @param {number} weeklyRate working period's weekly rate
+ * @returns {string}
+ */
+export function formatWeeklyRate(weeklyRate) {
+  return isNumber(weeklyRate) ? currencyFormatter.format(weeklyRate) : "-";
+}
+
+/**
+ * Formats numbers as US dollar sum.
+ */
+export const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});

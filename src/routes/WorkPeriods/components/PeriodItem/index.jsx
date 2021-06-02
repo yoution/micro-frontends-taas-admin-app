@@ -3,8 +3,7 @@ import PT from "prop-types";
 import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
 import PaymentStatus from "../PaymentStatus";
-import { formatUserHandleLink } from "utils/formatters";
-import _ from "lodash";
+import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import styles from "./styles.module.scss";
 
 /**
@@ -56,7 +55,9 @@ const PeriodItem = ({ isSelected, item, onToggle, onWorkingDaysChange }) => {
       <td className={styles.teamName}>{item.projectId}</td>
       <td className={styles.startDate}>{item.startDate}</td>
       <td className={styles.endDate}>{item.endDate}</td>
-      <td>{_.isNumber(item.weeklyRate) ? currencyFormatter.format(item.weeklyRate) : '-'}</td>
+      <td className={styles.weeklyRate}>
+        <span>{formatWeeklyRate(item.weeklyRate)}</span>
+      </td>
       <td>
         <PaymentStatus status={item.paymentStatus} />
       </td>
@@ -92,11 +93,5 @@ PeriodItem.propTypes = {
   onToggle: PT.func.isRequired,
   onWorkingDaysChange: PT.func.isRequired,
 };
-
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 
 export default memo(PeriodItem);
