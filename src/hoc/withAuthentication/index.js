@@ -8,8 +8,6 @@
  * Also, this component load important data for `hasPermission` method:
  * - decodes user token and set in Redux Store `authUser.userId, handle, roles`
  *   - we need to know user `roles` to check if user user has Topcoder Roles
- * - load team (project) members if current route has `:teamId` param
- *   - we need to know members of the team to check user users Project Roles
  */
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
