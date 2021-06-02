@@ -28,7 +28,7 @@ const WorkPeriods = () => (
       <ContentHeader className={styles.contentHeader}>
         <PageTitle text="Working Periods" />
         <Button variant="contained" onClick={() => {}}>
-          Process Day
+          Process Payment
         </Button>
       </ContentHeader>
       <ContentBlock>
