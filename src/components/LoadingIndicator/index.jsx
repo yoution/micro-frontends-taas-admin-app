@@ -1,6 +1,7 @@
 import React from "react";
 import get from "lodash/get";
 import PT from "prop-types";
+import cn from "classnames";
 import styles from "./styles.module.scss";
 
 /**
@@ -11,10 +12,12 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const LoadingIndicator = ({ error }) => (
-  <div className={styles.loadingIndicator}>
-    {!error
-      ? "Loading..."
-      : get(error, "response.data.message", error.toString())}
+  <div className={cn(styles.loadingIndicator, { [styles.error]: !!error })}>
+    <div className={styles.contents}>
+      {!error
+        ? "Loading..."
+        : get(error, "response.data.message", error.toString())}
+    </div>
   </div>
 );
 

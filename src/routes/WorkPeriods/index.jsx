@@ -13,6 +13,7 @@ import PeriodCount from "./components/PeriodCount";
 import PeriodsPagination from "./components/PeriodsPagination";
 import styles from "./styles.module.scss";
 import PeriodWeekPicker from "./components/PeriodWeekPicker";
+import { ADMIN_ROLES } from "../../constants";
 
 /**
  * Displays route component for Working Days' route.
@@ -52,4 +53,4 @@ const WorkPeriods = () => (
   </Page>
 );
 
-export default withAuthentication(WorkPeriods);
+export default withAuthentication(WorkPeriods, ADMIN_ROLES);

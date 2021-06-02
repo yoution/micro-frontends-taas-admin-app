@@ -5,11 +5,11 @@ import _ from "lodash";
 import * as ACTION_TYPE from "../actionTypes";
 
 const initialState = {
-  isLoggedIn: undefined,
-  userId: undefined,
-  handle: undefined,
+  isLoggedIn: null,
+  userId: null,
+  handle: null,
   roles: [],
-  authError: undefined,
+  authError: null,
 };
 
 const authInitialState = _.pick(initialState, [

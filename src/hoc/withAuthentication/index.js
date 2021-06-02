@@ -17,10 +17,15 @@ import { getAuthUserTokens, login } from "@topcoder/micro-frontends-navbar-app";
 import LoadingIndicator from "components/LoadingIndicator";
 import { authUserSuccess, authUserError } from "./actions";
 
-export default function withAuthentication(Component) {
+export default function withAuthentication(Component, rolesRequired) {
   return function AuthenticatedComponent(props) {
     const dispatch = useDispatch();
-    const { isLoggedIn, authError } = useSelector((state) => state.authUser);
+    const { isLoggedIn, roles, authError } = useSelector(
+      (state) => state.authUser
+    );
+
+    const hasRolesRequired =
+      !rolesRequired || roles.some((role) => rolesRequired.includes(role));
     /*
       Check if user is logged-in or redirect ot the login page
     */
@@ -57,8 +62,13 @@ export default function withAuthentication(Component) {
             or load v5 user profile but haven't loaded them yet.
             In we got error during this process, show error */}
         {isLoggedIn === null && <LoadingIndicator error={authError} />}
-        {/* Show component only if user is logged-in */}
-        {isLoggedIn === true ? <Component {...props} /> : null}
+        {isLoggedIn === true && !hasRolesRequired && (
+          <LoadingIndicator
+            error={"You don't have permission to access this page"}
+          />
+        )}
+        {/* Show component only if user is logged-in and has required permissions */}
+        {isLoggedIn === true && hasRolesRequired && <Component {...props} />}
       </>
     );
   };
