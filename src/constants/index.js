@@ -14,5 +14,5 @@ export const ADMIN_ROLES = ["bookingmanager", "administrator"];
 export const RESOURCE_BOOKING_STATUS = {
   PLACED: "placed",
   CLOSED: "closed",
-  CANCELLED: "cancelled"
-}
+  CANCELLED: "cancelled",
+};

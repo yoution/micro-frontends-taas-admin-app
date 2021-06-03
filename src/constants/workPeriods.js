@@ -27,7 +27,7 @@ export const REQUIRED_FIELDS = [
   "workPeriods.startDate",
   "workPeriods.endDate",
   "workPeriods.paymentStatus",
-  "workPeriods.daysWorked"
+  "workPeriods.daysWorked",
 ];
 
 // Valid parameter names for requests.
@@ -36,7 +36,7 @@ export const QUERY_PARAM_NAMES = [
   "page",
   "perPage",
   "sortBy",
-  "sortOrder"
+  "sortOrder",
 ].concat(REQUIRED_FIELDS);
 
 export const FIELDS_QUERY = REQUIRED_FIELDS.join(",");
