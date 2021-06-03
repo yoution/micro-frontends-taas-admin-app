@@ -15,6 +15,7 @@ import {
   replaceItems,
 } from "utils/misc";
 import { normalizePeriodItems } from "utils/workPeriods";
+import { RESOURCE_BOOKING_STATUS } from "constants/index.js";
 
 /**
  * Thunk that loads the specified working periods' page. If page number is not
@@ -56,6 +57,8 @@ export const loadWorkPeriodsPage =
       perPage: pagination.pageSize,
       sortBy,
       sortOrder,
+      // we only want to show Resource Bookings with status "placed"
+      status: RESOURCE_BOOKING_STATUS.PLACED,
       ["workPeriods.userHandle"]: filters.userHandle,
       ["workPeriods.startDate"]: startDate.format(DATE_FORMAT),
       ["workPeriods.paymentStatus"]:
