@@ -8,7 +8,7 @@ import styles from "./styles.module.scss";
  * Displays "Loading..." message or an error.
  *
  * @param {Object} props component properties
- * @param {Object} [props.error] error object
+ * @param {(Object|string)} [props.error] error object or a string
  * @returns {JSX.Element}
  */
 const LoadingIndicator = ({ error }) => (
@@ -22,7 +22,7 @@ const LoadingIndicator = ({ error }) => (
 );
 
 LoadingIndicator.propTypes = {
-  error: PT.object,
+  error: PT.oneOfType([PT.object, PT.string]),
 };
 
 export default LoadingIndicator;
