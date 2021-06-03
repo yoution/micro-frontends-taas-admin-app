@@ -61,7 +61,7 @@ Button.propTypes = {
   isSelected: PT.bool,
   name: PT.string,
   onClick: PT.func,
-  size: PT.oneOf(["medium"]),
+  size: PT.oneOf(["medium", "small"]),
   style: PT.oneOf(["circle", "rounded"]),
   type: PT.oneOf(["button", "submit", "reset"]),
   value: PT.oneOfType([PT.number, PT.string]),

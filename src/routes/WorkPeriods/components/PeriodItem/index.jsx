@@ -86,7 +86,7 @@ PeriodItem.propTypes = {
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
     startDate: PT.string.isRequired,
     endDate: PT.string.isRequired,
-    weeklyRate: PT.number.isRequired,
+    weeklyRate: PT.number,
     paymentStatus: PT.string.isRequired,
     workingDays: PT.number.isRequired,
   }),

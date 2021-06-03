@@ -21,7 +21,7 @@ const ContentMessage = ({ children, className, type = "info" }) => (
 ContentMessage.propTypes = {
   children: PT.node.isRequired,
   className: PT.string,
-  type: PT.string.isRequired,
+  type: PT.oneOf(["info", "warning", "error"]),
 };
 
 export default ContentMessage;

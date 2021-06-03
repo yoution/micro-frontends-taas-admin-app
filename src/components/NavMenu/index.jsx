@@ -24,7 +24,7 @@ NavMenu.propTypes = {
   className: PT.string,
   items: PT.arrayOf(
     PT.shape({
-      icon: PT.node.isRequired,
+      icon: PT.elementType.isRequired,
       label: PT.string.isRequired,
       path: PT.string.isRequired,
     })
