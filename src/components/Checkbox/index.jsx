@@ -55,7 +55,7 @@ Checkbox.propTypes = {
   option: PT.shape({
     value: PT.string.isRequired,
     label: PT.string,
-  }).isRequired,
+  }),
 };
 
 export default Checkbox;

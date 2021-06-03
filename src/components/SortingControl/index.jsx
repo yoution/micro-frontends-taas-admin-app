@@ -16,8 +16,8 @@ import styles from "./styles.module.scss";
  * @returns {JSX.Element}
  */
 const SortingControl = ({ className, onChange, sortBy, value }) => {
-  const isActiveUp = value === "asc";
-  const isActiveDown = value === "desc";
+  const isActiveUp = value === SORT_ORDER.ASC;
+  const isActiveDown = value === SORT_ORDER.DESC;
   return (
     <div className={cn(styles.container, className)}>
       <IconArrow
@@ -49,8 +49,7 @@ SortingControl.propTypes = {
   className: PT.string,
   onChange: PT.func.isRequired,
   sortBy: PT.string.isRequired,
-  value: PT.oneOf([SORT_ORDER.ASC, SORT_ORDER.DESC, null, undefined])
-    .isRequired,
+  value: PT.oneOf([SORT_ORDER.ASC, SORT_ORDER.DESC]),
 };
 
 export default memo(SortingControl);

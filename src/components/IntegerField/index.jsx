@@ -40,7 +40,7 @@ IntegerField.propTypes = {
   className: PT.string,
   name: PT.string.isRequired,
   maxValue: PT.number,
-  minValue: PT.string,
+  minValue: PT.number,
   onChange: PT.func.isRequired,
   value: PT.number.isRequired,
 };
