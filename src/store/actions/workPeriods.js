@@ -181,3 +181,11 @@ export const toggleWorkingPeriodsAll = () => ({
 export const toggleWorkingPeriodsVisible = () => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE,
 });
+
+export const toggleExpandWorkPeriod = (id, status) => ({
+  type: ACTION_TYPE.WP_TOGGLE_EXPAND_PERIOD,
+  payload: {
+    id,
+    status
+  },
+});

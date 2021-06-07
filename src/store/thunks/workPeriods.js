@@ -88,3 +88,22 @@ export const loadWorkPeriodsPage =
       actions.loadWorkPeriodsPageSuccess(periods, totalCount, pageCount)
     );
   };
+
+export const loadWorkPeriodDetail =
+  (item) => async (dispatch, getState) => {
+
+    const promise = services.fetchResourceBookingById(item.rbId);
+
+    dispatch(actions.loadWorkPeriodDetailPending(item.id));
+    try {
+      const response = await promise;
+      const data = extractResponseData(response);
+      periods = normalizePeriodItems(data);
+    } catch (error) {
+      dispatch(actions.loadWorkPeriodDetailError(error.toString()));
+      return
+    }
+    dispatch(
+      actions.loadWorkPeriodDetailSuccess(periods, totalCount, pageCount)
+    );
+  };

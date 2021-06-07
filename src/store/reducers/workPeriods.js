@@ -1,4 +1,5 @@
 import moment from "moment";
+import _ from "lodash";
 import * as ACTION_TYPE from "store/actionTypes/workPeriods";
 import {
   SORT_BY_DEFAULT,
@@ -85,6 +86,15 @@ const actionHandlers = {
       cancelSource: null,
       error: error.message,
       periods: [],
+    };
+  },
+  [ACTION_TYPE.WP_TOGGLE_EXPAND_PERIOD]: (state, { id, status }) => {
+    let periods = state.periods;
+    const index = _.findIndex(periods, (p) => p.id === id);
+    periods[index] = { ...periods[index], isExpand: status };
+    return {
+      ...state,
+      periods: [...periods],
     };
   },
   [ACTION_TYPE.WP_RESET_FILTERS]: (state) => ({

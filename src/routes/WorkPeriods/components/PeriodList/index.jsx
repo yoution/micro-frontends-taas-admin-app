@@ -11,7 +11,9 @@ import {
 import {
   setWorkPeriodWorkingDays,
   toggleWorkPeriod,
+  toggleExpandWorkPeriod,
 } from "store/actions/workPeriods";
+import { loadWorkPeriodDetail } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -40,6 +42,18 @@ const PeriodList = ({ className }) => {
     [dispatch]
   );
 
+  const onToggleExpandRowClick = useCallback((item) => {
+    debugger;
+    if (item.isExpand) {
+      dispatch(toggleExpandWorkPeriod(item.id, false))
+    }else {
+      dispatch(toggleExpandWorkPeriod(item.id, true))
+      if (!item.detailLoaded) {
+        dispatch(loadWorkPeriodDetail(item));
+      }
+    }
+  }, []);
+
   return (
     <div className={cn(styles.container, className)}>
       <table className={styles.table}>
@@ -56,6 +70,7 @@ const PeriodList = ({ className }) => {
               isSelected={period.id in periodsSelected}
               item={period}
               onToggle={onTogglePeriod}
+              onToggleExpandRow={onToggleExpandRowClick}
               onWorkingDaysChange={onWorkingDaysChange}
             />
           ))}
