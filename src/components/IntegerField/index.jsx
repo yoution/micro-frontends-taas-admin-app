@@ -8,6 +8,7 @@ import styles from "./styles.module.scss";
  *
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element
+ * @param {boolean} [props.isDisabled] if the field is disabled
  * @param {string} props.name field's name
  * @param {number} props.value field's value
  * @param {number} [props.maxValue] maximum allowed value
@@ -17,6 +18,7 @@ import styles from "./styles.module.scss";
  */
 const IntegerField = ({
   className,
+  isDisabled = false,
   name,
   onChange,
   value,
@@ -24,20 +26,37 @@ const IntegerField = ({
   minValue = -Infinity,
 }) => (
   <div className={cn(styles.container, className)}>
+    <input
+      disabled={isDisabled}
+      readOnly
+      className={styles.input}
+      name={name}
+      value={value}
+    />
     <button
       className={styles.btnMinus}
-      onClick={() => onChange(Math.max(value - 1, minValue))}
+      onClick={(event) => {
+        event.stopPropagation();
+        if (!isDisabled) {
+          onChange(Math.max(value - 1, minValue));
+        }
+      }}
     />
     <button
       className={styles.btnPlus}
-      onClick={() => onChange(Math.min(+value + 1, maxValue))}
+      onClick={(event) => {
+        event.stopPropagation();
+        if (!isDisabled) {
+          onChange(Math.min(+value + 1, maxValue));
+        }
+      }}
     />
-    <input readOnly className={styles.input} name={name} value={value} />
   </div>
 );
 
 IntegerField.propTypes = {
   className: PT.string,
+  isDisabled: PT.bool,
   name: PT.string.isRequired,
   maxValue: PT.number,
   minValue: PT.number,

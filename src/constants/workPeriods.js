@@ -8,15 +8,22 @@ import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
 
 export { API_PAYMENT_STATUS, API_SORT_BY, SORT_BY, SORT_ORDER, PAYMENT_STATUS };
 
-// challenges API url
-export const API_URL = `${API.V5}/resourceBookings`;
+// resource bookings API url
+export const RB_API_URL = `${API.V5}/resourceBookings`;
+export const JOBS_API_URL = `${API.V5}/jobs`;
+export const PAYMENTS_API_URL = `${API.V5}/work-period-payments`;
+export const PROJECTS_API_URL = `${API.V5}/projects`;
+export const WORK_PERIODS_API_URL = `${API.V5}/work-periods`;
 
-export const DATE_FORMAT = "YYYY-MM-DD";
+export const DATE_FORMAT_API = "YYYY-MM-DD";
+export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
-// Field names that are required to be retrieved for display, filtering and soring.
+// Field names that are required to be retrieved for display, filtering and sorting.
 export const REQUIRED_FIELDS = [
   "id",
+  "jobId",
   "projectId",
+  "billingAccountId",
   "startDate",
   "endDate",
   "memberRate",
@@ -59,7 +66,7 @@ export const PAYMENT_STATUS_LABELS = {
   [PAYMENT_STATUS.PAID]: "Paid",
   [PAYMENT_STATUS.PENDING]: "Pending",
   [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
-  [PAYMENT_STATUS.UNDEFINED]: "Undefined",
+  [PAYMENT_STATUS.UNDEFINED]: "NA",
 };
 
 export const PAYMENT_STATUS_MAP = {

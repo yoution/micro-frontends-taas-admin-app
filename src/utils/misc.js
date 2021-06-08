@@ -1,6 +1,28 @@
 import moment from "moment";
 
 /**
+ * Returns working periods filtered by start date.
+ *
+ * @param {Array} periods array of working period items that contain startDate
+ * @param {string|Object} startDate value denoting start date
+ * that can be accepted by momentjs
+ * @returns {Array}
+ */
+export function filterPeriodsByStartDate(periods, startDate) {
+  if (!startDate) {
+    return periods;
+  }
+  const items = [];
+  startDate = moment(startDate);
+  for (let period of periods) {
+    if (moment(period.startDate).isSameOrAfter(startDate, "date")) {
+      items.push(period);
+    }
+  }
+  return items;
+}
+
+/**
  * Returns the option which matches the provided value or null.
  *
  * @param {{ value: string, label: string }[]} options options object
@@ -109,4 +131,10 @@ export const extractResponsePagination = ({ headers }) => ({
   pageSize: +headers["x-per-page"] || 10,
 });
 
+export const extractJobName = (data) => data.title;
+
 export const extractResponseData = (response) => response.data;
+
+export function stopPropagation(event) {
+  event.stopPropagation();
+}

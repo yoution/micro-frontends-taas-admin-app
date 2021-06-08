@@ -23,6 +23,7 @@ const selectComponents = { DropdownIndicator, IndicatorSeparator: () => null };
  * @param {Object} props component properties
  * @param {string} [props.className] class name to be added to root element
  * @param {string} props.id control's id
+ * @param {boolean} [props.isDisabled] whether the control should be disabled
  * @param {string} [props.label] control's label
  * @param {(v: string) => void} props.onChange on change handler
  * @param {Object} props.options options for dropdown
@@ -33,6 +34,7 @@ const selectComponents = { DropdownIndicator, IndicatorSeparator: () => null };
 const SelectField = ({
   className,
   id,
+  isDisabled = false,
   label,
   onChange,
   options,
@@ -76,6 +78,7 @@ const SelectField = ({
         classNamePrefix="custom"
         components={selectComponents}
         id={id}
+        isDisabled={isDisabled}
         isSearchable={false}
         // menuIsOpen={true} // for debugging
         onChange={onOptionChange}
@@ -91,6 +94,7 @@ const SelectField = ({
 SelectField.propTypes = {
   className: PT.string,
   id: PT.string.isRequired,
+  isDisabled: PT.bool,
   label: PT.string,
   size: PT.oneOf(["medium", "small"]),
   onChange: PT.func.isRequired,

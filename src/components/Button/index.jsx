@@ -10,6 +10,7 @@ import styles from "./styles.module.scss";
  * @param {Object} props.children button text
  * @param {string} [props.className] class name added to root element
  * @param {'primary'|'primary-dark'|'primary-light'} [props.color] button color
+ * @param {boolean} [props.isDisabled] if button is disabled
  * @param {boolean} [props.isSelected] if button is selected
  * @param {string} [props.name] button name
  * @param {(e: any) => void} props.onClick function called when button is clicked
@@ -24,6 +25,7 @@ const Button = ({
   children,
   className,
   color = "primary",
+  isDisabled = false,
   isSelected = false,
   name,
   onClick,
@@ -35,6 +37,7 @@ const Button = ({
 }) => (
   <button
     data-value={value}
+    disabled={isDisabled}
     name={name || ""}
     type={type}
     className={cn(
@@ -58,6 +61,7 @@ Button.propTypes = {
   children: PT.node,
   className: PT.string,
   color: PT.oneOf(["primary"]),
+  isDisabled: PT.bool,
   isSelected: PT.bool,
   name: PT.string,
   onClick: PT.func,

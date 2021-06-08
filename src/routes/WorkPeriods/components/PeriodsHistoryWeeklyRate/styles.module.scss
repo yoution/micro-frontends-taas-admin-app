@@ -1,0 +1,21 @@
+.container {
+  position: relative;
+
+  .dropdown-arrow {
+    display: none;
+  }
+}
+
+.weeklyRateValue {
+  display: inline-block;
+  width: 70px;
+  text-align: right;
+}
+
+.hasPayments {
+  cursor: pointer;
+}
+
+.popup {
+  z-index: 1;
+}
