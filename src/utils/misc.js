@@ -68,6 +68,15 @@ export function replaceItems(array, map) {
 }
 
 /**
+ * Stops event propagation.
+ *
+ * @param {Object} event event object
+ */
+export function stopPropagation(event) {
+  event.stopPropagation();
+}
+
+/**
  * This function takes keys referring to truthy values in `newOptions`
  * and adds them to `oldOptions` returning a new object.
  *
@@ -134,7 +143,3 @@ export const extractResponsePagination = ({ headers }) => ({
 export const extractJobName = (data) => data.title;
 
 export const extractResponseData = (response) => response.data;
-
-export function stopPropagation(event) {
-  event.stopPropagation();
-}

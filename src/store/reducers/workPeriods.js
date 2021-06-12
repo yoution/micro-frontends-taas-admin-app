@@ -56,6 +56,7 @@ const initialState = {
   cancelSource: cancelSourceDummy,
   periods: [],
   periodsDetails: {},
+  periodsFailed: {},
   periodsSelected: {},
   isSelectedPeriodsAll: false,
   isSelectedPeriodsVisible: false,
@@ -85,6 +86,7 @@ const actionHandlers = {
     error: null,
     periods: [],
     periodsDetails: {},
+    periodsFailed: {},
     periodsSelected: {},
     pagination:
       pageNumber === state.pagination.pageNumber
@@ -124,6 +126,33 @@ const actionHandlers = {
     return {
       ...state,
       periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_HIGHLIGHT_FAILED_PERIODS]: (state, periods) => {
+    const periodIds = Object.keys(periods);
+    if (!periodIds.length) {
+      return state;
+    }
+    let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
+    let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
+    const periodsFailed = { ...state.periodsFailed };
+    const periodsSelected = { ...state.periodsSelected };
+    for (let periodId of periodIds) {
+      if (periods[periodId]) {
+        periodsFailed[periodId] = true;
+        periodsSelected[periodId] = true;
+      } else {
+        isSelectedPeriodsAll = false;
+        isSelectedPeriodsVisible = false;
+        delete periodsSelected[periodId];
+      }
+    }
+    return {
+      ...state,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
+      periodsFailed,
+      periodsSelected,
     };
   },
   [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING]: (
@@ -386,16 +415,22 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_SELECT_PERIODS]: (state, periods) => {
+    let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
+    let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
     let periodsSelected = { ...state.periodsSelected };
     for (let periodId in periods) {
       if (periods[periodId] === true) {
         periodsSelected[periodId] = true;
       } else {
+        isSelectedPeriodsAll = false;
+        isSelectedPeriodsVisible = false;
         delete periodsSelected[periodId];
       }
     }
     return {
       ...state,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
       periodsSelected,
     };
   },
@@ -520,10 +555,18 @@ const actionHandlers = {
       isSelectedPeriodsVisible: isSelected,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => ({
-    ...state,
-    isProcessingPayments: on === null ? !state.isProcessingPayments : on,
-  }),
+  [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => {
+    let periodsFailed = state.periodsFailed;
+    let isProcessingPayments = on === null ? !state.isProcessingPayments : on;
+    if (isProcessingPayments) {
+      periodsFailed = {};
+    }
+    return {
+      ...state,
+      periodsFailed,
+      isProcessingPayments,
+    };
+  },
 };
 
 export default reducer;

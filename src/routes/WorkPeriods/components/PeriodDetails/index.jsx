@@ -25,9 +25,10 @@ import { useUpdateEffect } from "utils/hooks";
  * @param {string} [props.className] class name to be added to root element
  * @param {Object} props.details working period details object
  * @param {boolean} props.isDisabled whether the details are disabled
+ * @param {boolean} props.isFailed whether the payments for the period has failed
  * @returns {JSX.Element}
  */
-const PeriodDetails = ({ className, details, isDisabled }) => {
+const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
   const dispatch = useDispatch();
   const {
     periodId,
@@ -94,7 +95,13 @@ const PeriodDetails = ({ className, details, isDisabled }) => {
     billingAccounts[0].value === -1;
 
   return (
-    <tr className={cn(styles.container, className)}>
+    <tr
+      className={cn(
+        styles.container,
+        { [styles.isFailed]: isFailed },
+        className
+      )}
+    >
       {periodsIsLoading ? (
         <td colSpan={8}>
           <div className={styles.loadingIndicator}>Loading...</div>
@@ -199,6 +206,7 @@ PeriodDetails.propTypes = {
     lockWorkingDays: PT.bool.isRequired,
   }).isRequired,
   isDisabled: PT.bool.isRequired,
+  isFailed: PT.bool.isRequired,
 };
 
 export default memo(PeriodDetails);

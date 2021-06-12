@@ -267,18 +267,20 @@ export const processPayments = async (dispatch, getState) => {
     errorMessage = error.toString();
   }
   if (results) {
-    const periodsToDeselect = {};
+    const periodsToHighlight = {};
     const periodsSucceeded = [];
     const periodsFailed = [];
     for (let result of results) {
-      if ("error" in result) {
+      let isFailed = "error" in result;
+      periodsToHighlight[result.workPeriodId] = isFailed;
+      if (isFailed) {
         periodsFailed.push(result);
       } else {
-        periodsToDeselect[result.workPeriodId] = false;
         periodsSucceeded.push(result);
       }
     }
-    dispatch(actions.selectWorkPeriods(periodsToDeselect));
+    // highlights failed periods and deselects successful periods
+    dispatch(actions.highlightFailedWorkPeriods(periodsToHighlight));
     if (periodsSucceeded.length) {
       if (periodsFailed.length) {
         makeWarningToast(periodsSucceeded, periodsFailed);

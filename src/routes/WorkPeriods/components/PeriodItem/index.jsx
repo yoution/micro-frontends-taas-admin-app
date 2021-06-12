@@ -17,26 +17,27 @@ import {
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
+import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
-
-/**
- * @param {(v: string) => void} props.onToggle function called when working period checkbox is clicked
- * @param {(id: object) => void} props.onToggleDetails function called when item row is clicked
- * @param {(v: { periodId: string, workingDays: number }) => void} props.onWorkingDaysChange
- * function called when the number of working days is changed
- */
 
 /**
  * Displays the working period data row to be used in PeriodList component.
  *
  * @param {Object} props component properties
  * @param {boolean} [props.isDisabled] whether the item is disabled
+ * @param {boolean} [props.isFailed] whether the item should be highlighted as failed
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
  * @param {Object} [props.details] object with working period details
  * @returns {JSX.Element}
  */
-const PeriodItem = ({ isDisabled = false, isSelected, item, details }) => {
+const PeriodItem = ({
+  isDisabled = false,
+  isFailed = false,
+  isSelected,
+  item,
+  details,
+}) => {
   const dispatch = useDispatch();
 
   const onToggleItem = useCallback(
@@ -76,7 +77,10 @@ const PeriodItem = ({ isDisabled = false, isSelected, item, details }) => {
   return (
     <>
       <tr
-        className={cn(styles.container, { [styles.hasDetails]: !!details })}
+        className={cn(styles.container, {
+          [styles.hasDetails]: !!details,
+          [styles.isFailed]: isFailed,
+        })}
         onClick={onToggleItemDetails}
       >
         <td className={styles.toggle}>
@@ -123,7 +127,13 @@ const PeriodItem = ({ isDisabled = false, isSelected, item, details }) => {
           />
         </td>
       </tr>
-      {details && <PeriodDetails details={details} isDisabled={isDisabled} />}
+      {details && (
+        <PeriodDetails
+          details={details}
+          isDisabled={isDisabled}
+          isFailed={isFailed}
+        />
+      )}
     </>
   );
 };
@@ -131,6 +141,7 @@ const PeriodItem = ({ isDisabled = false, isSelected, item, details }) => {
 PeriodItem.propTypes = {
   className: PT.string,
   isDisabled: PT.bool,
+  isFailed: PT.bool,
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
@@ -164,13 +175,6 @@ PeriodItem.propTypes = {
     ),
     periodsIsLoading: PT.bool.isRequired,
   }),
-  // onToggle: PT.func.isRequired,
-  // onToggleDetails: PT.func.isRequired,
-  // onWorkingDaysChange: PT.func.isRequired,
 };
-
-function stopPropagation(event) {
-  event.stopPropagation();
-}
 
 export default memo(PeriodItem);
