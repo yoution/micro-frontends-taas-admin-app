@@ -20,6 +20,7 @@ export default function Root() {
           from={APP_BASE_PATH}
           to={`${APP_BASE_PATH}/work-periods`}
           exact
+          noThrow
         />
         <WorkPeriods path={`${APP_BASE_PATH}/work-periods`} />
         <Freelancers path={`${APP_BASE_PATH}/freelancers`} />
