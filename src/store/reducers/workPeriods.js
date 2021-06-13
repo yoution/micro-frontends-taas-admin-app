@@ -481,13 +481,18 @@ const actionHandlers = {
       ),
     },
   }),
-  [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => ({
-    ...state,
-    filters: {
-      ...state.filters,
-      userHandle,
-    },
-  }),
+  [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => {
+    if (userHandle === state.filters.userHandle) {
+      return state;
+    }
+    return {
+      ...state,
+      filters: {
+        ...state.filters,
+        userHandle,
+      },
+    };
+  },
   [ACTION_TYPE.WP_SET_WORKING_DAYS]: (state, { periodId, workingDays }) => {
     const oldPeriods = state.periods;
     const periods = [];
