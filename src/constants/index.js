@@ -1,6 +1,6 @@
-import { PLATFORM_WEBSITE_URL } from "../../config";
+import { PLATFORM_WEBSITE_URL, TOPCODER_WEBSITE_URL } from "../../config";
 
-export { PLATFORM_WEBSITE_URL };
+export { PLATFORM_WEBSITE_URL, TOPCODER_WEBSITE_URL };
 
 export const APP_BASE_PATH = "/taas-admin";
 

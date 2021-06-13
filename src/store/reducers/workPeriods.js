@@ -5,7 +5,11 @@ import {
   SORT_ORDER_DEFAULT,
   PAYMENT_STATUS,
 } from "constants/workPeriods";
-import { getWeekByDate, updateOptionMap } from "utils/misc";
+import {
+  filterPeriodsByStartDate,
+  getWeekByDate,
+  updateOptionMap,
+} from "utils/misc";
 
 const initPagination = () => ({
   totalCount: 0,
@@ -24,13 +28,38 @@ const initFilters = () => ({
   userHandle: "",
 });
 
+const cancelSourceDummy = { cancel: () => {} };
+
+const initPeriodDetails = (
+  periodId,
+  rbId,
+  billingAccountId = 0,
+  cancelSource = cancelSourceDummy
+) => ({
+  periodId,
+  rbId,
+  cancelSource,
+  jobName: "Loading...",
+  jobNameIsLoading: true,
+  billingAccountId,
+  billingAccounts: [{ value: billingAccountId, label: "Loading..." }],
+  billingAccountsIsLoading: true,
+  periods: [],
+  periodsVisible: [],
+  periodsIsLoading: true,
+  hidePastPeriods: false,
+  lockWorkingDays: false,
+});
+
 const initialState = {
   error: null,
-  cancelSource: { cancel: () => {} },
+  cancelSource: cancelSourceDummy,
   periods: [],
+  periodsDetails: {},
   periodsSelected: {},
   isSelectedPeriodsAll: false,
   isSelectedPeriodsVisible: false,
+  isProcessingPayments: false,
   pagination: initPagination(),
   sorting: {
     criteria: SORT_BY_DEFAULT,
@@ -55,6 +84,8 @@ const actionHandlers = {
     cancelSource,
     error: null,
     periods: [],
+    periodsDetails: {},
+    periodsSelected: {},
     pagination:
       pageNumber === state.pagination.pageNumber
         ? state.pagination
@@ -87,6 +118,255 @@ const actionHandlers = {
       periods: [],
     };
   },
+  [ACTION_TYPE.WP_HIDE_PERIOD_DETAILS]: (state, periodId) => {
+    const periodsDetails = { ...state.periodsDetails };
+    delete periodsDetails[periodId];
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING]: (
+    state,
+    { periodId, rbId, billingAccountId, cancelSource }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    periodsDetails[periodId] = initPeriodDetails(
+      periodId,
+      rbId,
+      billingAccountId,
+      cancelSource
+    );
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_SUCCESS]: (
+    state,
+    { periodId, details }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    // period details object must already be initialized
+    if (!periodDetails) {
+      // This branch should not be reachable but just in case.
+      return state;
+    }
+    periodDetails = {
+      ...periodDetails,
+      periods: details.periods,
+      periodsIsLoading: false,
+    };
+    if (periodDetails.hidePastPeriods) {
+      periodDetails.periodsVisible = filterPeriodsByStartDate(
+        periodDetails.periods,
+        state.filters.dateRange[0]
+      );
+    } else {
+      periodDetails.periodsVisible = periodDetails.periods;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_ERROR]: (
+    state,
+    { periodId, message }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    // No periods to show so we just hide period details.
+    delete periodsDetails[periodId];
+    console.error(message);
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_JOB_NAME_SUCCESS]: (state, { periodId, jobName }) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      // Period details may be removed at this point so we must handle this case.
+      return state;
+    }
+    periodDetails = { ...periodDetails, jobName, jobNameIsLoading: false };
+    if (!periodDetails.billingAccountsIsLoading) {
+      periodDetails.cancelSource = null;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR]: (state, { periodId, message }) => {
+    console.error(message);
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      return state;
+    }
+    periodDetails = {
+      ...periodDetails,
+      jobName: "Error",
+      jobNameIsLoading: false,
+    };
+    if (!periodDetails.billingAccountsIsLoading) {
+      periodDetails.cancelSource = null;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS]: (
+    state,
+    { periodId, accounts }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      // Period details may be removed at this point so we must handle this case.
+      return state;
+    }
+    let billingAccountId = periodDetails.billingAccountId;
+    if (!accounts.length) {
+      accounts.push({ value: -1, label: "No Accounts Available" });
+      billingAccountId = -1;
+    }
+    periodDetails = {
+      ...periodDetails,
+      billingAccountId,
+      billingAccounts: accounts,
+      billingAccountsIsLoading: false,
+    };
+    if (!periodDetails.jobNameIsLoading) {
+      periodDetails.cancelSource = null;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR]: (
+    state,
+    { periodId, message }
+  ) => {
+    console.error(message);
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      return state;
+    }
+    periodDetails = {
+      ...periodDetails,
+      billingAccounts: [
+        { value: periodDetails.billingAccountId, label: "Error" },
+      ],
+      billingAccountsIsLoading: false,
+    };
+    if (!periodDetails.jobNameIsLoading) {
+      periodDetails.cancelSource = null;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_SET_BILLING_ACCOUNT]: (state, { periodId, accountId }) => {
+    const periodsDetails = { ...state.periodsDetails };
+    const periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      return state;
+    }
+    periodsDetails[periodId] = {
+      ...periodDetails,
+      billingAccountId: accountId,
+    };
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_SET_DETAILS_HIDE_PAST_PERIODS]: (
+    state,
+    { periodId, hide }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      return state;
+    }
+    periodDetails = { ...periodDetails, hidePastPeriods: hide };
+    if (hide) {
+      periodDetails.periodsVisible = filterPeriodsByStartDate(
+        periodDetails.periods,
+        state.filters.dateRange[0]
+      );
+    } else {
+      periodDetails.periodsVisible = periodDetails.periods;
+    }
+    periodsDetails[periodId] = periodDetails;
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_SET_DETAILS_LOCK_WORKING_DAYS]: (
+    state,
+    { periodId, lock }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[periodId];
+    if (!periodDetails) {
+      return state;
+    }
+    periodsDetails[periodId] = { ...periodDetails, lockWorkingDays: lock };
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS]: (
+    state,
+    { parentPeriodId, periodId, workingDays }
+  ) => {
+    const periodsDetails = { ...state.periodsDetails };
+    let periodDetails = periodsDetails[parentPeriodId];
+    if (!periodDetails) {
+      return state;
+    }
+    workingDays = Math.min(Math.max(workingDays, 0), 5);
+    const periods = [];
+    for (let period of periodDetails.periods) {
+      if (period.id === periodId) {
+        period = { ...period, workingDays };
+      }
+      periods.push(period);
+    }
+    const periodsVisible = [];
+    for (let period of periodDetails.periodsVisible) {
+      if (period.id === periodId) {
+        period = { ...period, workingDays };
+      }
+      periodsVisible.push(period);
+    }
+    periodsDetails[parentPeriodId] = {
+      ...periodDetails,
+      periods,
+      periodsVisible,
+    };
+    return {
+      ...state,
+      periodsDetails,
+    };
+  },
   [ACTION_TYPE.WP_RESET_FILTERS]: (state) => ({
     ...state,
     filters: initFilters(),
@@ -103,6 +383,20 @@ const actionHandlers = {
         ...state.filters,
         dateRange: range,
       },
+    };
+  },
+  [ACTION_TYPE.WP_SELECT_PERIODS]: (state, periods) => {
+    let periodsSelected = { ...state.periodsSelected };
+    for (let periodId in periods) {
+      if (periods[periodId] === true) {
+        periodsSelected[periodId] = true;
+      } else {
+        delete periodsSelected[periodId];
+      }
+    }
+    return {
+      ...state,
+      periodsSelected,
     };
   },
   [ACTION_TYPE.WP_SET_PAGE_NUMBER]: (state, pageNumber) => ({
@@ -226,6 +520,10 @@ const actionHandlers = {
       isSelectedPeriodsVisible: isSelected,
     };
   },
+  [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => ({
+    ...state,
+    isProcessingPayments: on === null ? !state.isProcessingPayments : on,
+  }),
 };
 
 export default reducer;

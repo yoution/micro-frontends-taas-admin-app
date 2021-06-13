@@ -5,6 +5,7 @@ import PT from "prop-types";
 import cn from "classnames";
 // import SidebarSection from "components/SidebarSection";
 import Button from "components/Button";
+import SearchHandleField from "components/SearchHandleField";
 // import CheckboxList from "components/CheckboxList";
 // import { PAYMENT_STATUS } from "constants/workPeriods";
 import { getWorkPeriodsFilters } from "store/selectors/workPeriods";
@@ -16,7 +17,6 @@ import {
 import { loadWorkPeriodsPage as loadWorkingPeriodsPage } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
-import SearchField from "components/SearchField";
 
 /**
  * Displays working periods' filters like user handle search control or
@@ -66,7 +66,7 @@ const PeriodFilters = ({ className }) => {
   return (
     <form className={cn(styles.container, className)} action="#">
       <div className={styles.handleSection}>
-        <SearchField
+        <SearchHandleField
           id="topcoder-handle"
           name="topcoder_handle"
           placeholder="Search Topcoder Handle"

@@ -19,6 +19,18 @@ input.input {
   outline: none !important;
   box-shadow: none !important;
   text-align: center;
+
+  &:disabled {
+    border-color: $control-disabled-border-color;
+    background-color: $control-disabled-bg-color;
+    color: $control-disabled-text-color;
+    cursor: not-allowed;
+
+    ~ .btnMinus,
+    ~ .btnPlus {
+      cursor: not-allowed;
+    }
+  }
 }
 
 .btnMinus,
