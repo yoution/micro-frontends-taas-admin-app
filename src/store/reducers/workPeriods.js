@@ -59,7 +59,6 @@ const initPeriodDetails = (
   periodsVisible: [],
   periodsIsLoading: true,
   hidePastPeriods: false,
-  lockWorkingDays: false,
 });
 
 const initialState = {
@@ -370,21 +369,6 @@ const actionHandlers = {
       periodDetails.periodsVisible = periodDetails.periods;
     }
     periodsDetails[periodId] = periodDetails;
-    return {
-      ...state,
-      periodsDetails,
-    };
-  },
-  [ACTION_TYPE.WP_SET_DETAILS_LOCK_WORKING_DAYS]: (
-    state,
-    { periodId, lock }
-  ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      return state;
-    }
-    periodsDetails[periodId] = { ...periodDetails, lockWorkingDays: lock };
     return {
       ...state,
       periodsDetails,

@@ -185,11 +185,6 @@ export const setDetailsHidePastPeriods = (periodId, hide) => ({
   payload: { periodId, hide },
 });
 
-export const setDetailsLockWorkingDays = (periodId, lock) => ({
-  type: ACTION_TYPE.WP_SET_DETAILS_LOCK_WORKING_DAYS,
-  payload: { periodId, lock },
-});
-
 /**
  * Creates an action to reset working periods' filters.
  *
