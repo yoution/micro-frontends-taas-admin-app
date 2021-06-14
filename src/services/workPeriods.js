@@ -142,6 +142,15 @@ export const postWorkPeriodsPayments = (payments) => {
  * @returns {Promise}
  */
 export const postWorkPeriodsPaymentsAll = (query) => {
+  for (let key in query) {
+    let value = query[key];
+    if (
+      (typeof value !== "number" && !value) ||
+      (Array.isArray(value) && !value.length)
+    ) {
+      delete query[key];
+    }
+  }
   return axios
     .post(`${PAYMENTS_API_URL}/query`, { query })
     .then(extractResponseData);
