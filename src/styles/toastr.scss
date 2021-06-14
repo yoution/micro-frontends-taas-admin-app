@@ -3,7 +3,7 @@
 
 .redux-toastr {
   position: absolute;
-  left: $sidebar-width;
+  left: 0;
   top: 0;
   right: 0;
   margin: 0;
@@ -12,16 +12,26 @@
   height: auto;
   background: transparent;
 
+  @include desktop {
+    left: $sidebar-width;
+  }
+
   > div {
     position: absolute;
-    left: 22px;
+    left: 10px;
     top: 24px;
-    right: 14px;
+    right: 10px;
     margin: 0;
     border: none;
     padding: 0;
     height: auto;
     background: transparent;
+
+    @include desktop {
+      left: 22px;
+      top: 24px;
+      right: 14px;
+    }
   }
 
   .top-right {

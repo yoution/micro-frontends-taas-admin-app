@@ -12,7 +12,7 @@ import {
   hideWorkPeriodDetails,
   setBillingAccount,
   setDetailsHidePastPeriods,
-  setDetailsLockWorkingDays,
+  // setDetailsLockWorkingDays,
 } from "store/actions/workPeriods";
 import styles from "./styles.module.scss";
 import { updateWorkPeriodBillingAccount } from "store/thunks/workPeriods";
@@ -34,14 +34,15 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     periodId,
     rbId,
     jobName,
-    jobNameIsLoading,
+    jobNameError,
     billingAccountId,
     billingAccounts,
-    billingAccountsIsLoading,
+    billingAccountsError,
+    billingAccountsIsDisabled,
     periodsVisible,
     periodsIsLoading,
     hidePastPeriods,
-    lockWorkingDays,
+    // lockWorkingDays,
   } = details;
 
   const onHideDetailsBtnClick = useCallback(() => {
@@ -55,12 +56,12 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     [dispatch, periodId]
   );
 
-  const onChangeLockWorkingDays = useCallback(
-    (lock) => {
-      dispatch(setDetailsLockWorkingDays(periodId, lock));
-    },
-    [dispatch, periodId]
-  );
+  // const onChangeLockWorkingDays = useCallback(
+  //   (lock) => {
+  //     dispatch(setDetailsLockWorkingDays(periodId, lock));
+  //   },
+  //   [dispatch, periodId]
+  // );
 
   const onChangeBillingAccount = useCallback(
     (value) => {
@@ -84,16 +85,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     updateBillingAccount(billingAccountId);
   }, [billingAccountId]);
 
-  const isFailedLoadingJobName = !jobNameIsLoading && jobName === "Error";
-  const isFailedLoadingBilAccs =
-    !billingAccountsIsLoading &&
-    billingAccounts.length === 1 &&
-    billingAccounts[0].value === 0;
-  const isDisabledBilAccs =
-    !billingAccountsIsLoading &&
-    billingAccounts.length === 1 &&
-    billingAccounts[0].value === -1;
-
   return (
     <tr
       className={cn(
@@ -115,14 +106,14 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
                 <div className={styles.label}>Job Name</div>
                 <div
                   className={cn(styles.jobName, {
-                    [styles.jobNameError]: isFailedLoadingJobName,
+                    [styles.jobNameError]: !!jobNameError,
                   })}
                 >
-                  {jobNameIsLoading ? "Loading..." : jobName}
+                  {jobName}
                 </div>
               </div>
             </div>
-            <div className={styles.lockWorkingDaysSection}>
+            {/* <div className={styles.lockWorkingDaysSection}>
               <div className={styles.sectionLabel}>Lock Working Days</div>
               <Toggle
                 size="small"
@@ -131,15 +122,15 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
                 onChange={onChangeLockWorkingDays}
                 isOn={lockWorkingDays}
               />
-            </div>
+            </div> */}
             <div className={styles.billingAccountSection}>
               <div className={styles.sectionLabel}>Billing Account</div>
               <SelectField
                 className={
-                  isFailedLoadingBilAccs ? styles.billingAccountError : ""
+                  billingAccountsError ? styles.billingAccountsError : ""
                 }
                 id={`rb_bil_acc_${periodId}`}
-                isDisabled={isDisabledBilAccs}
+                isDisabled={billingAccountsIsDisabled}
                 size="small"
                 onChange={onChangeBillingAccount}
                 options={billingAccounts}
@@ -191,6 +182,7 @@ PeriodDetails.propTypes = {
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,
     jobName: PT.string,
+    jobNameError: PT.string,
     jobNameIsLoading: PT.bool.isRequired,
     billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
@@ -199,6 +191,8 @@ PeriodDetails.propTypes = {
         value: PT.string.isRequired,
       })
     ),
+    billingAccountsError: PT.string,
+    billingAccountsIsDisabled: PT.bool.isRequired,
     billingAccountsIsLoading: PT.bool.isRequired,
     periodsVisible: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,

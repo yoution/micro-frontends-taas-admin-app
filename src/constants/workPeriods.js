@@ -85,3 +85,11 @@ export const API_PAYMENT_STATUS_MAP = (function () {
   }
   return obj;
 })();
+
+export const JOB_NAME_LOADING = "Loading...";
+export const JOB_NAME_NONE = "<Job is not assigned>";
+export const JOB_NAME_ERROR = "<Error loading job>";
+
+export const BILLING_ACCOUNTS_LOADING = "Loading...";
+export const BILLING_ACCOUNTS_NONE = "<No accounts available>";
+export const BILLING_ACCOUNTS_ERROR = "<Error loading accounts>";

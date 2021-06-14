@@ -25,7 +25,7 @@ const WorkPeriods = () => (
     </Sidebar>
     <Content>
       <PeriodsContentHeader />
-      <ContentBlock>
+      <ContentBlock className={styles.periodsBlock}>
         <div className={styles.periodsHeader}>
           <PeriodCount className={styles.periodCount} />
           <PeriodWeekPicker className={styles.periodWeekPicker} />

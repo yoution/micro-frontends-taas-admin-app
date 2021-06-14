@@ -1,10 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import _ from "lodash";
 import AsyncSelect from "react-select/async";
 import { getMemberSuggestions } from "services/teams";
-// import { getOptionByValue } from "utils/misc";
 import styles from "./styles.module.scss";
 
 const selectComponents = {

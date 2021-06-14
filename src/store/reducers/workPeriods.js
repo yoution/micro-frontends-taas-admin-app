@@ -4,12 +4,18 @@ import {
   SORT_BY_DEFAULT,
   SORT_ORDER_DEFAULT,
   PAYMENT_STATUS,
+  JOB_NAME_ERROR,
+  BILLING_ACCOUNTS_NONE,
+  JOB_NAME_LOADING,
+  BILLING_ACCOUNTS_LOADING,
+  BILLING_ACCOUNTS_ERROR,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
   getWeekByDate,
   updateOptionMap,
 } from "utils/misc";
+import { createAssignedBillingAccountOption } from "utils/workPeriods";
 
 const initPagination = () => ({
   totalCount: 0,
@@ -39,10 +45,15 @@ const initPeriodDetails = (
   periodId,
   rbId,
   cancelSource,
-  jobName: "Loading...",
+  jobName: JOB_NAME_LOADING,
+  jobNameError: null,
   jobNameIsLoading: true,
   billingAccountId,
-  billingAccounts: [{ value: billingAccountId, label: "Loading..." }],
+  billingAccounts: [
+    { value: billingAccountId, label: BILLING_ACCOUNTS_LOADING },
+  ],
+  billingAccountsError: null,
+  billingAccountsIsDisabled: true,
   billingAccountsIsLoading: true,
   periods: [],
   periodsVisible: [],
@@ -221,7 +232,12 @@ const actionHandlers = {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
-    periodDetails = { ...periodDetails, jobName, jobNameIsLoading: false };
+    periodDetails = {
+      ...periodDetails,
+      jobName,
+      jobNameError: null,
+      jobNameIsLoading: false,
+    };
     if (!periodDetails.billingAccountsIsLoading) {
       periodDetails.cancelSource = null;
     }
@@ -232,7 +248,6 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR]: (state, { periodId, message }) => {
-    console.error(message);
     const periodsDetails = { ...state.periodsDetails };
     let periodDetails = periodsDetails[periodId];
     if (!periodDetails) {
@@ -240,7 +255,8 @@ const actionHandlers = {
     }
     periodDetails = {
       ...periodDetails,
-      jobName: "Error",
+      jobName: JOB_NAME_ERROR,
+      jobNameError: message,
       jobNameIsLoading: false,
     };
     if (!periodDetails.billingAccountsIsLoading) {
@@ -262,15 +278,17 @@ const actionHandlers = {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
-    let billingAccountId = periodDetails.billingAccountId;
+    let billingAccountsIsDisabled = false;
+    let accountId = periodDetails.billingAccountId;
     if (!accounts.length) {
-      accounts.push({ value: -1, label: "No Accounts Available" });
-      billingAccountId = -1;
+      accounts.push({ value: accountId, label: BILLING_ACCOUNTS_NONE });
+      billingAccountsIsDisabled = true;
     }
     periodDetails = {
       ...periodDetails,
-      billingAccountId,
       billingAccounts: accounts,
+      billingAccountsError: null,
+      billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
     if (!periodDetails.jobNameIsLoading) {
@@ -286,17 +304,25 @@ const actionHandlers = {
     state,
     { periodId, message }
   ) => {
-    console.error(message);
     const periodsDetails = { ...state.periodsDetails };
     let periodDetails = periodsDetails[periodId];
     if (!periodDetails) {
       return state;
     }
+    let billingAccounts = [];
+    let billingAccountsIsDisabled = true;
+    let accountId = periodDetails.billingAccountId;
+    if (accountId) {
+      billingAccounts.push(createAssignedBillingAccountOption(accountId));
+      billingAccountsIsDisabled = false;
+    } else {
+      billingAccounts.push({ value: accountId, label: BILLING_ACCOUNTS_ERROR });
+    }
     periodDetails = {
       ...periodDetails,
-      billingAccounts: [
-        { value: periodDetails.billingAccountId, label: "Error" },
-      ],
+      billingAccounts,
+      billingAccountsError: message,
+      billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
     if (!periodDetails.jobNameIsLoading) {

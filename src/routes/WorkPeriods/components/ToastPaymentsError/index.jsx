@@ -9,7 +9,7 @@ import ToastMessage from "components/ToastrMessage";
  * @param {Object} props
  * @returns {JSX.Element}
  */
-const ToastPaymentsSuccess = ({ periods, remove }) => {
+const ToastPaymentsError = ({ periods, remove }) => {
   return (
     <ToastMessage type="error" remove={remove}>
       Failed to schedule payments for {periods.length} resources
@@ -17,7 +17,7 @@ const ToastPaymentsSuccess = ({ periods, remove }) => {
   );
 };
 
-ToastPaymentsSuccess.propTypes = {
+ToastPaymentsError.propTypes = {
   periods: PT.arrayOf(
     PT.shape({
       workPeriodId: PT.string.isRequired,
@@ -27,4 +27,4 @@ ToastPaymentsSuccess.propTypes = {
   remove: PT.func,
 };
 
-export default ToastPaymentsSuccess;
+export default ToastPaymentsError;

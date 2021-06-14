@@ -2,6 +2,7 @@ import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import ReduxToastr from "react-redux-toastr";
+import { TOAST_DEFAULT_TIMEOUT } from "constants/index.js";
 import styles from "./styles.module.scss";
 
 /**
@@ -16,8 +17,9 @@ const Page = ({ className, children }) => (
   <div className={cn(styles.container, className)}>
     {children}
     <ReduxToastr
-      timeOut={60000}
+      timeOut={TOAST_DEFAULT_TIMEOUT}
       position="top-right"
+      removeOnHover={false}
       transitionIn="fadeIn"
       transitionOut="fadeOut"
     />
