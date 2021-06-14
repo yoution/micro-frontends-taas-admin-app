@@ -169,7 +169,7 @@ PeriodDetails.propTypes = {
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,
-        value: PT.string.isRequired,
+        value: PT.number.isRequired,
       })
     ),
     billingAccountsError: PT.string,

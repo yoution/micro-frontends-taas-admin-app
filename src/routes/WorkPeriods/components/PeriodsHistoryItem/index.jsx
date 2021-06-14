@@ -105,7 +105,7 @@ PeriodsHistoryItem.propTypes = {
     endDate: PT.oneOfType([PT.string, PT.number]).isRequired,
     paymentStatus: PT.string.isRequired,
     payments: PT.array,
-    weeklyRate: PT.number.isRequired,
+    weeklyRate: PT.number,
     workingDays: PT.number.isRequired,
   }).isRequired,
   currentStartDate: PT.oneOfType([PT.string, PT.number, PT.object]).isRequired,
