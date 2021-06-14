@@ -23,6 +23,7 @@ const PeriodsContentHeader = () => {
     <ContentHeader className={styles.container}>
       <PageTitle text="Working Periods" />
       <Button
+        className={styles.button}
         variant="contained"
         isDisabled={!hasSelectedItems || isProcessingPayments}
         onClick={onProcessPaymentsClick}

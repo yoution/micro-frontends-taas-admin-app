@@ -63,6 +63,7 @@ export const SORT_BY_MAP = {
 
 export const PAYMENT_STATUS_LABELS = {
   [PAYMENT_STATUS.CANCELLED]: "Cancelled",
+  [PAYMENT_STATUS.FAILED]: "Failed",
   [PAYMENT_STATUS.PAID]: "Paid",
   [PAYMENT_STATUS.PENDING]: "Pending",
   [PAYMENT_STATUS.IN_PROGRESS]: "In Progress",
@@ -71,6 +72,7 @@ export const PAYMENT_STATUS_LABELS = {
 
 export const PAYMENT_STATUS_MAP = {
   [PAYMENT_STATUS.CANCELLED]: API_PAYMENT_STATUS.CANCELLED,
+  [PAYMENT_STATUS.FAILED]: API_PAYMENT_STATUS.FAILED,
   [PAYMENT_STATUS.PAID]: API_PAYMENT_STATUS.COMPLETED,
   [PAYMENT_STATUS.PENDING]: API_PAYMENT_STATUS.PENDING,
   [PAYMENT_STATUS.IN_PROGRESS]: API_PAYMENT_STATUS.PARTIALLY_COMPLETED,
@@ -85,3 +87,11 @@ export const API_PAYMENT_STATUS_MAP = (function () {
   }
   return obj;
 })();
+
+export const JOB_NAME_LOADING = "Loading...";
+export const JOB_NAME_NONE = "<Job is not assigned>";
+export const JOB_NAME_ERROR = "<Error loading job>";
+
+export const BILLING_ACCOUNTS_LOADING = "Loading...";
+export const BILLING_ACCOUNTS_NONE = "<No accounts available>";
+export const BILLING_ACCOUNTS_ERROR = "<Error loading accounts>";

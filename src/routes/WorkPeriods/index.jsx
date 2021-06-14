@@ -9,9 +9,10 @@ import PeriodFilters from "./components/PeriodFilters";
 import Periods from "./components/Periods";
 import PeriodCount from "./components/PeriodCount";
 import PeriodsPagination from "./components/PeriodsPagination";
-import styles from "./styles.module.scss";
+import PeriodsSelectionMessage from "./components/PeriodsSelectionMessage";
 import PeriodWeekPicker from "./components/PeriodWeekPicker";
 import { ADMIN_ROLES } from "../../constants";
+import styles from "./styles.module.scss";
 
 /**
  * Displays route component for Working Days' route.
@@ -25,7 +26,7 @@ const WorkPeriods = () => (
     </Sidebar>
     <Content>
       <PeriodsContentHeader />
-      <ContentBlock>
+      <ContentBlock className={styles.periodsBlock}>
         <div className={styles.periodsHeader}>
           <PeriodCount className={styles.periodCount} />
           <PeriodWeekPicker className={styles.periodWeekPicker} />
@@ -34,6 +35,7 @@ const WorkPeriods = () => (
             id="periods-pagination-top"
           />
         </div>
+        <PeriodsSelectionMessage />
         <Periods />
         <div className={styles.periodsFooter}>
           <PeriodsPagination

@@ -3,15 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import PT from "prop-types";
 import cn from "classnames";
-// import SidebarSection from "components/SidebarSection";
+import SidebarSection from "components/SidebarSection";
 import Button from "components/Button";
 import SearchHandleField from "components/SearchHandleField";
-// import CheckboxList from "components/CheckboxList";
-// import { PAYMENT_STATUS } from "constants/workPeriods";
+import CheckboxList from "components/CheckboxList";
+import { PAYMENT_STATUS } from "constants/workPeriods";
 import { getWorkPeriodsFilters } from "store/selectors/workPeriods";
 import {
   resetWorkPeriodsFilters,
-  // setWorkPeriodsPaymentStatuses,
+  setWorkPeriodsPaymentStatuses,
   setWorkPeriodsUserHandle,
 } from "store/actions/workPeriods";
 import { loadWorkPeriodsPage as loadWorkingPeriodsPage } from "store/thunks/workPeriods";
@@ -29,7 +29,7 @@ import styles from "./styles.module.scss";
 const PeriodFilters = ({ className }) => {
   const dispatch = useDispatch();
   const filters = useSelector(getWorkPeriodsFilters);
-  const { /*paymentStatuses,*/ userHandle } = filters;
+  const { paymentStatuses, userHandle } = filters;
 
   const onUserHandleChange = useCallback(
     (value) => {
@@ -38,12 +38,12 @@ const PeriodFilters = ({ className }) => {
     [dispatch]
   );
 
-  // const onPaymentStatusesChange = useCallback(
-  //   (statuses) => {
-  //     dispatch(setWorkPeriodsPaymentStatuses(statuses));
-  //   },
-  //   [dispatch]
-  // );
+  const onPaymentStatusesChange = useCallback(
+    (statuses) => {
+      dispatch(setWorkPeriodsPaymentStatuses(statuses));
+    },
+    [dispatch]
+  );
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
@@ -74,14 +74,14 @@ const PeriodFilters = ({ className }) => {
           value={userHandle}
         />
       </div>
-      {/* <SidebarSection label="Payment Status">
+      <SidebarSection label="Payment Status">
         <CheckboxList
           name="payment_status[]"
           onChange={onPaymentStatusesChange}
           options={PAYMENT_STATUS_OPTIONS}
           value={paymentStatuses}
         />
-      </SidebarSection> */}
+      </SidebarSection>
       <div className={styles.buttons}>
         <Button className={styles.button} size="small" onClick={onClearFilter}>
           Clear Filter
@@ -95,10 +95,11 @@ PeriodFilters.propTypes = {
   className: PT.string,
 };
 
-// const PAYMENT_STATUS_OPTIONS = [
-//   { value: PAYMENT_STATUS.PENDING, label: "Pending" },
-//   { value: PAYMENT_STATUS.PAID, label: "Paid" },
-//   { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
-// ];
+const PAYMENT_STATUS_OPTIONS = [
+  { value: PAYMENT_STATUS.PENDING, label: "Pending" },
+  { value: PAYMENT_STATUS.PAID, label: "Paid" },
+  { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
+  // { value: PAYMENT_STATUS.FAILED, label: "Failed" },
+];
 
 export default PeriodFilters;

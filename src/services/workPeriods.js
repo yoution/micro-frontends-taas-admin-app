@@ -31,6 +31,18 @@ export const fetchJob = (jobId, source) => {
 };
 
 /**
+ * Fetches project data by project id.
+ *
+ * @param {number} projectId project id
+ * @returns {Promise}
+ */
+export const fetchProject = (projectId) => {
+  return axios
+    .get(`${PROJECTS_API_URL}/${projectId}?fields=projectId,name`)
+    .then(extractResponseData);
+};
+
+/**
  * Fetches billing accounts for specific project id.
  *
  * @param {number|string} projectId resource booking's project id
@@ -119,4 +131,18 @@ export const patchWorkPeriodBillingAccount = (rbId, billingAccountId) => {
  */
 export const postWorkPeriodsPayments = (payments) => {
   return axios.post(`${PAYMENTS_API_URL}`, payments).then(extractResponseData);
+};
+
+/**
+ * Sends request to schedule payments for working periods satisfying
+ * the provided query. See
+ * https://topcoder-platform.github.io/taas-apis/#/WorkPeriodPayments/post_work_period_payments_query
+ *
+ * @param {Object} query query object
+ * @returns {Promise}
+ */
+export const postWorkPeriodsPaymentsAll = (query) => {
+  return axios
+    .post(`${PAYMENTS_API_URL}/query`, { query })
+    .then(extractResponseData);
 };

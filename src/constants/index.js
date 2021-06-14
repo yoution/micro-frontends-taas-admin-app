@@ -16,3 +16,5 @@ export const RESOURCE_BOOKING_STATUS = {
   CLOSED: "closed",
   CANCELLED: "cancelled",
 };
+
+export const TOAST_DEFAULT_TIMEOUT = 50000;

@@ -55,12 +55,13 @@ export function normalizeBillingAccounts(accounts, accountId = -1) {
     });
   }
   if (!hasSelectedAccount && accountId > 0) {
-    accs.unshift({
-      value: accountId,
-      label: `<Assigned Account> (${accountId})`,
-    });
+    accs.unshift(createAssignedBillingAccountOption(accountId));
   }
   return accs;
+}
+
+export function createAssignedBillingAccountOption(accountId) {
+  return { value: accountId, label: `<Assigned Account> (${accountId})` };
 }
 
 export function normalizeDetailsPeriodItems(items) {

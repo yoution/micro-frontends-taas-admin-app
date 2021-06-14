@@ -10,22 +10,17 @@ import styles from "./styles.module.scss";
  * @param {Object} props
  * @returns {JSX.Element}
  */
-const ToastPaymentsProcessing = ({ periods, remove }) => {
+const ToastPaymentsProcessing = ({ resourceCount, remove }) => {
   return (
     <ToastMessage className={styles.container} remove={remove}>
       <span className={styles.icon}></span>
-      Payment in progress for {periods.length} resources
+      Payment in progress for {resourceCount} resources
     </ToastMessage>
   );
 };
 
 ToastPaymentsProcessing.propTypes = {
-  periods: PT.arrayOf(
-    PT.shape({
-      workPeriodId: PT.string.isRequired,
-      amount: PT.number.isRequired,
-    })
-  ),
+  resourceCount: PT.number.isRequired,
   remove: PT.func,
 };
 
