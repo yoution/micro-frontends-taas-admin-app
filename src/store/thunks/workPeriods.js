@@ -74,12 +74,7 @@ export const loadWorkPeriodsPage =
       status: RESOURCE_BOOKING_STATUS.PLACED,
       ["workPeriods.userHandle"]: filters.userHandle,
       ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
-      ["workPeriods.paymentStatus"]:
-        // Currently resourceBookings API does not support multiple payment statuses.
-        // When the support is implemented remove the next line and uncomment
-        // the following line.
-        paymentStatuses.length === 1 ? paymentStatuses[0] : null,
-      // paymentStatuses,
+      ["workPeriods.paymentStatus"]: paymentStatuses,
     });
     dispatch(actions.loadWorkPeriodsPagePending(cancelSource, pageNumber));
     let totalCount, periods, pageCount;

@@ -122,9 +122,7 @@ export const buildRequestQuery = (params, paramNames) => {
     }
     if (Array.isArray(paramValue)) {
       if (paramValue.length) {
-        queryParams.push(
-          paramValue.map((value) => `${paramName}[]=${value}`).join("&")
-        );
+        queryParams.push(`${paramName}=${paramValue.join(",")}`);
       }
     } else {
       queryParams.push(`${paramName}=${paramValue}`);
