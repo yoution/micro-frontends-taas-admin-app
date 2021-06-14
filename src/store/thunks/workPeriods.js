@@ -265,7 +265,7 @@ const processPaymentsAll = async (dispatch, getState) => {
     status: RESOURCE_BOOKING_STATUS.PLACED,
     ["workPeriods.userHandle"]: filters.userHandle,
     ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
-    ["workPeriods.paymentStatus"]: paymentStatuses.join(","),
+    ["workPeriods.paymentStatus"]: paymentStatuses,
   });
   let data = null;
   let errorMessage = null;

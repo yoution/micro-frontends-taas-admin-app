@@ -144,11 +144,16 @@ export const postWorkPeriodsPayments = (payments) => {
 export const postWorkPeriodsPaymentsAll = (query) => {
   for (let key in query) {
     let value = query[key];
-    if (
-      (typeof value !== "number" && !value) ||
-      (Array.isArray(value) && !value.length)
-    ) {
+    if (typeof value !== "number" && !value) {
       delete query[key];
+      continue;
+    }
+    if (Array.isArray(value)) {
+      if (value.length) {
+        query[key] = value.join(",");
+      } else {
+        delete query[key];
+      }
     }
   }
   return axios
