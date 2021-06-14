@@ -139,7 +139,7 @@ export const toggleWorkPeriodDetails =
         if (period.jobId) {
           const [jobNamePromise] = services.fetchJob(period.jobId, source);
           jobNamePromise
-            .then(([data]) => {
+            .then((data) => {
               const jobName = extractJobName(data);
               dispatch(actions.loadJobNameSuccess(period.id, jobName));
             })
