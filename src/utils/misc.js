@@ -141,3 +141,7 @@ export const extractResponsePagination = ({ headers }) => ({
 export const extractJobName = (data) => data.title;
 
 export const extractResponseData = (response) => response.data;
+
+export const increment = (value) => value + 1;
+
+export const noop = () => {};

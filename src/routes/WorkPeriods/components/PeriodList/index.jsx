@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
+import ProjectNameContextProvider from "components/ProjectNameContextProvider";
 import PeriodItem from "../PeriodItem";
 import PeriodListHead from "../PeriodListHead";
 import {
@@ -28,28 +29,30 @@ const PeriodList = ({ className }) => {
   const isProcessingPayments = useSelector(getWorkPeriodsIsProcessingPayments);
 
   return (
-    <div className={cn(styles.container, className)}>
-      <table className={styles.table}>
-        <thead>
-          <PeriodListHead />
-        </thead>
-        <tbody>
-          <tr>
-            <td colSpan={8} className={styles.listTopMargin}></td>
-          </tr>
-          {periods.map((period) => (
-            <PeriodItem
-              key={period.id}
-              isDisabled={isProcessingPayments}
-              isFailed={period.id in periodsFailed}
-              isSelected={period.id in periodsSelected}
-              item={period}
-              details={periodsDetails[period.id]}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ProjectNameContextProvider>
+      <div className={cn(styles.container, className)}>
+        <table className={styles.table}>
+          <thead>
+            <PeriodListHead />
+          </thead>
+          <tbody>
+            <tr>
+              <td colSpan={8} className={styles.listTopMargin}></td>
+            </tr>
+            {periods.map((period) => (
+              <PeriodItem
+                key={period.id}
+                isDisabled={isProcessingPayments}
+                isFailed={period.id in periodsFailed}
+                isSelected={period.id in periodsSelected}
+                item={period}
+                details={periodsDetails[period.id]}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ProjectNameContextProvider>
   );
 };
 

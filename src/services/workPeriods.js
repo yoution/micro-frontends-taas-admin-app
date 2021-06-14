@@ -31,6 +31,18 @@ export const fetchJob = (jobId, source) => {
 };
 
 /**
+ * Fetches project data by project id.
+ *
+ * @param {number} projectId project id
+ * @returns {Promise}
+ */
+export const fetchProject = (projectId) => {
+  return axios
+    .get(`${PROJECTS_API_URL}/${projectId}?fields=projectId,name`)
+    .then(extractResponseData);
+};
+
+/**
  * Fetches billing accounts for specific project id.
  *
  * @param {number|string} projectId resource booking's project id

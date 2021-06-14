@@ -5,6 +5,7 @@ import cn from "classnames";
 import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
 import IntegerField from "components/IntegerField";
+import ProjectName from "components/ProjectName";
 import PaymentStatus from "../PaymentStatus";
 import PeriodDetails from "../PeriodDetails";
 import {
@@ -106,7 +107,9 @@ const PeriodItem = ({
             </a>
           </span>
         </td>
-        <td className={styles.teamName}>{item.projectId}</td>
+        <td className={styles.teamName}>
+          <ProjectName projectId={item.projectId} />
+        </td>
         <td className={styles.startDate}>{item.startDate}</td>
         <td className={styles.endDate}>{item.endDate}</td>
         <td className={styles.weeklyRate}>
