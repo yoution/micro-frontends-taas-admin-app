@@ -1,17 +1,15 @@
-import React, { useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useSelector } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import PeriodItem from "../PeriodItem";
 import PeriodListHead from "../PeriodListHead";
 import {
   getWorkPeriods,
+  getWorkPeriodsDetails,
+  getWorkPeriodsIsProcessingPayments,
   getWorkPeriodsSelected,
 } from "store/selectors/workPeriods";
-import {
-  setWorkPeriodWorkingDays,
-  toggleWorkPeriod,
-} from "store/actions/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -23,22 +21,9 @@ import styles from "./styles.module.scss";
  */
 const PeriodList = ({ className }) => {
   const periods = useSelector(getWorkPeriods);
+  const periodsDetails = useSelector(getWorkPeriodsDetails);
   const periodsSelected = useSelector(getWorkPeriodsSelected);
-  const dispatch = useDispatch();
-
-  const onTogglePeriod = useCallback(
-    (periodId) => {
-      dispatch(toggleWorkPeriod(periodId));
-    },
-    [dispatch]
-  );
-
-  const onWorkingDaysChange = useCallback(
-    (payload) => {
-      dispatch(setWorkPeriodWorkingDays(payload));
-    },
-    [dispatch]
-  );
+  const isProcessingPayments = useSelector(getWorkPeriodsIsProcessingPayments);
 
   return (
     <div className={cn(styles.container, className)}>
@@ -53,10 +38,10 @@ const PeriodList = ({ className }) => {
           {periods.map((period) => (
             <PeriodItem
               key={period.id}
+              isDisabled={isProcessingPayments}
               isSelected={period.id in periodsSelected}
               item={period}
-              onToggle={onTogglePeriod}
-              onWorkingDaysChange={onWorkingDaysChange}
+              details={periodsDetails[period.id]}
             />
           ))}
         </tbody>

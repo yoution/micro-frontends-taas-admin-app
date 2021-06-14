@@ -36,6 +36,13 @@ input.checkbox {
       }
     }
   }
+
+  &:disabled {
+    + .impostor {
+      background-color: $control-disabled-bg-color;
+      cursor: not-allowed;
+    }
+  }
 }
 
 .impostor {

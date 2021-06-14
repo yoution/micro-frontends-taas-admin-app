@@ -16,7 +16,7 @@ export const loadWorkPeriodsPagePending = (cancelSource, pageNumber) => ({
 });
 
 /**
- * Creates an action denoting the saving of fetched challenge page.
+ * Creates an action denoting the saving of fetched working periods' page.
  *
  * @param {Array} periods array of challenge objects
  * @param {number} totalCount total number of periods for current filters' state
@@ -29,14 +29,165 @@ export const loadWorkPeriodsPageSuccess = (periods, totalCount, pageCount) => ({
 });
 
 /**
- * Creates an action denoting the occurrence of an error while loading challenges.
+ * Creates an action denoting the occurrence of an error while loading working
+ * periods.
  *
  * @param {string} message error message
  * @returns {Object}
  */
 export const loadWorkPeriodsPageError = (message) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_ERROR,
-  payload: { id: nextErrorId++, message },
+  payload: { message, id: nextErrorId++ },
+});
+
+/**
+ * Creates an action to hide specific working period details.
+ *
+ * @param {string} periodId working period id
+ * @returns {Object}
+ */
+export const hideWorkPeriodDetails = (periodId) => ({
+  type: ACTION_TYPE.WP_HIDE_PERIOD_DETAILS,
+  payload: periodId,
+});
+
+/**
+ * Creates an action denoting the loading of working period's details.
+ *
+ * @param {string} periodId working period id
+ * @param {string} rbId resource booking id
+ * @param {number} billingAccountId billing account id
+ * @param {Object} cancelSource axios cancel token source
+ * @returns {Object}
+ */
+export const loadWorkPeriodDetailsPending = (
+  periodId,
+  rbId,
+  billingAccountId,
+  cancelSource
+) => ({
+  type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING,
+  payload: { periodId, rbId, billingAccountId, cancelSource },
+});
+
+/**
+ * Creates an action denoting successful loading of working period details.
+ *
+ * @param {string} periodId working period id
+ * @param {Object} details working period details object
+ * @returns {Object}
+ */
+export const loadWorkPeriodDetailsSuccess = (periodId, details) => ({
+  type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_SUCCESS,
+  payload: { periodId, details },
+});
+
+/**
+ * Creates an action denoting the occurrence of an error while loading
+ * working period details.
+ *
+ * @param {string} periodId work period id
+ * @param {string} message error message
+ * @returns {Object}
+ */
+export const loadWorkPeriodDetailsError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_ERROR,
+  payload: { periodId, message, id: nextErrorId++ },
+});
+
+/**
+ * Creates an action denoting successful loading of resource booking's job name.
+ *
+ * @param {string} periodId working period id
+ * @param {string} jobName working period job name
+ * @returns {Object}
+ */
+export const loadJobNameSuccess = (periodId, jobName) => ({
+  type: ACTION_TYPE.WP_LOAD_JOB_NAME_SUCCESS,
+  payload: { periodId, jobName },
+});
+
+/**
+ * Creates an action denoting an error for loading resource booking's job name.
+ *
+ * @param {string} periodId working period id
+ * @param {string} message error message
+ * @returns {Object}
+ */
+export const loadJobNameError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR,
+  payload: { periodId, message, id: nextErrorId++ },
+});
+
+/**
+ * Creates an action denoting successful load of billing accounts.
+ *
+ * @param {string} periodId working period id
+ * @param {Array} accounts billing accounts
+ * @returns {Object}
+ */
+export const loadBillingAccountsSuccess = (periodId, accounts) => ({
+  type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS,
+  payload: { periodId, accounts },
+});
+
+/**
+ * Creates an action denoting an error while loading billing accounts.
+ *
+ * @param {string} periodId working period id
+ * @param {string} message error message
+ * @returns {Object}
+ */
+export const loadBillingAccountsError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR,
+  payload: { periodId, message, id: nextErrorId++ },
+});
+
+/**
+ * Creates an action denoting the change of billing account.
+ *
+ * @param {string} periodId working period id
+ * @param {number|string} accountId billing account id
+ * @returns {Object}
+ */
+export const setBillingAccount = (periodId, accountId) => ({
+  type: ACTION_TYPE.WP_SET_BILLING_ACCOUNT,
+  payload: { periodId, accountId },
+});
+
+/**
+ * Creates an action denoting the change of working period's working days in
+ * details view.
+ *
+ * @param {string} parentPeriodId parent working period id
+ * @param {string} periodId working period id
+ * @param {number} workingDays number of working days
+ * @returns {Object}
+ */
+export const setDetailsWorkingDays = (
+  parentPeriodId,
+  periodId,
+  workingDays
+) => ({
+  type: ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS,
+  payload: { parentPeriodId, periodId, workingDays },
+});
+
+/**
+ * Creates an action denoting the hiding or showing past working periods.
+ *
+ * @param {string} periodId working period id
+ * @param {boolean} hide whether to hide or show past working periods
+ * @returns {Object}
+ */
+export const setDetailsHidePastPeriods = (periodId, hide) => ({
+  type: ACTION_TYPE.WP_SET_DETAILS_HIDE_PAST_PERIODS,
+  payload: { periodId, hide },
+});
+
+export const setDetailsLockWorkingDays = (periodId, lock) => ({
+  type: ACTION_TYPE.WP_SET_DETAILS_LOCK_WORKING_DAYS,
+  payload: { periodId, lock },
 });
 
 /**
@@ -46,6 +197,18 @@ export const loadWorkPeriodsPageError = (message) => ({
  */
 export const resetWorkPeriodsFilters = () => ({
   type: ACTION_TYPE.WP_RESET_FILTERS,
+});
+
+/**
+ * Creates an action denoting the selection/deselection of specified
+ * working periods.
+ *
+ * @param {Object} periods object with period ids as keys and booleans as values
+ * @returns {Object}
+ */
+export const selectWorkPeriods = (periods) => ({
+  type: ACTION_TYPE.WP_SELECT_PERIODS,
+  payload: periods,
 });
 
 /**
@@ -180,4 +343,15 @@ export const toggleWorkingPeriodsAll = () => ({
  */
 export const toggleWorkingPeriodsVisible = () => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE,
+});
+
+/**
+ * Creates an action denoting the change of processing-payments state.
+ *
+ * @param {?boolean} on whether to turn processing-payments state on or off
+ * @returns {Object}
+ */
+export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
+  type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
+  payload: on,
 });

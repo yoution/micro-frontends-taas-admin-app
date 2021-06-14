@@ -1,6 +1,7 @@
 import React from "react";
 import PT from "prop-types";
 import cn from "classnames";
+import ReduxToastr from "react-redux-toastr";
 import styles from "./styles.module.scss";
 
 /**
@@ -12,7 +13,15 @@ import styles from "./styles.module.scss";
  * @returns {Object}
  */
 const Page = ({ className, children }) => (
-  <div className={cn(styles.container, className)}>{children}</div>
+  <div className={cn(styles.container, className)}>
+    {children}
+    <ReduxToastr
+      timeOut={60000}
+      position="top-right"
+      transitionIn="fadeIn"
+      transitionOut="fadeOut"
+    />
+  </div>
 );
 
 Page.propTypes = {

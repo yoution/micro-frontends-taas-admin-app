@@ -1,7 +1,6 @@
 import React, { useLayoutEffect } from "react";
 import { Provider } from "react-redux";
 import { Router, Redirect } from "@reach/router";
-// import ReduxToastr from "react-redux-toastr";
 import store from "store";
 import { disableSidebarForRoute } from "@topcoder/micro-frontends-navbar-app";
 import WorkPeriods from "routes/WorkPeriods";
@@ -25,12 +24,6 @@ export default function Root() {
         <WorkPeriods path={`${APP_BASE_PATH}/work-periods`} />
         <Freelancers path={`${APP_BASE_PATH}/freelancers`} />
       </Router>
-      {/* <ReduxToastr
-        timeOut={4000}
-        position="bottom-left"
-        transitionIn="fadeIn"
-        transitionOut="fadeOut"
-      /> */}
     </Provider>
   );
 }
