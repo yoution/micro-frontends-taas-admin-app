@@ -1,6 +1,9 @@
 .container {
 }
 
+.periodsBlock {
+}
+
 .periodsHeader {
   display: flex;
   justify-content: space-between;
@@ -16,6 +19,7 @@
 }
 
 .periodCount {
+  white-space: nowrap;
 }
 
 .periodWeekPicker {

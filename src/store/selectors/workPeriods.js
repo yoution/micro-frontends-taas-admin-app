@@ -24,6 +24,15 @@ export const getWorkPeriodsDetails = (state) =>
   state.workPeriods.periodsDetails;
 
 /**
+ * Returns an object which has working periods' ids for which the payments
+ * were failed to be scheduled as keys.
+ *
+ * @param {Object} state redux root state
+ * @returns {Object}
+ */
+export const getWorkPeriodsFailed = (state) => state.workPeriods.periodsFailed;
+
+/**
  * Returns an object with working periods' ids as keys and booleans showing
  * whether the period is selected as values.
  *
@@ -49,6 +58,9 @@ export const getWorkPeriodsError = (state) => state.workPeriods.error;
 export const getWorkPeriodsSorting = (state) => state.workPeriods.sorting;
 
 export const getWorkPeriodsPagination = (state) => state.workPeriods.pagination;
+
+export const getWorkPeriodsPageSize = (state) =>
+  state.workPeriods.pagination.pageSize;
 
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 

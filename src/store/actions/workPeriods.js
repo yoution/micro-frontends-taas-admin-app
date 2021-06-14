@@ -212,6 +212,19 @@ export const selectWorkPeriods = (periods) => ({
 });
 
 /**
+ * Creates an action that should result in deselecting working periods for which
+ * the payments were successfully scheduled and in highlighting those working
+ * periods for which the payments were failed to be scheduled.
+ *
+ * @param {Object} periods object with period ids as keys and booleans as values
+ * @returns {Object}
+ */
+export const highlightFailedWorkPeriods = (periods) => ({
+  type: ACTION_TYPE.WP_HIGHLIGHT_FAILED_PERIODS,
+  payload: periods,
+});
+
+/**
  * Creates an action denoting the changing of working periods' page number.
  *
  * @param {number} pageNumber number of pages
@@ -330,19 +343,23 @@ export const toggleWorkPeriod = (id) => ({
 /**
  * Creates an action to toggle all working periods.
  *
+ * @param {?boolean} on whether to toggle all periods on or off
  * @returns {Object}
  */
-export const toggleWorkingPeriodsAll = () => ({
+export const toggleWorkingPeriodsAll = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_ALL,
+  payload: on,
 });
 
 /**
  * Creates an action to toggle all visible working periods.
  *
+ * @param {?boolean} on whether to toggle all visible periods on or off
  * @returns {Object}
  */
-export const toggleWorkingPeriodsVisible = () => ({
+export const toggleWorkingPeriodsVisible = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE,
+  payload: on,
 });
 
 /**

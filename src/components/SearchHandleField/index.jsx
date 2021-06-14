@@ -1,16 +1,18 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import _ from "lodash";
 import AsyncSelect from "react-select/async";
 import { getMemberSuggestions } from "services/teams";
-// import { getOptionByValue } from "utils/misc";
 import styles from "./styles.module.scss";
 
 const selectComponents = {
   DropdownIndicator: () => null,
   IndicatorSeparator: () => null,
 };
+
+const loadingMessage = () => "Loading...";
+
+const noOptionsMessage = () => "No suggestions";
 
 /**
  * Displays search input field.
@@ -25,20 +27,31 @@ const selectComponents = {
  * @param {string} props.value input value
  * @returns {JSX.Element}
  */
-const SearchAutocomplete = ({
+const SearchHandleField = ({
   className,
   id,
+  name,
   size = "medium",
   onChange,
   placeholder,
   value,
 }) => {
-  // const option = getOptionByValue(options, value);
-  const [savedInput, setSavedInput] = useState("");
-
   const onValueChange = useCallback(
-    (option) => {
-      onChange(option.value);
+    (option, { action }) => {
+      if (action === "clear") {
+        onChange("");
+      } else {
+        onChange(option.value);
+      }
+    },
+    [onChange]
+  );
+
+  const onInputChange = useCallback(
+    (value, { action }) => {
+      if (action === "input-change") {
+        onChange(value);
+      }
     },
     [onChange]
   );
@@ -51,52 +64,52 @@ const SearchAutocomplete = ({
         classNamePrefix="custom"
         components={selectComponents}
         id={id}
+        name={name}
+        isClearable={true}
         isSearchable={true}
         // menuIsOpen={true} // for debugging
-        // onChange={onOptionChange}
-        // onMenuOpen={onMenuOpen}
-        // onMenuClose={onMenuClose}
-        value={{ value, label: value }}
-        onInputChange={setSavedInput}
-        onFocus={() => {
-          setSavedInput("");
-          onChange(savedInput);
-        }}
-        placeholder={placeholder}
+        value={null}
+        inputValue={value}
         onChange={onValueChange}
-        noOptionsMessage={() => "No options"}
-        loadingMessage={() => "Loading..."}
+        onInputChange={onInputChange}
+        openMenuOnClick={false}
+        placeholder={placeholder}
+        noOptionsMessage={noOptionsMessage}
+        loadingMessage={loadingMessage}
         loadOptions={loadSuggestions}
-        blurInputOnSelect
+        cacheOptions
       />
     </div>
   );
 };
 
-const loadSuggestions = (inputVal) => {
-  return getMemberSuggestions(inputVal)
-    .then((res) => {
-      const users = _.get(res, "data.result.content", []);
-      return users.map((user) => ({
-        label: user.handle,
-        value: user.handle,
-      }));
-    })
-    .catch(() => {
-      console.warn("could not get suggestions");
-      return [];
-    });
+const loadSuggestions = async (inputVal) => {
+  let options = [];
+  if (inputVal.length < 3) {
+    return options;
+  }
+  try {
+    const res = await getMemberSuggestions(inputVal);
+    const users = res.data.result.content;
+    for (let i = 0, len = users.length; i < len; i++) {
+      let value = users[i].handle;
+      options.push({ value, label: value });
+    }
+  } catch (error) {
+    console.error(error);
+    console.warn("could not get suggestions");
+  }
+  return options;
 };
 
-SearchAutocomplete.propTypes = {
+SearchHandleField.propTypes = {
   className: PT.string,
   id: PT.string.isRequired,
   size: PT.oneOf(["medium", "small"]),
   name: PT.string.isRequired,
   onChange: PT.func.isRequired,
-  options: PT.array,
   placeholder: PT.string,
   value: PT.oneOfType([PT.number, PT.string]),
 };
 
-export default SearchAutocomplete;
+export default SearchHandleField;

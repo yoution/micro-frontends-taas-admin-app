@@ -1,7 +1,14 @@
 @import "styles/mixins";
+@import "styles/variables";
 
 .container {
   position: relative;
+
+  &.isFailed {
+    td {
+      // background-color: $period-row-failed-bg-color;
+    }
+  }
 }
 
 .loadingIndicator {
@@ -74,7 +81,7 @@
   margin-top: 13px;
 }
 
-.billingAccountError {
+.billingAccountsError {
   color: #e90c5a;
 }
 

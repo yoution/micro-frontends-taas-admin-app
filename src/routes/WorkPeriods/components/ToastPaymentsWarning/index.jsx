@@ -7,51 +7,70 @@ import styles from "./styles.module.scss";
  * Displays a toastr message with info about the number of resources for which
  * payments have been scheduled or failed to schedule.
  *
- * @param {Object} props
+ * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const ToastPaymentsWarning = ({ periodsSucceeded, periodsFailed, remove }) => {
+const ToastPaymentsWarning = ({
+  resourcesSucceeded,
+  resourcesSucceededCount,
+  resourcesFailed,
+  resourcesFailedCount,
+  remove,
+}) => {
   return (
     <ToastMessage type="warning" remove={remove}>
-      Payment scheduled for {periodsSucceeded.length} resources
-      <br />
-      <div className={styles.periodsSucceeded}>
-        {periodsSucceeded.map((period) => (
-          <div key={period.workPeriodId} className={styles.periodSucceeded}>
-            {period.workPeriodId}
+      <div className={styles.sectionSucceeded}>
+        <div className={styles.sectionTitle}>
+          Payment scheduled for {resourcesSucceededCount} resources
+        </div>
+        {resourcesSucceeded && resourcesSucceeded.length && (
+          <div className={styles.periodsSucceeded}>
+            {resourcesSucceeded.map((period) => (
+              <div key={period.workPeriodId} className={styles.periodSucceeded}>
+                {period.workPeriodId}
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
-      Failed to schedule payment for {periodsFailed.length} resources:
-      <br />
-      <div className={styles.periodsFailed}>
-        {periodsFailed.map((period) => (
-          <div key={period.workPeriodId} className={styles.periodFailed}>
-            {period.workPeriodId}: ({period.error.code}) {period.error.message}
+      <div className={styles.sectionFailed}>
+        <div className={styles.sectionTitle}>
+          Failed to schedule payment for {resourcesFailedCount} resources:
+        </div>
+        {resourcesFailed && resourcesFailed.length && (
+          <div className={styles.periodsFailed}>
+            {resourcesFailed.map((period) => (
+              <div key={period.workPeriodId} className={styles.periodFailed}>
+                {period.workPeriodId} ({period.error.code}):{" "}
+                {period.error.message}
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </ToastMessage>
   );
 };
 
 ToastPaymentsWarning.propTypes = {
-  periodsSucceeded: PT.arrayOf(
+  resourcesSucceeded: PT.arrayOf(
     PT.shape({
       workPeriodId: PT.string.isRequired,
-      amount: PT.number.isRequired,
+      amount: PT.number,
     })
   ),
-  periodsFailed: PT.arrayOf(
+  resourcesSucceededCount: PT.number.isRequired,
+  resourcesFailed: PT.arrayOf(
     PT.shape({
       workPeriodId: PT.string.isRequired,
-      amount: PT.number.isRequired,
+      amount: PT.number,
       error: PT.shape({
         message: PT.string.isRequired,
         code: PT.number.isRequired,
       }),
     })
   ),
+  resourcesFailedCount: PT.number.isRequired,
   remove: PT.func,
 };
 

@@ -17,15 +17,17 @@ const PeriodsHistory = ({ className, isDisabled, periodId, periods }) => {
   return (
     <div className={cn(styles.container, className)}>
       <table>
-        {periods.map((period) => (
-          <PeriodHistoryItem
-            key={period.id}
-            periodId={periodId}
-            isDisabled={isDisabled}
-            item={period}
-            currentStartDate={startDate}
-          />
-        ))}
+        <tbody>
+          {periods.map((period) => (
+            <PeriodHistoryItem
+              key={period.id}
+              periodId={periodId}
+              isDisabled={isDisabled}
+              item={period}
+              currentStartDate={startDate}
+            />
+          ))}
+        </tbody>
       </table>
     </div>
   );

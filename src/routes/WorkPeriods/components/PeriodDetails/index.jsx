@@ -12,7 +12,7 @@ import {
   hideWorkPeriodDetails,
   setBillingAccount,
   setDetailsHidePastPeriods,
-  setDetailsLockWorkingDays,
+  // setDetailsLockWorkingDays,
 } from "store/actions/workPeriods";
 import styles from "./styles.module.scss";
 import { updateWorkPeriodBillingAccount } from "store/thunks/workPeriods";
@@ -25,22 +25,24 @@ import { useUpdateEffect } from "utils/hooks";
  * @param {string} [props.className] class name to be added to root element
  * @param {Object} props.details working period details object
  * @param {boolean} props.isDisabled whether the details are disabled
+ * @param {boolean} props.isFailed whether the payments for the period has failed
  * @returns {JSX.Element}
  */
-const PeriodDetails = ({ className, details, isDisabled }) => {
+const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
   const dispatch = useDispatch();
   const {
     periodId,
     rbId,
     jobName,
-    jobNameIsLoading,
+    jobNameError,
     billingAccountId,
     billingAccounts,
-    billingAccountsIsLoading,
+    billingAccountsError,
+    billingAccountsIsDisabled,
     periodsVisible,
     periodsIsLoading,
     hidePastPeriods,
-    lockWorkingDays,
+    // lockWorkingDays,
   } = details;
 
   const onHideDetailsBtnClick = useCallback(() => {
@@ -54,12 +56,12 @@ const PeriodDetails = ({ className, details, isDisabled }) => {
     [dispatch, periodId]
   );
 
-  const onChangeLockWorkingDays = useCallback(
-    (lock) => {
-      dispatch(setDetailsLockWorkingDays(periodId, lock));
-    },
-    [dispatch, periodId]
-  );
+  // const onChangeLockWorkingDays = useCallback(
+  //   (lock) => {
+  //     dispatch(setDetailsLockWorkingDays(periodId, lock));
+  //   },
+  //   [dispatch, periodId]
+  // );
 
   const onChangeBillingAccount = useCallback(
     (value) => {
@@ -83,18 +85,14 @@ const PeriodDetails = ({ className, details, isDisabled }) => {
     updateBillingAccount(billingAccountId);
   }, [billingAccountId]);
 
-  const isFailedLoadingJobName = !jobNameIsLoading && jobName === "Error";
-  const isFailedLoadingBilAccs =
-    !billingAccountsIsLoading &&
-    billingAccounts.length === 1 &&
-    billingAccounts[0].value === 0;
-  const isDisabledBilAccs =
-    !billingAccountsIsLoading &&
-    billingAccounts.length === 1 &&
-    billingAccounts[0].value === -1;
-
   return (
-    <tr className={cn(styles.container, className)}>
+    <tr
+      className={cn(
+        styles.container,
+        { [styles.isFailed]: isFailed },
+        className
+      )}
+    >
       {periodsIsLoading ? (
         <td colSpan={8}>
           <div className={styles.loadingIndicator}>Loading...</div>
@@ -108,14 +106,14 @@ const PeriodDetails = ({ className, details, isDisabled }) => {
                 <div className={styles.label}>Job Name</div>
                 <div
                   className={cn(styles.jobName, {
-                    [styles.jobNameError]: isFailedLoadingJobName,
+                    [styles.jobNameError]: !!jobNameError,
                   })}
                 >
-                  {jobNameIsLoading ? "Loading..." : jobName}
+                  {jobName}
                 </div>
               </div>
             </div>
-            <div className={styles.lockWorkingDaysSection}>
+            {/* <div className={styles.lockWorkingDaysSection}>
               <div className={styles.sectionLabel}>Lock Working Days</div>
               <Toggle
                 size="small"
@@ -124,15 +122,15 @@ const PeriodDetails = ({ className, details, isDisabled }) => {
                 onChange={onChangeLockWorkingDays}
                 isOn={lockWorkingDays}
               />
-            </div>
+            </div> */}
             <div className={styles.billingAccountSection}>
               <div className={styles.sectionLabel}>Billing Account</div>
               <SelectField
                 className={
-                  isFailedLoadingBilAccs ? styles.billingAccountError : ""
+                  billingAccountsError ? styles.billingAccountsError : ""
                 }
                 id={`rb_bil_acc_${periodId}`}
-                isDisabled={isDisabledBilAccs}
+                isDisabled={billingAccountsIsDisabled}
                 size="small"
                 onChange={onChangeBillingAccount}
                 options={billingAccounts}
@@ -184,6 +182,7 @@ PeriodDetails.propTypes = {
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,
     jobName: PT.string,
+    jobNameError: PT.string,
     jobNameIsLoading: PT.bool.isRequired,
     billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
@@ -192,6 +191,8 @@ PeriodDetails.propTypes = {
         value: PT.string.isRequired,
       })
     ),
+    billingAccountsError: PT.string,
+    billingAccountsIsDisabled: PT.bool.isRequired,
     billingAccountsIsLoading: PT.bool.isRequired,
     periodsVisible: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
@@ -199,6 +200,7 @@ PeriodDetails.propTypes = {
     lockWorkingDays: PT.bool.isRequired,
   }).isRequired,
   isDisabled: PT.bool.isRequired,
+  isFailed: PT.bool.isRequired,
 };
 
 export default memo(PeriodDetails);

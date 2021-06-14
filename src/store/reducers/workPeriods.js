@@ -4,12 +4,18 @@ import {
   SORT_BY_DEFAULT,
   SORT_ORDER_DEFAULT,
   PAYMENT_STATUS,
+  JOB_NAME_ERROR,
+  BILLING_ACCOUNTS_NONE,
+  JOB_NAME_LOADING,
+  BILLING_ACCOUNTS_LOADING,
+  BILLING_ACCOUNTS_ERROR,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
   getWeekByDate,
   updateOptionMap,
 } from "utils/misc";
+import { createAssignedBillingAccountOption } from "utils/workPeriods";
 
 const initPagination = () => ({
   totalCount: 0,
@@ -39,10 +45,15 @@ const initPeriodDetails = (
   periodId,
   rbId,
   cancelSource,
-  jobName: "Loading...",
+  jobName: JOB_NAME_LOADING,
+  jobNameError: null,
   jobNameIsLoading: true,
   billingAccountId,
-  billingAccounts: [{ value: billingAccountId, label: "Loading..." }],
+  billingAccounts: [
+    { value: billingAccountId, label: BILLING_ACCOUNTS_LOADING },
+  ],
+  billingAccountsError: null,
+  billingAccountsIsDisabled: true,
   billingAccountsIsLoading: true,
   periods: [],
   periodsVisible: [],
@@ -56,6 +67,7 @@ const initialState = {
   cancelSource: cancelSourceDummy,
   periods: [],
   periodsDetails: {},
+  periodsFailed: {},
   periodsSelected: {},
   isSelectedPeriodsAll: false,
   isSelectedPeriodsVisible: false,
@@ -85,7 +97,10 @@ const actionHandlers = {
     error: null,
     periods: [],
     periodsDetails: {},
+    periodsFailed: {},
     periodsSelected: {},
+    isSelectedPeriodsAll: false,
+    isSelectedPeriodsVisible: false,
     pagination:
       pageNumber === state.pagination.pageNumber
         ? state.pagination
@@ -124,6 +139,33 @@ const actionHandlers = {
     return {
       ...state,
       periodsDetails,
+    };
+  },
+  [ACTION_TYPE.WP_HIGHLIGHT_FAILED_PERIODS]: (state, periods) => {
+    const periodIds = Object.keys(periods);
+    if (!periodIds.length) {
+      return state;
+    }
+    let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
+    let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
+    const periodsFailed = { ...state.periodsFailed };
+    const periodsSelected = { ...state.periodsSelected };
+    for (let periodId of periodIds) {
+      if (periods[periodId]) {
+        periodsFailed[periodId] = true;
+        periodsSelected[periodId] = true;
+      } else {
+        isSelectedPeriodsAll = false;
+        isSelectedPeriodsVisible = false;
+        delete periodsSelected[periodId];
+      }
+    }
+    return {
+      ...state,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
+      periodsFailed,
+      periodsSelected,
     };
   },
   [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING]: (
@@ -192,7 +234,12 @@ const actionHandlers = {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
-    periodDetails = { ...periodDetails, jobName, jobNameIsLoading: false };
+    periodDetails = {
+      ...periodDetails,
+      jobName,
+      jobNameError: null,
+      jobNameIsLoading: false,
+    };
     if (!periodDetails.billingAccountsIsLoading) {
       periodDetails.cancelSource = null;
     }
@@ -203,7 +250,6 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR]: (state, { periodId, message }) => {
-    console.error(message);
     const periodsDetails = { ...state.periodsDetails };
     let periodDetails = periodsDetails[periodId];
     if (!periodDetails) {
@@ -211,7 +257,8 @@ const actionHandlers = {
     }
     periodDetails = {
       ...periodDetails,
-      jobName: "Error",
+      jobName: JOB_NAME_ERROR,
+      jobNameError: message,
       jobNameIsLoading: false,
     };
     if (!periodDetails.billingAccountsIsLoading) {
@@ -233,15 +280,17 @@ const actionHandlers = {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
-    let billingAccountId = periodDetails.billingAccountId;
+    let billingAccountsIsDisabled = false;
+    let accountId = periodDetails.billingAccountId;
     if (!accounts.length) {
-      accounts.push({ value: -1, label: "No Accounts Available" });
-      billingAccountId = -1;
+      accounts.push({ value: accountId, label: BILLING_ACCOUNTS_NONE });
+      billingAccountsIsDisabled = true;
     }
     periodDetails = {
       ...periodDetails,
-      billingAccountId,
       billingAccounts: accounts,
+      billingAccountsError: null,
+      billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
     if (!periodDetails.jobNameIsLoading) {
@@ -257,17 +306,25 @@ const actionHandlers = {
     state,
     { periodId, message }
   ) => {
-    console.error(message);
     const periodsDetails = { ...state.periodsDetails };
     let periodDetails = periodsDetails[periodId];
     if (!periodDetails) {
       return state;
     }
+    let billingAccounts = [];
+    let billingAccountsIsDisabled = true;
+    let accountId = periodDetails.billingAccountId;
+    if (accountId) {
+      billingAccounts.push(createAssignedBillingAccountOption(accountId));
+      billingAccountsIsDisabled = false;
+    } else {
+      billingAccounts.push({ value: accountId, label: BILLING_ACCOUNTS_ERROR });
+    }
     periodDetails = {
       ...periodDetails,
-      billingAccounts: [
-        { value: periodDetails.billingAccountId, label: "Error" },
-      ],
+      billingAccounts,
+      billingAccountsError: message,
+      billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
     if (!periodDetails.jobNameIsLoading) {
@@ -386,16 +443,25 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_SELECT_PERIODS]: (state, periods) => {
+    let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
+    let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
     let periodsSelected = { ...state.periodsSelected };
     for (let periodId in periods) {
       if (periods[periodId] === true) {
         periodsSelected[periodId] = true;
       } else {
+        isSelectedPeriodsAll = false;
+        isSelectedPeriodsVisible = false;
         delete periodsSelected[periodId];
       }
     }
+    if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+      isSelectedPeriodsVisible = true;
+    }
     return {
       ...state,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
       periodsSelected,
     };
   },
@@ -446,13 +512,18 @@ const actionHandlers = {
       ),
     },
   }),
-  [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => ({
-    ...state,
-    filters: {
-      ...state.filters,
-      userHandle,
-    },
-  }),
+  [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => {
+    if (userHandle === state.filters.userHandle) {
+      return state;
+    }
+    return {
+      ...state,
+      filters: {
+        ...state.filters,
+        userHandle,
+      },
+    };
+  },
   [ACTION_TYPE.WP_SET_WORKING_DAYS]: (state, { periodId, workingDays }) => {
     const oldPeriods = state.periods;
     const periods = [];
@@ -478,6 +549,9 @@ const actionHandlers = {
     const isSelected = !periodsSelected[periodId];
     if (isSelected) {
       periodsSelected[periodId] = true;
+      if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+        isSelectedPeriodsVisible = true;
+      }
     } else {
       isSelectedPeriodsAll = false;
       isSelectedPeriodsVisible = false;
@@ -490,8 +564,8 @@ const actionHandlers = {
       isSelectedPeriodsVisible,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PERIODS_ALL]: (state) => {
-    const isSelected = !state.isSelectedPeriodsAll;
+  [ACTION_TYPE.WP_TOGGLE_PERIODS_ALL]: (state, on) => {
+    const isSelected = on === null ? !state.isSelectedPeriodsAll : on;
     const periodsSelected = {};
     if (isSelected) {
       for (let period of state.periods) {
@@ -505,8 +579,8 @@ const actionHandlers = {
       isSelectedPeriodsVisible: isSelected,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE]: (state) => {
-    const isSelected = !state.isSelectedPeriodsVisible;
+  [ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE]: (state, on) => {
+    const isSelected = on === null ? !state.isSelectedPeriodsVisible : on;
     const periodsSelected = {};
     if (isSelected) {
       for (let period of state.periods) {
@@ -520,10 +594,18 @@ const actionHandlers = {
       isSelectedPeriodsVisible: isSelected,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => ({
-    ...state,
-    isProcessingPayments: on === null ? !state.isProcessingPayments : on,
-  }),
+  [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => {
+    let periodsFailed = state.periodsFailed;
+    let isProcessingPayments = on === null ? !state.isProcessingPayments : on;
+    if (isProcessingPayments) {
+      periodsFailed = {};
+    }
+    return {
+      ...state,
+      periodsFailed,
+      isProcessingPayments,
+    };
+  },
 };
 
 export default reducer;

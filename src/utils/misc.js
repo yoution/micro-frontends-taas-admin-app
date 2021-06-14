@@ -68,6 +68,15 @@ export function replaceItems(array, map) {
 }
 
 /**
+ * Stops event propagation.
+ *
+ * @param {Object} event event object
+ */
+export function stopPropagation(event) {
+  event.stopPropagation();
+}
+
+/**
  * This function takes keys referring to truthy values in `newOptions`
  * and adds them to `oldOptions` returning a new object.
  *
@@ -113,9 +122,7 @@ export const buildRequestQuery = (params, paramNames) => {
     }
     if (Array.isArray(paramValue)) {
       if (paramValue.length) {
-        queryParams.push(
-          paramValue.map((value) => `${paramName}[]=${value}`).join("&")
-        );
+        queryParams.push(`${paramName}=${paramValue.join(",")}`);
       }
     } else {
       queryParams.push(`${paramName}=${paramValue}`);
@@ -135,6 +142,6 @@ export const extractJobName = (data) => data.title;
 
 export const extractResponseData = (response) => response.data;
 
-export function stopPropagation(event) {
-  event.stopPropagation();
-}
+export const increment = (value) => value + 1;
+
+export const noop = () => {};

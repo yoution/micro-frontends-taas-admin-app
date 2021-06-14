@@ -1,11 +1,4 @@
-import React from "react";
 import axios from "axios";
-import { toastr } from "react-redux-toastr";
-import ToastrMessage from "components/ToastrMessage";
-import ToastPaymentsProcessing from "routes/WorkPeriods/components/ToastPaymentsProcessing";
-import ToastPaymentsSuccess from "routes/WorkPeriods/components/ToastPaymentsSuccess";
-import ToastPaymentsWarning from "routes/WorkPeriods/components/ToastPaymentsWarning";
-import ToastPaymentsError from "routes/WorkPeriods/components/ToastPaymentsError";
 import * as actions from "store/actions/workPeriods";
 import * as selectors from "store/selectors/workPeriods";
 import * as services from "services/workPeriods";
@@ -15,6 +8,7 @@ import {
   DATE_FORMAT_API,
   PAYMENT_STATUS_MAP,
   FIELDS_QUERY,
+  JOB_NAME_NONE,
 } from "constants/workPeriods";
 import {
   extractJobName,
@@ -27,6 +21,13 @@ import {
   normalizeDetailsPeriodItems,
   normalizePeriodItems,
 } from "utils/workPeriods";
+import { makeToast } from "components/ToastrMessage";
+import {
+  makeToastPaymentsProcessing,
+  makeToastPaymentsSuccess,
+  makeToastPaymentsWarning,
+  makeToastPaymentsError,
+} from "routes/WorkPeriods/utils/toasts";
 import { RESOURCE_BOOKING_STATUS } from "constants/index.js";
 
 /**
@@ -73,12 +74,7 @@ export const loadWorkPeriodsPage =
       status: RESOURCE_BOOKING_STATUS.PLACED,
       ["workPeriods.userHandle"]: filters.userHandle,
       ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
-      ["workPeriods.paymentStatus"]:
-        // Currently resourceBookings API does not support multiple payment statuses.
-        // When the support is implemented remove the next line and uncomment
-        // the following line.
-        paymentStatuses.length === 1 ? paymentStatuses[0] : null,
-      // paymentStatuses,
+      ["workPeriods.paymentStatus"]: paymentStatuses,
     });
     dispatch(actions.loadWorkPeriodsPagePending(cancelSource, pageNumber));
     let totalCount, periods, pageCount;
@@ -139,16 +135,50 @@ export const toggleWorkPeriodDetails =
             source
           )
         );
-        const [rbPromise] = services.fetchWorkPeriods(period.rbId, source);
-        const [jobNamePromise] = services.fetchJob(period.jobId, source);
+
+        if (period.jobId) {
+          const [jobNamePromise] = services.fetchJob(period.jobId, source);
+          jobNamePromise
+            .then((data) => {
+              const jobName = extractJobName(data);
+              dispatch(actions.loadJobNameSuccess(period.id, jobName));
+            })
+            .catch((error) => {
+              if (!axios.isCancel(error)) {
+                dispatch(actions.loadJobNameError(period.id, error.toString()));
+              }
+            });
+        } else {
+          dispatch(actions.loadJobNameSuccess(period.id, JOB_NAME_NONE));
+        }
+
         const [bilAccsPromise] = services.fetchBillingAccounts(
           period.projectId,
           source
         );
+        bilAccsPromise
+          .then((data) => {
+            const periodsDetails = selectors.getWorkPeriodsDetails(getState());
+            const periodDetails = periodsDetails[period.id];
+            const billingAccountId =
+              (periodDetails && periodDetails.billingAccountId) ||
+              period.billingAccountId;
+            const accounts = normalizeBillingAccounts(data, billingAccountId);
+            dispatch(actions.loadBillingAccountsSuccess(period.id, accounts));
+          })
+          .catch((error) => {
+            if (!axios.isCancel(error)) {
+              dispatch(
+                actions.loadBillingAccountsError(period.id, error.toString())
+              );
+            }
+          });
+
+        const [periodsPromise] = services.fetchWorkPeriods(period.rbId, source);
         let details = null;
         let errorMessage = null;
         try {
-          const data = await rbPromise;
+          const data = await periodsPromise;
           const periods = normalizeDetailsPeriodItems(data);
           details = { periods };
         } catch (error) {
@@ -160,43 +190,6 @@ export const toggleWorkPeriodDetails =
           dispatch(actions.loadWorkPeriodDetailsSuccess(period.id, details));
         } else if (errorMessage) {
           dispatch(actions.loadWorkPeriodDetailsError(period.id, errorMessage));
-          makeToast(errorMessage);
-        }
-        let jobName = null;
-        errorMessage = null;
-        try {
-          const data = await jobNamePromise;
-          jobName = extractJobName(data);
-        } catch (error) {
-          if (!axios.isCancel(error)) {
-            errorMessage = error.toString();
-          }
-        }
-        if (jobName) {
-          dispatch(actions.loadJobNameSuccess(period.id, jobName));
-        } else if (errorMessage) {
-          dispatch(actions.loadJobNameError(period.id, errorMessage));
-          makeToast(errorMessage);
-        }
-        let accounts = null;
-        errorMessage = null;
-        try {
-          const data = await bilAccsPromise;
-          const periodsDetails = selectors.getWorkPeriodsDetails(getState());
-          const periodDetails = periodsDetails[period.id];
-          const billingAccountId =
-            (periodDetails && periodDetails.billingAccountId) ||
-            period.billingAccountId;
-          accounts = normalizeBillingAccounts(data, billingAccountId);
-        } catch (error) {
-          if (!axios.isCancel(error)) {
-            errorMessage = error.toString();
-          }
-        }
-        if (accounts) {
-          dispatch(actions.loadBillingAccountsSuccess(period.id, accounts));
-        } else if (errorMessage) {
-          dispatch(actions.loadBillingAccountsError(period.id, errorMessage));
           makeToast(errorMessage);
         }
       }
@@ -249,16 +242,71 @@ export const updateWorkPeriodWorkingDays =
  */
 export const processPayments = async (dispatch, getState) => {
   dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
+  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(getState());
+  if (isSelectedAll) {
+    processPaymentsAll(dispatch, getState);
+  } else {
+    processPaymentsSpecific(dispatch, getState);
+  }
+  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
+};
+
+const processPaymentsAll = async (dispatch, getState) => {
+  const state = getState();
+  const filters = selectors.getWorkPeriodsFilters(state);
+  const [startDate] = filters.dateRange;
+  const paymentStatuses = replaceItems(
+    Object.keys(filters.paymentStatuses),
+    PAYMENT_STATUS_MAP
+  );
+  const totalCount = selectors.getWorkPeriodsTotalCount(state);
+  makeToastPaymentsProcessing(totalCount);
+  const promise = services.postWorkPeriodsPaymentsAll({
+    status: RESOURCE_BOOKING_STATUS.PLACED,
+    ["workPeriods.userHandle"]: filters.userHandle,
+    ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
+    ["workPeriods.paymentStatus"]: paymentStatuses.join(","),
+  });
+  let data = null;
+  let errorMessage = null;
+  try {
+    data = await promise;
+  } catch (error) {
+    errorMessage = error.toString();
+  }
+  dispatch(actions.toggleWorkingPeriodsAll(false));
+  if (data) {
+    const { totalSuccess, totalError } = data;
+    const resourcesSucceededCount = +totalSuccess;
+    const resourcesFailedCount = +totalError;
+    if (resourcesSucceededCount) {
+      if (resourcesFailedCount) {
+        makeToastPaymentsWarning({
+          resourcesSucceededCount,
+          resourcesFailedCount,
+        });
+      } else {
+        makeToastPaymentsSuccess(resourcesSucceededCount);
+      }
+    } else {
+      makeToastPaymentsError(resourcesFailedCount);
+    }
+  } else {
+    makeToast(errorMessage);
+  }
+};
+
+const processPaymentsSpecific = async (dispatch, getState) => {
   const state = getState();
   const periods = selectors.getWorkPeriods(state);
   const periodsSelected = selectors.getWorkPeriodsSelected(state);
   const payments = [];
   for (let period of periods) {
     if (period.id in periodsSelected) {
-      payments.push({ workPeriodId: period.id, amount: period.weeklyRate });
+      payments.push({ workPeriodId: period.id });
     }
   }
-  makeProcessingToast(payments);
+  makeToastPaymentsProcessing(payments.length);
   let results = null;
   let errorMessage = null;
   try {
@@ -267,70 +315,35 @@ export const processPayments = async (dispatch, getState) => {
     errorMessage = error.toString();
   }
   if (results) {
-    const periodsToDeselect = {};
-    const periodsSucceeded = [];
-    const periodsFailed = [];
+    const periodsToHighlight = {};
+    const resourcesSucceeded = [];
+    const resourcesFailed = [];
     for (let result of results) {
-      if ("error" in result) {
-        periodsFailed.push(result);
+      let isFailed = "error" in result;
+      periodsToHighlight[result.workPeriodId] = isFailed;
+      if (isFailed) {
+        resourcesFailed.push(result);
       } else {
-        periodsToDeselect[result.workPeriodId] = false;
-        periodsSucceeded.push(result);
+        resourcesSucceeded.push(result);
       }
     }
-    dispatch(actions.selectWorkPeriods(periodsToDeselect));
-    if (periodsSucceeded.length) {
-      if (periodsFailed.length) {
-        makeWarningToast(periodsSucceeded, periodsFailed);
+    // highlights failed periods and deselects successful periods
+    dispatch(actions.highlightFailedWorkPeriods(periodsToHighlight));
+    if (resourcesSucceeded.length) {
+      if (resourcesFailed.length) {
+        makeToastPaymentsWarning({
+          resourcesSucceeded,
+          resourcesSucceededCount: resourcesSucceeded.length,
+          resourcesFailed,
+          resourcesFailedCount: resourcesFailed.length,
+        });
       } else {
-        makeSuccessToast(periodsSucceeded);
+        makeToastPaymentsSuccess(resourcesSucceeded.length);
       }
     } else {
-      makeErrorToast(periodsFailed);
+      makeToastPaymentsError(resourcesFailed.length);
     }
   } else {
     makeToast(errorMessage);
   }
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
 };
-
-/**
- *
- * @param {string} message
- * @param {'info'|'success'|'warning'|'error'} type
- * @returns {Object}
- */
-function makeToast(message, type = "error") {
-  const component =
-    typeof message === "string" ? (
-      <ToastrMessage message={message} type={type} />
-    ) : (
-      <ToastrMessage type={type}>{message}</ToastrMessage>
-    );
-  toastr[type]("", { component });
-}
-
-function makeProcessingToast(periods) {
-  const component = <ToastPaymentsProcessing periods={periods} />;
-  toastr.info("", { component });
-}
-
-function makeSuccessToast(periods) {
-  const component = <ToastPaymentsSuccess periods={periods} />;
-  toastr.success("", { component });
-}
-
-function makeWarningToast(periodsSucceeded, periodsFailed) {
-  const component = (
-    <ToastPaymentsWarning
-      periodsSucceeded={periodsSucceeded}
-      periodsFailed={periodsFailed}
-    />
-  );
-  toastr.warning("", { component });
-}
-
-function makeErrorToast(periods) {
-  const component = <ToastPaymentsError periods={periods} />;
-  toastr.error("", { component });
-}

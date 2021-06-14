@@ -9,21 +9,16 @@ import ToastMessage from "components/ToastrMessage";
  * @param {Object} props
  * @returns {JSX.Element}
  */
-const ToastPaymentsSuccess = ({ periods, remove }) => {
+const ToastPaymentsSuccess = ({ resourceCount, remove }) => {
   return (
     <ToastMessage type="success" remove={remove}>
-      Payment scheduled for {periods.length} resources
+      Payment scheduled for {resourceCount} resources
     </ToastMessage>
   );
 };
 
 ToastPaymentsSuccess.propTypes = {
-  periods: PT.arrayOf(
-    PT.shape({
-      workPeriodId: PT.string.isRequired,
-      amount: PT.number.isRequired,
-    })
-  ),
+  resourceCount: PT.number.isRequired,
   remove: PT.func,
 };
 
