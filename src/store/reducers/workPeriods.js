@@ -99,6 +99,8 @@ const actionHandlers = {
     periodsDetails: {},
     periodsFailed: {},
     periodsSelected: {},
+    isSelectedPeriodsAll: false,
+    isSelectedPeriodsVisible: false,
     pagination:
       pageNumber === state.pagination.pageNumber
         ? state.pagination
@@ -453,6 +455,9 @@ const actionHandlers = {
         delete periodsSelected[periodId];
       }
     }
+    if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+      isSelectedPeriodsVisible = true;
+    }
     return {
       ...state,
       isSelectedPeriodsAll,
@@ -544,6 +549,9 @@ const actionHandlers = {
     const isSelected = !periodsSelected[periodId];
     if (isSelected) {
       periodsSelected[periodId] = true;
+      if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+        isSelectedPeriodsVisible = true;
+      }
     } else {
       isSelectedPeriodsAll = false;
       isSelectedPeriodsVisible = false;
@@ -556,8 +564,8 @@ const actionHandlers = {
       isSelectedPeriodsVisible,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PERIODS_ALL]: (state) => {
-    const isSelected = !state.isSelectedPeriodsAll;
+  [ACTION_TYPE.WP_TOGGLE_PERIODS_ALL]: (state, on) => {
+    const isSelected = on === null ? !state.isSelectedPeriodsAll : on;
     const periodsSelected = {};
     if (isSelected) {
       for (let period of state.periods) {
@@ -571,8 +579,8 @@ const actionHandlers = {
       isSelectedPeriodsVisible: isSelected,
     };
   },
-  [ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE]: (state) => {
-    const isSelected = !state.isSelectedPeriodsVisible;
+  [ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE]: (state, on) => {
+    const isSelected = on === null ? !state.isSelectedPeriodsVisible : on;
     const periodsSelected = {};
     if (isSelected) {
       for (let period of state.periods) {

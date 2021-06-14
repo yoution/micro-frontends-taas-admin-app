@@ -242,16 +242,71 @@ export const updateWorkPeriodWorkingDays =
  */
 export const processPayments = async (dispatch, getState) => {
   dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
+  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(getState());
+  if (isSelectedAll) {
+    processPaymentsAll(dispatch, getState);
+  } else {
+    processPaymentsSpecific(dispatch, getState);
+  }
+  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
+};
+
+const processPaymentsAll = async (dispatch, getState) => {
+  const state = getState();
+  const filters = selectors.getWorkPeriodsFilters(state);
+  const [startDate] = filters.dateRange;
+  const paymentStatuses = replaceItems(
+    Object.keys(filters.paymentStatuses),
+    PAYMENT_STATUS_MAP
+  );
+  const totalCount = selectors.getWorkPeriodsTotalCount(state);
+  makeToastPaymentsProcessing(totalCount);
+  const promise = services.postWorkPeriodsPaymentsAll({
+    status: RESOURCE_BOOKING_STATUS.PLACED,
+    ["workPeriods.userHandle"]: filters.userHandle,
+    ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
+    ["workPeriods.paymentStatus"]: paymentStatuses.join(","),
+  });
+  let data = null;
+  let errorMessage = null;
+  try {
+    data = await promise;
+  } catch (error) {
+    errorMessage = error.toString();
+  }
+  dispatch(actions.toggleWorkingPeriodsAll(false));
+  if (data) {
+    const { totalSuccess, totalError } = data;
+    const resourcesSucceededCount = +totalSuccess;
+    const resourcesFailedCount = +totalError;
+    if (resourcesSucceededCount) {
+      if (resourcesFailedCount) {
+        makeToastPaymentsWarning({
+          resourcesSucceededCount,
+          resourcesFailedCount,
+        });
+      } else {
+        makeToastPaymentsSuccess(resourcesSucceededCount);
+      }
+    } else {
+      makeToastPaymentsError(resourcesFailedCount);
+    }
+  } else {
+    makeToast(errorMessage);
+  }
+};
+
+const processPaymentsSpecific = async (dispatch, getState) => {
   const state = getState();
   const periods = selectors.getWorkPeriods(state);
   const periodsSelected = selectors.getWorkPeriodsSelected(state);
   const payments = [];
   for (let period of periods) {
     if (period.id in periodsSelected) {
-      payments.push({ workPeriodId: period.id, amount: period.weeklyRate });
+      payments.push({ workPeriodId: period.id });
     }
   }
-  makeToastPaymentsProcessing(payments);
+  makeToastPaymentsProcessing(payments.length);
   let results = null;
   let errorMessage = null;
   try {
@@ -261,30 +316,34 @@ export const processPayments = async (dispatch, getState) => {
   }
   if (results) {
     const periodsToHighlight = {};
-    const periodsSucceeded = [];
-    const periodsFailed = [];
+    const resourcesSucceeded = [];
+    const resourcesFailed = [];
     for (let result of results) {
       let isFailed = "error" in result;
       periodsToHighlight[result.workPeriodId] = isFailed;
       if (isFailed) {
-        periodsFailed.push(result);
+        resourcesFailed.push(result);
       } else {
-        periodsSucceeded.push(result);
+        resourcesSucceeded.push(result);
       }
     }
     // highlights failed periods and deselects successful periods
     dispatch(actions.highlightFailedWorkPeriods(periodsToHighlight));
-    if (periodsSucceeded.length) {
-      if (periodsFailed.length) {
-        makeToastPaymentsWarning(periodsSucceeded, periodsFailed);
+    if (resourcesSucceeded.length) {
+      if (resourcesFailed.length) {
+        makeToastPaymentsWarning({
+          resourcesSucceeded,
+          resourcesSucceededCount: resourcesSucceeded.length,
+          resourcesFailed,
+          resourcesFailedCount: resourcesFailed.length,
+        });
       } else {
-        makeToastPaymentsSuccess(periodsSucceeded);
+        makeToastPaymentsSuccess(resourcesSucceeded.length);
       }
     } else {
-      makeToastPaymentsError(periodsFailed);
+      makeToastPaymentsError(resourcesFailed.length);
     }
   } else {
     makeToast(errorMessage);
   }
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
 };

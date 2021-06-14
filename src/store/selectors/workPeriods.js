@@ -59,6 +59,9 @@ export const getWorkPeriodsSorting = (state) => state.workPeriods.sorting;
 
 export const getWorkPeriodsPagination = (state) => state.workPeriods.pagination;
 
+export const getWorkPeriodsPageSize = (state) =>
+  state.workPeriods.pagination.pageSize;
+
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 
 export const getWorkPeriodsTotalCount = (state) =>

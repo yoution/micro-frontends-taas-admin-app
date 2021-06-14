@@ -132,3 +132,17 @@ export const patchWorkPeriodBillingAccount = (rbId, billingAccountId) => {
 export const postWorkPeriodsPayments = (payments) => {
   return axios.post(`${PAYMENTS_API_URL}`, payments).then(extractResponseData);
 };
+
+/**
+ * Sends request to schedule payments for working periods satisfying
+ * the provided query. See
+ * https://topcoder-platform.github.io/taas-apis/#/WorkPeriodPayments/post_work_period_payments_query
+ *
+ * @param {Object} query query object
+ * @returns {Promise}
+ */
+export const postWorkPeriodsPaymentsAll = (query) => {
+  return axios
+    .post(`${PAYMENTS_API_URL}/query`, { query })
+    .then(extractResponseData);
+};

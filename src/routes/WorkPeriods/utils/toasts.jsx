@@ -6,15 +6,20 @@ import ToastPaymentsWarning from "../components/ToastPaymentsWarning";
 import ToastPaymentsError from "../components/ToastPaymentsError";
 import { TOAST_DEFAULT_TIMEOUT } from "constants/index.js";
 
-const options = { timeOut: TOAST_DEFAULT_TIMEOUT };
+const options = {
+  timeOut: TOAST_DEFAULT_TIMEOUT,
+  removeOnHover: false,
+  removeOnHoverTimeOut: TOAST_DEFAULT_TIMEOUT,
+  closeOnToastrClick: false,
+};
 
 /**
  * Creates a redux toastr message denoting the start of payments processing.
  *
- * @param {Array} periods array with info about periods that were sent for processing
+ * @param {number} resourceCount number of periods that were sent for processing
  */
-export function makeToastPaymentsProcessing(periods) {
-  const component = <ToastPaymentsProcessing periods={periods} />;
+export function makeToastPaymentsProcessing(resourceCount) {
+  const component = <ToastPaymentsProcessing resourceCount={resourceCount} />;
   toastr.info("", { component, options });
 }
 
@@ -22,11 +27,11 @@ export function makeToastPaymentsProcessing(periods) {
  * Creates a redux toastr message denoting the successful scheduling of payments
  * for the specified periods.
  *
- * @param {Array} periods array with info about periods for which payments were
+ * @param {number} resourceCount number of periods for which payments were
  * successfully scheduled
  */
-export function makeToastPaymentsSuccess(periods) {
-  const component = <ToastPaymentsSuccess periods={periods} />;
+export function makeToastPaymentsSuccess(resourceCount) {
+  const component = <ToastPaymentsSuccess resourceCount={resourceCount} />;
   toastr.success("", { component, options });
 }
 
@@ -34,18 +39,18 @@ export function makeToastPaymentsSuccess(periods) {
  * Creates a redux toastr message denoting the partial success in shceduling
  * payments for specified working periods.
  *
- * @param {Array} periodsSucceeded periods for which payments were successfully
- * scheduled
- * @param {Array} periodsFailed periods for which payments were failed to be
- * scheduled
+ * @param {Object} props warning toastr properties
+ * @param {number} props.resourcesSucceededCount the number of periods for which
+ * payments were successfully scheduled
+ * @param {number} props.resourcesFailedCount the number of periods for which
+ * payments were failed to be scheduled
+ * @param {Array} [props.resourcesSucceeded] periods for which payments were
+ * successfully scheduled
+ * @param {Array} [props.resourcesFailed] periods for which payments were failed
+ * to be scheduled
  */
-export function makeToastPaymentsWarning(periodsSucceeded, periodsFailed) {
-  const component = (
-    <ToastPaymentsWarning
-      periodsSucceeded={periodsSucceeded}
-      periodsFailed={periodsFailed}
-    />
-  );
+export function makeToastPaymentsWarning(props) {
+  const component = <ToastPaymentsWarning {...props} />;
   toastr.warning("", { component, options });
 }
 
@@ -53,9 +58,10 @@ export function makeToastPaymentsWarning(periodsSucceeded, periodsFailed) {
  * Creates redux toastr message showing the information about working
  * periods for which the payments were failed to be scheduled.
  *
- * @param {Array} periods periods for which payments were failed to be scheduled
+ * @param {number} resourceCount number of periods for which payments
+ * were failed to be scheduled
  */
-export function makeToastPaymentsError(periods) {
-  const component = <ToastPaymentsError periods={periods} />;
+export function makeToastPaymentsError(resourceCount) {
+  const component = <ToastPaymentsError resourceCount={resourceCount} />;
   toastr.error("", { component, options });
 }

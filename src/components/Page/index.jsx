@@ -19,7 +19,10 @@ const Page = ({ className, children }) => (
     <ReduxToastr
       timeOut={TOAST_DEFAULT_TIMEOUT}
       position="top-right"
+      newestOnTop={true}
       removeOnHover={false}
+      removeOnHoverTimeOut={TOAST_DEFAULT_TIMEOUT}
+      closeOnToastrClick={false}
       transitionIn="fadeIn"
       transitionOut="fadeOut"
     />

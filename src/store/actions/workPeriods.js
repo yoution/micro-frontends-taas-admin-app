@@ -343,19 +343,23 @@ export const toggleWorkPeriod = (id) => ({
 /**
  * Creates an action to toggle all working periods.
  *
+ * @param {?boolean} on whether to toggle all periods on or off
  * @returns {Object}
  */
-export const toggleWorkingPeriodsAll = () => ({
+export const toggleWorkingPeriodsAll = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_ALL,
+  payload: on,
 });
 
 /**
  * Creates an action to toggle all visible working periods.
  *
+ * @param {?boolean} on whether to toggle all visible periods on or off
  * @returns {Object}
  */
-export const toggleWorkingPeriodsVisible = () => ({
+export const toggleWorkingPeriodsVisible = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE,
+  payload: on,
 });
 
 /**
