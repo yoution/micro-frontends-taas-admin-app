@@ -334,7 +334,6 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     if (resourcesSucceeded.length) {
       if (resourcesFailed.length) {
         makeToastPaymentsWarning({
-          resourcesSucceeded,
           resourcesSucceededCount: resourcesSucceeded.length,
           resourcesFailed,
           resourcesFailedCount: resourcesFailed.length,
