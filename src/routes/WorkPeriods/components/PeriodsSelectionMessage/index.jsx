@@ -29,25 +29,20 @@ const PeriodsSelectionMessage = ({ className }) => {
     dispatch(toggleWorkingPeriodsAll());
   }, [dispatch]);
 
-  const infoText = isSelectedAll
-    ? `All ${totalCount} Records are selected. `
-    : `All ${pageSize} Records on this page are selected. `;
-  const btnText = isSelectedAll
-    ? "Deselect"
-    : `Select all ${totalCount} Records`;
-
   return (
     <div className={cn(styles.container, className)}>
-      {isSelectedVisible && (
+      {isSelectedVisible && totalCount > pageSize && (
         <span className={styles.message}>
-          {infoText}
+          {isSelectedAll
+            ? `All ${totalCount} Records are selected. `
+            : `All ${pageSize} Records on this page are selected. `}
           <span
             className={styles.button}
             onClick={onBtnClick}
             role="button"
             tabIndex={0}
           >
-            {btnText}
+            {isSelectedAll ? "Deselect" : `Select all ${totalCount} Records`}
           </span>
         </span>
       )}

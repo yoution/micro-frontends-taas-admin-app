@@ -242,8 +242,10 @@ export const updateWorkPeriodWorkingDays =
  */
 export const processPayments = async (dispatch, getState) => {
   dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
-  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(getState());
-  if (isSelectedAll) {
+  const state = getState();
+  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(state);
+  const { pageSize, totalCount } = selectors.getWorkPeriodsPagination(state);
+  if (isSelectedAll && totalCount > pageSize) {
     processPaymentsAll(dispatch, getState);
   } else {
     processPaymentsSpecific(dispatch, getState);
