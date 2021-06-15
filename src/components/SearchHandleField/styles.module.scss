@@ -2,6 +2,7 @@
 @import "styles/mixins";
 
 .container {
+  z-index: 3;
   position: relative;
   display: flex;
   align-items: center;
