@@ -13,21 +13,24 @@
   color: #fff;
 }
 
-.paid {
+.completed {
   background: #0ab88a;
 }
 
-.pending {
-  background: #ef476f;
+.partially_completed {
+  background: #ecef47;
 }
 
 .in_progress {
   background: #9d41c9;
 }
 
-.cancelled,
-.failed {
-  background: #da0000;
+.no_days {
+  background: #aaa;
+}
+
+.pending {
+  background: #ef476f;
 }
 
 .undefined {

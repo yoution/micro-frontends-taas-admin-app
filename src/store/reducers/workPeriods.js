@@ -3,7 +3,6 @@ import * as ACTION_TYPE from "store/actionTypes/workPeriods";
 import {
   SORT_BY_DEFAULT,
   SORT_ORDER_DEFAULT,
-  PAYMENT_STATUS,
   JOB_NAME_ERROR,
   BILLING_ACCOUNTS_NONE,
   JOB_NAME_LOADING,
@@ -26,11 +25,7 @@ const initPagination = () => ({
 
 const initFilters = () => ({
   dateRange: getWeekByDate(moment()),
-  paymentStatuses: {
-    [PAYMENT_STATUS.PAID]: true,
-    [PAYMENT_STATUS.PENDING]: true,
-    [PAYMENT_STATUS.IN_PROGRESS]: true,
-  },
+  paymentStatuses: {}, // all disabled by default
   userHandle: "",
 });
 

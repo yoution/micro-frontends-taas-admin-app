@@ -97,9 +97,10 @@ PeriodFilters.propTypes = {
 
 const PAYMENT_STATUS_OPTIONS = [
   { value: PAYMENT_STATUS.PENDING, label: "Pending" },
-  { value: PAYMENT_STATUS.PAID, label: "Paid" },
+  { value: PAYMENT_STATUS.COMPLETED, label: "Completed" },
+  { value: PAYMENT_STATUS.PARTIALLY_COMPLETED, label: "Partially Completed" },
   { value: PAYMENT_STATUS.IN_PROGRESS, label: "In Progress" },
-  // { value: PAYMENT_STATUS.FAILED, label: "Failed" },
+  { value: PAYMENT_STATUS.NO_DAYS, label: "No Days" },
 ];
 
 export default PeriodFilters;
