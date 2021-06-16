@@ -242,8 +242,10 @@ export const updateWorkPeriodWorkingDays =
  */
 export const processPayments = async (dispatch, getState) => {
   dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
-  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(getState());
-  if (isSelectedAll) {
+  const state = getState();
+  const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(state);
+  const { pageSize, totalCount } = selectors.getWorkPeriodsPagination(state);
+  if (isSelectedAll && totalCount > pageSize) {
     processPaymentsAll(dispatch, getState);
   } else {
     processPaymentsSpecific(dispatch, getState);
@@ -265,7 +267,7 @@ const processPaymentsAll = async (dispatch, getState) => {
     status: RESOURCE_BOOKING_STATUS.PLACED,
     ["workPeriods.userHandle"]: filters.userHandle,
     ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
-    ["workPeriods.paymentStatus"]: paymentStatuses.join(","),
+    ["workPeriods.paymentStatus"]: paymentStatuses,
   });
   let data = null;
   let errorMessage = null;
@@ -332,7 +334,6 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     if (resourcesSucceeded.length) {
       if (resourcesFailed.length) {
         makeToastPaymentsWarning({
-          resourcesSucceeded,
           resourcesSucceededCount: resourcesSucceeded.length,
           resourcesFailed,
           resourcesFailedCount: resourcesFailed.length,

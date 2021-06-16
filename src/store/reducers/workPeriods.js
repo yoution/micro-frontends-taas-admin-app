@@ -59,7 +59,6 @@ const initPeriodDetails = (
   periodsVisible: [],
   periodsIsLoading: true,
   hidePastPeriods: false,
-  lockWorkingDays: false,
 });
 
 const initialState = {
@@ -375,21 +374,6 @@ const actionHandlers = {
       periodsDetails,
     };
   },
-  [ACTION_TYPE.WP_SET_DETAILS_LOCK_WORKING_DAYS]: (
-    state,
-    { periodId, lock }
-  ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      return state;
-    }
-    periodsDetails[periodId] = { ...periodDetails, lockWorkingDays: lock };
-    return {
-      ...state,
-      periodsDetails,
-    };
-  },
   [ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS]: (
     state,
     { parentPeriodId, periodId, workingDays }
@@ -455,7 +439,15 @@ const actionHandlers = {
         delete periodsSelected[periodId];
       }
     }
-    if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+    const selectedCount = Object.keys(periodsSelected).length;
+    const pageSize = state.pagination.pageSize;
+    const totalCount = state.pagination.totalCount;
+    if (totalCount > pageSize) {
+      if (selectedCount === pageSize) {
+        isSelectedPeriodsVisible = true;
+      }
+    } else if (selectedCount === totalCount) {
+      isSelectedPeriodsAll = true;
       isSelectedPeriodsVisible = true;
     }
     return {
@@ -549,7 +541,15 @@ const actionHandlers = {
     const isSelected = !periodsSelected[periodId];
     if (isSelected) {
       periodsSelected[periodId] = true;
-      if (Object.keys(periodsSelected).length === state.pagination.pageSize) {
+      const selectedCount = Object.keys(periodsSelected).length;
+      const pageSize = state.pagination.pageSize;
+      const totalCount = state.pagination.totalCount;
+      if (totalCount > pageSize) {
+        if (selectedCount === pageSize) {
+          isSelectedPeriodsVisible = true;
+        }
+      } else if (selectedCount === totalCount) {
+        isSelectedPeriodsAll = true;
         isSelectedPeriodsVisible = true;
       }
     } else {
@@ -580,18 +580,22 @@ const actionHandlers = {
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PERIODS_VISIBLE]: (state, on) => {
-    const isSelected = on === null ? !state.isSelectedPeriodsVisible : on;
+    let isSelectedPeriodsAll = false;
+    const isSelectedPeriodsVisible =
+      on === null ? !state.isSelectedPeriodsVisible : on;
     const periodsSelected = {};
-    if (isSelected) {
+    if (isSelectedPeriodsVisible) {
       for (let period of state.periods) {
         periodsSelected[period.id] = true;
       }
+      isSelectedPeriodsAll =
+        state.periods.length === state.pagination.totalCount;
     }
     return {
       ...state,
       periodsSelected,
-      isSelectedPeriodsAll: false,
-      isSelectedPeriodsVisible: isSelected,
+      isSelectedPeriodsAll,
+      isSelectedPeriodsVisible,
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => {

@@ -44,8 +44,6 @@ export function makeToastPaymentsSuccess(resourceCount) {
  * payments were successfully scheduled
  * @param {number} props.resourcesFailedCount the number of periods for which
  * payments were failed to be scheduled
- * @param {Array} [props.resourcesSucceeded] periods for which payments were
- * successfully scheduled
  * @param {Array} [props.resourcesFailed] periods for which payments were failed
  * to be scheduled
  */
