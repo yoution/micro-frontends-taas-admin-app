@@ -8,10 +8,17 @@ import styles from "./styles.module.scss";
  * payments have been scheduled or failed to schedule.
  *
  * @param {Object} props component properties
+ * @param {number} props.resourcesSucceededCount the number of resources
+ * for which payments have been successfully scheduled
+ * @param {Array} [props.resourcesFailed] array with data for resources
+ * for which payments were failed to be scheduled
+ * @param {number} props.resourcesFailedCount the number of resources
+ * for which payments were failed to be scheduled
+ * @param {() => void} [props.remove] function that must be called
+ * on toast message removal intent
  * @returns {JSX.Element}
  */
 const ToastPaymentsWarning = ({
-  resourcesSucceeded,
   resourcesSucceededCount,
   resourcesFailed,
   resourcesFailedCount,
@@ -23,15 +30,6 @@ const ToastPaymentsWarning = ({
         <div className={styles.sectionTitle}>
           Payment scheduled for {resourcesSucceededCount} resources
         </div>
-        {resourcesSucceeded && resourcesSucceeded.length && (
-          <div className={styles.periodsSucceeded}>
-            {resourcesSucceeded.map((period) => (
-              <div key={period.workPeriodId} className={styles.periodSucceeded}>
-                {period.workPeriodId}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
       <div className={styles.sectionFailed}>
         <div className={styles.sectionTitle}>
@@ -53,12 +51,6 @@ const ToastPaymentsWarning = ({
 };
 
 ToastPaymentsWarning.propTypes = {
-  resourcesSucceeded: PT.arrayOf(
-    PT.shape({
-      workPeriodId: PT.string.isRequired,
-      amount: PT.number,
-    })
-  ),
   resourcesSucceededCount: PT.number.isRequired,
   resourcesFailed: PT.arrayOf(
     PT.shape({

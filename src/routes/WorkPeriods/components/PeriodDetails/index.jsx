@@ -12,7 +12,6 @@ import {
   hideWorkPeriodDetails,
   setBillingAccount,
   setDetailsHidePastPeriods,
-  // setDetailsLockWorkingDays,
 } from "store/actions/workPeriods";
 import styles from "./styles.module.scss";
 import { updateWorkPeriodBillingAccount } from "store/thunks/workPeriods";
@@ -42,7 +41,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     periodsVisible,
     periodsIsLoading,
     hidePastPeriods,
-    // lockWorkingDays,
   } = details;
 
   const onHideDetailsBtnClick = useCallback(() => {
@@ -55,13 +53,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     },
     [dispatch, periodId]
   );
-
-  // const onChangeLockWorkingDays = useCallback(
-  //   (lock) => {
-  //     dispatch(setDetailsLockWorkingDays(periodId, lock));
-  //   },
-  //   [dispatch, periodId]
-  // );
 
   const onChangeBillingAccount = useCallback(
     (value) => {
@@ -113,16 +104,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
                 </div>
               </div>
             </div>
-            {/* <div className={styles.lockWorkingDaysSection}>
-              <div className={styles.sectionLabel}>Lock Working Days</div>
-              <Toggle
-                size="small"
-                className={styles.lockWorkingDaysToggle}
-                name={`rb_lck_wd_${periodId}`}
-                onChange={onChangeLockWorkingDays}
-                isOn={lockWorkingDays}
-              />
-            </div> */}
             <div className={styles.billingAccountSection}>
               <div className={styles.sectionLabel}>Billing Account</div>
               <SelectField
@@ -188,7 +169,7 @@ PeriodDetails.propTypes = {
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,
-        value: PT.string.isRequired,
+        value: PT.number.isRequired,
       })
     ),
     billingAccountsError: PT.string,
@@ -197,7 +178,6 @@ PeriodDetails.propTypes = {
     periodsVisible: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
     hidePastPeriods: PT.bool.isRequired,
-    lockWorkingDays: PT.bool.isRequired,
   }).isRequired,
   isDisabled: PT.bool.isRequired,
   isFailed: PT.bool.isRequired,

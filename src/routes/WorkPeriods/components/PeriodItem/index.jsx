@@ -166,16 +166,12 @@ PeriodItem.propTypes = {
     billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({
-        value: PT.string.isRequired,
         label: PT.string.isRequired,
+        value: PT.number.isRequired,
       })
-    ),
+    ).isRequired,
     billingAccountsIsLoading: PT.bool.isRequired,
-    periods: PT.arrayOf(
-      PT.shape({
-        id: PT.string.isRequired,
-      })
-    ),
+    periods: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
   }),
 };
