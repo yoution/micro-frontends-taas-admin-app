@@ -376,25 +376,25 @@ const actionHandlers = {
   },
   [ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS]: (
     state,
-    { parentPeriodId, periodId, workingDays }
+    { parentPeriodId, periodId, daysWorked }
   ) => {
     const periodsDetails = { ...state.periodsDetails };
     let periodDetails = periodsDetails[parentPeriodId];
     if (!periodDetails) {
       return state;
     }
-    workingDays = Math.min(Math.max(workingDays, 0), 5);
+    daysWorked = Math.min(Math.max(daysWorked, 0), 5);
     const periods = [];
     for (let period of periodDetails.periods) {
       if (period.id === periodId) {
-        period = { ...period, workingDays };
+        period = { ...period, daysWorked };
       }
       periods.push(period);
     }
     const periodsVisible = [];
     for (let period of periodDetails.periodsVisible) {
       if (period.id === periodId) {
-        period = { ...period, workingDays };
+        period = { ...period, daysWorked };
       }
       periodsVisible.push(period);
     }
@@ -516,7 +516,7 @@ const actionHandlers = {
       },
     };
   },
-  [ACTION_TYPE.WP_SET_WORKING_DAYS]: (state, { periodId, workingDays }) => {
+  [ACTION_TYPE.WP_SET_WORKING_DAYS]: (state, { periodId, daysWorked }) => {
     const oldPeriods = state.periods;
     const periods = [];
     for (let i = 0, len = oldPeriods.length; i < len; i++) {
@@ -524,7 +524,7 @@ const actionHandlers = {
       if (period.id === periodId) {
         period = {
           ...period,
-          workingDays: Math.min(Math.max(workingDays, 0), 5),
+          daysWorked: Math.min(Math.max(daysWorked, 0), 5),
         };
       }
       periods.push(period);

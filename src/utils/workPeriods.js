@@ -26,7 +26,8 @@ export function normalizePeriodItems(items) {
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
       weeklyRate: item.memberRate,
       paymentStatus: normalizePaymentStatus(workPeriod.paymentStatus),
-      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
+      daysWorked: daysWorked === null ? 5 : +daysWorked || 0,
+      daysPaid: +workPeriod.daysPaid || 0,
     });
   }
   return periods;
@@ -75,7 +76,7 @@ export function normalizeDetailsPeriodItems(items) {
       paymentStatus: normalizePaymentStatus(item.paymentStatus),
       payments: item.payments || [],
       weeklyRate: item.memberRate,
-      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
+      daysWorked: daysWorked === null ? 5 : +daysWorked || 0,
     });
   }
   periods.sort(sortByStartDate);

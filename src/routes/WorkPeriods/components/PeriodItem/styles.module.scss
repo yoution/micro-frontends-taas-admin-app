@@ -25,7 +25,7 @@
         padding-left: 14px;
       }
 
-      &.workingDays {
+      &.daysWorked {
         border-right: 1px solid #d6d6d6;
         padding-top: 4px;
         padding-right: 9px;
@@ -77,10 +77,10 @@ td.weeklyRate {
   }
 }
 
-td.workingDays {
+td.daysWorked {
   padding: 5px 10px;
 }
 
-.workingDaysControl {
+.daysWorkedControl {
   width: 100px;
 }

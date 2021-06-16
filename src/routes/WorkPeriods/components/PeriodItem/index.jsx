@@ -53,16 +53,16 @@ const PeriodItem = ({
   }, [dispatch, item]);
 
   const onWorkingDaysChange = useCallback(
-    (workingDays) => {
-      dispatch(setWorkPeriodWorkingDays({ periodId: item.id, workingDays }));
+    (daysWorked) => {
+      dispatch(setWorkPeriodWorkingDays(item.id, daysWorked));
     },
     [dispatch, item.id]
   );
 
   const updateWorkingDays = useCallback(
     debounce(
-      (workingDays) => {
-        dispatch(updateWorkPeriodWorkingDays(item.id, workingDays));
+      (daysWorked) => {
+        dispatch(updateWorkPeriodWorkingDays(item.id, daysWorked));
       },
       300,
       { leading: false }
@@ -72,8 +72,8 @@ const PeriodItem = ({
 
   // Update working days on server if working days change.
   useUpdateEffect(() => {
-    updateWorkingDays(item.workingDays);
-  }, [item.workingDays]);
+    updateWorkingDays(item.daysWorked);
+  }, [item.daysWorked]);
 
   return (
     <>
@@ -118,15 +118,15 @@ const PeriodItem = ({
         <td>
           <PaymentStatus status={item.paymentStatus} />
         </td>
-        <td className={styles.workingDays}>
+        <td className={styles.daysWorked}>
           <IntegerField
-            className={styles.workingDaysControl}
+            className={styles.daysWorkedControl}
             isDisabled={isDisabled}
             name={`wp_wrk_days_${item.id}`}
             onChange={onWorkingDaysChange}
             maxValue={5}
             minValue={0}
-            value={item.workingDays}
+            value={item.daysWorked}
           />
         </td>
       </tr>
@@ -156,7 +156,7 @@ PeriodItem.propTypes = {
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
     paymentStatus: PT.string.isRequired,
-    workingDays: PT.number.isRequired,
+    daysWorked: PT.number.isRequired,
   }),
   details: PT.shape({
     periodId: PT.string.isRequired,

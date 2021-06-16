@@ -161,16 +161,16 @@ export const setBillingAccount = (periodId, accountId) => ({
  *
  * @param {string} parentPeriodId parent working period id
  * @param {string} periodId working period id
- * @param {number} workingDays number of working days
+ * @param {number} daysWorked number of working days
  * @returns {Object}
  */
 export const setDetailsWorkingDays = (
   parentPeriodId,
   periodId,
-  workingDays
+  daysWorked
 ) => ({
   type: ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS,
-  payload: { parentPeriodId, periodId, workingDays },
+  payload: { parentPeriodId, periodId, daysWorked },
 });
 
 /**
@@ -314,14 +314,13 @@ export const setWorkPeriodsUserHandle = (handle) => ({
 /**
  * Creates an action to change working days for specific working period.
  *
- * @param {Object} payload object containing period id and days number
- * @param {string|number} payload.periodId period id
- * @param {number} payload.workingDays number of working days
+ * @param {string|number} periodId period id
+ * @param {number} daysWorked number of working days
  * @returns {Object}
  */
-export const setWorkPeriodWorkingDays = (payload) => ({
+export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
   type: ACTION_TYPE.WP_SET_WORKING_DAYS,
-  payload,
+  payload: { periodId, daysWorked },
 });
 
 /**

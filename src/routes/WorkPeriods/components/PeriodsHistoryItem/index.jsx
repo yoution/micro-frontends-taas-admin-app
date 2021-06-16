@@ -32,19 +32,19 @@ const PeriodsHistoryItem = ({
   const dispatch = useDispatch();
 
   const dateLabel = formatDateLabel(item.startDate, currentStartDate);
-  const workingDays = item.workingDays;
+  const daysWorked = item.daysWorked;
 
   const onWorkingDaysChange = useCallback(
-    (workingDays) => {
-      dispatch(setDetailsWorkingDays(periodId, item.id, workingDays));
+    (daysWorked) => {
+      dispatch(setDetailsWorkingDays(periodId, item.id, daysWorked));
     },
     [dispatch, periodId, item.id]
   );
 
   const updateWorkingDays = useCallback(
     debounce(
-      (workingDays) => {
-        dispatch(updateWorkPeriodWorkingDays(item.id, workingDays));
+      (daysWorked) => {
+        dispatch(updateWorkPeriodWorkingDays(item.id, daysWorked));
       },
       300,
       { leading: false }
@@ -54,8 +54,8 @@ const PeriodsHistoryItem = ({
 
   // Update working days on server if working days change.
   useUpdateEffect(() => {
-    updateWorkingDays(item.workingDays);
-  }, [item.workingDays]);
+    updateWorkingDays(item.daysWorked);
+  }, [item.daysWorked]);
 
   return (
     <tr
@@ -77,16 +77,16 @@ const PeriodsHistoryItem = ({
       <td className={styles.paymentStatus}>
         <PaymentStatus status={item.paymentStatus} />
       </td>
-      <td className={styles.workingDays}>
+      <td className={styles.daysWorked}>
         {item.paymentStatus === PAYMENT_STATUS.PAID ? (
-          `${workingDays} ${workingDays === 1 ? "Day" : "Days"}`
+          `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
         ) : (
           <IntegerField
-            className={styles.workingDaysControl}
+            className={styles.daysWorkedControl}
             name={`wp_det_wd_${item.id}`}
             isDisabled={isDisabled}
             onChange={onWorkingDaysChange}
-            value={workingDays}
+            value={daysWorked}
             maxValue={5}
             minValue={0}
           />
@@ -106,7 +106,7 @@ PeriodsHistoryItem.propTypes = {
     paymentStatus: PT.string.isRequired,
     payments: PT.array,
     weeklyRate: PT.number,
-    workingDays: PT.number.isRequired,
+    daysWorked: PT.number.isRequired,
   }).isRequired,
   currentStartDate: PT.oneOfType([PT.string, PT.number, PT.object]).isRequired,
 };

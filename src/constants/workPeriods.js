@@ -35,6 +35,7 @@ export const REQUIRED_FIELDS = [
   "workPeriods.endDate",
   "workPeriods.paymentStatus",
   "workPeriods.daysWorked",
+  "workPeriods.daysPaid",
 ];
 
 // Valid parameter names for requests.

@@ -219,13 +219,13 @@ export const updateWorkPeriodBillingAccount =
 /**
  *
  * @param {string} periodId
- * @param {number} workingDays
+ * @param {number} daysWorked
  * @returns {function}
  */
 export const updateWorkPeriodWorkingDays =
-  (periodId, workingDays) => async () => {
+  (periodId, daysWorked) => async () => {
     try {
-      await services.patchWorkPeriodWorkingDays(periodId, workingDays);
+      await services.patchWorkPeriodWorkingDays(periodId, daysWorked);
     } catch (error) {
       makeToast(
         `Failed to update working days for working period ${periodId}.\n` +
