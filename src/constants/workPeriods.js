@@ -34,6 +34,7 @@ export const REQUIRED_FIELDS = [
   "workPeriods.startDate",
   "workPeriods.endDate",
   "workPeriods.paymentStatus",
+  "workPeriods.paymentTotal",
   "workPeriods.daysWorked",
   "workPeriods.daysPaid",
 ];
@@ -59,6 +60,7 @@ export const SORT_BY_MAP = {
   [SORT_BY.END_DATE]: API_SORT_BY.END_DATE,
   [SORT_BY.WEEKLY_RATE]: API_SORT_BY.WEEKLY_RATE,
   [SORT_BY.PAYMENT_STATUS]: API_SORT_BY.PAYMENT_STATUS,
+  [SORT_BY.PAYMENT_TOTAL]: API_SORT_BY.PAYMENT_TOTAL,
   [SORT_BY.WORKING_DAYS]: API_SORT_BY.WORKING_DAYS,
 };
 

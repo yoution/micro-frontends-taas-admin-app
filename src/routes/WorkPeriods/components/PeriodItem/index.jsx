@@ -17,7 +17,11 @@ import {
   updateWorkPeriodWorkingDays,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
+import {
+  currencyFormatter,
+  formatUserHandleLink,
+  formatWeeklyRate,
+} from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
 
@@ -117,6 +121,12 @@ const PeriodItem = ({
         <td className={styles.weeklyRate}>
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
+        <td className={styles.paymentTotal}>
+          <span className={styles.paymentTotalSum}>
+            {currencyFormatter.format(item.paymentTotal)}
+          </span>
+          <span className={styles.daysPaid}> ({data.daysPaid})</span>
+        </td>
         <td>
           <PaymentStatus status={item.paymentStatus} />
         </td>
@@ -158,6 +168,7 @@ PeriodItem.propTypes = {
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
     paymentStatus: PT.string.isRequired,
+    paymentTotal: PT.number.isRequired,
   }).isRequired,
   data: PT.shape({
     daysWorked: PT.number.isRequired,

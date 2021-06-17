@@ -124,7 +124,7 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
               </Button>
             </div>
           </td>
-          <td colSpan={5} className={styles.periodHistory}>
+          <td colSpan={6} className={styles.periodHistory}>
             <div className={styles.periodsContainer}>
               <div className={styles.periodsHeader}>
                 <span className={styles.periodsHeaderTitle}>History</span>

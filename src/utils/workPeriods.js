@@ -26,6 +26,7 @@ export function normalizePeriodItems(items) {
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
       weeklyRate: item.memberRate,
       paymentStatus: normalizePaymentStatus(workPeriod.paymentStatus),
+      paymentTotal: +workPeriod.paymentTotal || 0,
       daysWorked: daysWorked === null ? 5 : +daysWorked || 0,
       daysPaid: +workPeriod.daysPaid || 0,
     });
@@ -75,6 +76,7 @@ export function normalizeDetailsPeriodItems(items) {
       endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
       paymentStatus: normalizePaymentStatus(item.paymentStatus),
       payments: item.payments || [],
+      paymentTotal: +item.paymentTotal || 0,
       weeklyRate: item.memberRate,
       daysWorked: daysWorked === null ? 5 : +daysWorked || 0,
       daysPaid: +item.daysPaid || 0,

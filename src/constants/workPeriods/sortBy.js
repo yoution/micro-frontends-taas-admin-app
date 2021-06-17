@@ -5,4 +5,5 @@ export const END_DATE = "END_DATE";
 export const ALERT = "ALERT";
 export const WEEKLY_RATE = "WEEKLY_RATE";
 export const PAYMENT_STATUS = "STATUS";
+export const PAYMENT_TOTAL = "TOTAL_PAYMENT";
 export const WORKING_DAYS = "WORKING_DAYS";

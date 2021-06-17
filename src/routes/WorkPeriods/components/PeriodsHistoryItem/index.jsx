@@ -3,20 +3,16 @@ import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
+import moment from "moment";
 import IntegerField from "components/IntegerField";
 import PaymentStatus from "../PaymentStatus";
+import PeriodsHistoryPaymentTotal from "../PeriodsHistoryPaymentTotal";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import { setDetailsWorkingDays } from "store/actions/workPeriods";
 import { updateWorkPeriodWorkingDays } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import {
-  formatDateLabel,
-  formatDateRange,
-  formatWeeklyRate,
-} from "utils/formatters";
+import { formatDateLabel, formatDateRange } from "utils/formatters";
 import styles from "./styles.module.scss";
-import PeriodsHistoryWeeklyRate from "../PeriodsHistoryWeeklyRate";
-import moment from "moment";
 
 /**
  * Displays working period row in history table in details view.
@@ -66,11 +62,12 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
         {formatDateRange(item.startDate, item.endDate)}
       </td>
       <td className={styles.dateLabel}>{dateLabel}</td>
-      <td className={styles.weeklyRate}>
-        <PeriodsHistoryWeeklyRate
-          className={styles.weeklyRateContainer}
+      <td className={styles.paymentTotal}>
+        <PeriodsHistoryPaymentTotal
+          className={styles.paymentTotalContainer}
           payments={item.payments}
-          weeklyRate={formatWeeklyRate(item.weeklyRate)}
+          paymentTotal={item.paymentTotal}
+          daysPaid={data.daysPaid}
         />
       </td>
       <td className={styles.paymentStatus}>
@@ -103,6 +100,7 @@ PeriodsHistoryItem.propTypes = {
     endDate: PT.oneOfType([PT.string, PT.number]).isRequired,
     paymentStatus: PT.string.isRequired,
     payments: PT.array,
+    paymentTotal: PT.number.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
   data: PT.shape({

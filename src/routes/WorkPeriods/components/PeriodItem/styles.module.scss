@@ -77,6 +77,20 @@ td.weeklyRate {
   }
 }
 
+td.paymentTotal {
+  white-space: nowrap;
+}
+
+.paymentTotalSum {
+  display: inline-block;
+  width: 70px;
+  text-align: right;
+}
+
+.daysPaid {
+  color: #aaa;
+}
+
 td.daysWorked {
   padding: 5px 10px;
 }
