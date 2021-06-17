@@ -33,7 +33,8 @@ const ToastPaymentsWarning = ({
       </div>
       <div className={styles.sectionFailed}>
         <div className={styles.sectionTitle}>
-          Failed to schedule payment for {resourcesFailedCount} resources:
+          Failed to schedule payment for {resourcesFailedCount} resources
+          {resourcesFailed && resourcesFailed.length ? ":" : ""}
         </div>
         {resourcesFailed && resourcesFailed.length && (
           <div className={styles.periodsFailed}>

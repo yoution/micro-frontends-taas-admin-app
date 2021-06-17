@@ -1,9 +1,5 @@
 import moment from "moment";
-import {
-  API_PAYMENT_STATUS_MAP,
-  DATE_FORMAT_UI,
-  PAYMENT_STATUS,
-} from "constants/workPeriods";
+import { API_PAYMENT_STATUS_MAP, DATE_FORMAT_UI } from "constants/workPeriods";
 
 export function normalizePeriodItems(items) {
   const empty = {};
@@ -99,7 +95,7 @@ export function normalizeDetailsPeriodItems(items) {
 }
 
 export function normalizePaymentStatus(paymentStatus) {
-  return API_PAYMENT_STATUS_MAP[paymentStatus] || PAYMENT_STATUS.UNDEFINED;
+  return API_PAYMENT_STATUS_MAP[paymentStatus];
 }
 
 export function sortByStartDate(itemA, itemB) {

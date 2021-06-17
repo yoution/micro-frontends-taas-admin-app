@@ -76,9 +76,14 @@ export const fetchWorkPeriods = (rbId, source) => {
   }
   return [
     axios
-      .get(`${WORK_PERIODS_API_URL}/?resourceBookingIds=${rbId}`, {
-        cancelToken: source.token,
-      })
+      // sort by `startDate` just for comfort - so it's easier to check request in the Dev Tools
+      // we get 10000 records to see all the records for now, but we have to improve this
+      .get(
+        `${WORK_PERIODS_API_URL}/?resourceBookingIds=${rbId}&sortBy=startDate&sortOrder=asc&perPage=10000`,
+        {
+          cancelToken: source.token,
+        }
+      )
       .then(extractResponseData),
     source,
   ];
