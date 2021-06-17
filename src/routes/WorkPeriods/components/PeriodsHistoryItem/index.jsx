@@ -66,15 +66,15 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
         <PeriodsHistoryPaymentTotal
           className={styles.paymentTotalContainer}
           payments={item.payments}
-          paymentTotal={item.paymentTotal}
+          paymentTotal={data.paymentTotal}
           daysPaid={data.daysPaid}
         />
       </td>
       <td className={styles.paymentStatus}>
-        <PaymentStatus status={item.paymentStatus} />
+        <PaymentStatus status={data.paymentStatus} />
       </td>
       <td className={styles.daysWorked}>
-        {item.paymentStatus === PAYMENT_STATUS.PAID ? (
+        {data.paymentStatus === PAYMENT_STATUS.PAID ? (
           `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
         ) : (
           <IntegerField
@@ -98,14 +98,14 @@ PeriodsHistoryItem.propTypes = {
     id: PT.string.isRequired,
     startDate: PT.oneOfType([PT.string, PT.number]).isRequired,
     endDate: PT.oneOfType([PT.string, PT.number]).isRequired,
-    paymentStatus: PT.string.isRequired,
     payments: PT.array,
-    paymentTotal: PT.number.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    paymentStatus: PT.string.isRequired,
+    paymentTotal: PT.number.isRequired,
   }).isRequired,
   currentStartDate: PT.oneOfType([PT.string, PT.number, PT.object]).isRequired,
 };

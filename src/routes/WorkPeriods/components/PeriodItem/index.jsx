@@ -123,12 +123,12 @@ const PeriodItem = ({
         </td>
         <td className={styles.paymentTotal}>
           <span className={styles.paymentTotalSum}>
-            {currencyFormatter.format(item.paymentTotal)}
+            {currencyFormatter.format(data.paymentTotal)}
           </span>
           <span className={styles.daysPaid}> ({data.daysPaid})</span>
         </td>
         <td>
-          <PaymentStatus status={item.paymentStatus} />
+          <PaymentStatus status={data.paymentStatus} />
         </td>
         <td className={styles.daysWorked}>
           <IntegerField
@@ -167,12 +167,12 @@ PeriodItem.propTypes = {
     startDate: PT.string.isRequired,
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
-    paymentStatus: PT.string.isRequired,
-    paymentTotal: PT.number.isRequired,
   }).isRequired,
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    paymentStatus: PT.string.isRequired,
+    paymentTotal: PT.number.isRequired,
   }).isRequired,
   details: PT.shape({
     periodId: PT.string.isRequired,

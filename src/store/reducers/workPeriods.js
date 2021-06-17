@@ -36,12 +36,6 @@ const initFilters = () => ({
   userHandle: "",
 });
 
-const initPeriodData = (daysWorked, daysPaid) => ({
-  cancelSource: null,
-  daysWorked,
-  daysPaid,
-});
-
 const initPeriodDetails = (
   periodId,
   rbId,
@@ -125,13 +119,9 @@ const actionHandlers = {
         : oldPagination;
     const periodsData = {};
     for (let period of periods) {
-      periodsData[period.id] = initPeriodData(
-        period.daysWorked,
-        period.daysPaid
-      );
-      // These two lines can be removed but they're kept for now for debugging.
-      delete period.daysWorked;
-      delete period.daysPaid;
+      period.data.cancelSource = null;
+      periodsData[period.id] = period.data;
+      delete period.data;
     }
     return {
       ...state,
@@ -215,13 +205,9 @@ const actionHandlers = {
     }
     const periodsData = state.periodsData[0];
     for (let period of details.periods) {
-      periodsData[period.id] = initPeriodData(
-        period.daysWorked,
-        period.daysPaid
-      );
-      // These two lines can be removed but they're kept for now for debugging.
-      delete period.daysWorked;
-      delete period.daysPaid;
+      period.data.cancelSource = null;
+      periodsData[period.id] = period.data;
+      delete period.data;
     }
     periodDetails = {
       ...periodDetails,
@@ -528,9 +514,58 @@ const actionHandlers = {
       },
     };
   },
+  [ACTION_TYPE.WP_SET_DATA_PENDING]: (state, { periodId, cancelSource }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_DATA_SUCCESS]: (state, { periodId, data }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      ...data,
+      cancelSource: null,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_DATA_ERROR]: (state, { periodId }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource: null,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
   [ACTION_TYPE.WP_SET_WORKING_DAYS]: (state, { periodId, daysWorked }) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
     daysWorked = Math.min(Math.max(daysWorked, periodData.daysPaid), 5);
     if (daysWorked === periodData.daysWorked) {
       return state;

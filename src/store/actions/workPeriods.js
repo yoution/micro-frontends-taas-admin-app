@@ -319,6 +319,28 @@ export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
 });
 
 /**
+ * Creates an action denoting the update of working period's changeable data.
+ *
+ * @param {Object} periodId working period id
+ * @param {Object} cancelSource axios cancel token source
+ * @returns {Object}
+ */
+export const setWorkPeriodDataPending = (periodId, cancelSource) => ({
+  type: ACTION_TYPE.WP_SET_DATA_PENDING,
+  payload: { periodId, cancelSource },
+});
+
+export const setWorkPeriodDataSuccess = (periodId, data) => ({
+  type: ACTION_TYPE.WP_SET_DATA_SUCCESS,
+  payload: { periodId, data },
+});
+
+export const setWorkPeriodDataError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_SET_DATA_ERROR,
+  payload: { periodId, message },
+});
+
+/**
  * Creates an action to toggle certain working period by its id.
  *
  * @param {string} id period id
