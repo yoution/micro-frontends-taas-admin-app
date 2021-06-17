@@ -3,11 +3,17 @@ import React, { useCallback, useRef, useState } from "react";
 import { usePopper } from "react-popper";
 import PT from "prop-types";
 import cn from "classnames";
-import ChallengePopup from "../PaymentsPopup";
-import compStyles from "./styles.module.scss";
+import PaymentsPopup from "../PaymentsPopup";
 import { useClickOutside } from "utils/hooks";
+import { currencyFormatter } from "utils/formatters";
+import compStyles from "./styles.module.scss";
 
-const PeriodsHistoryWeeklyRate = ({ className, payments, weeklyRate }) => {
+const PeriodsHistoryPaymentTotal = ({
+  className,
+  payments,
+  paymentTotal,
+  daysPaid,
+}) => {
   const [isShowPopup, setIsShowPopup] = useState(false);
   const containerRef = useRef();
 
@@ -37,15 +43,18 @@ const PeriodsHistoryWeeklyRate = ({ className, payments, weeklyRate }) => {
 
   return (
     <div className={cn(compStyles.container, className)} ref={containerRef}>
-      <span
-        className={cn(compStyles.weeklyRateValue, {
+      <div
+        className={cn(compStyles.paymentTotal, {
           [compStyles.hasPayments]: hasPayments,
         })}
         ref={setReferenceElement}
         onClick={onWeeklyRateClick}
       >
-        {weeklyRate}
-      </span>
+        <span className={compStyles.paymentTotalSum}>
+          {currencyFormatter.format(paymentTotal)}
+        </span>
+        <span className={compStyles.daysPaid}> ({daysPaid})</span>
+      </div>
       {hasPayments && isShowPopup && (
         <div
           className={compStyles.popup}
@@ -53,7 +62,7 @@ const PeriodsHistoryWeeklyRate = ({ className, payments, weeklyRate }) => {
           style={styles.popper}
           {...attributes.popper}
         >
-          <ChallengePopup payments={payments} />
+          <PaymentsPopup payments={payments} />
           <div
             className="dropdown-arrow"
             ref={setArrowElement}
@@ -65,14 +74,15 @@ const PeriodsHistoryWeeklyRate = ({ className, payments, weeklyRate }) => {
   );
 };
 
-PeriodsHistoryWeeklyRate.propTypes = {
+PeriodsHistoryPaymentTotal.propTypes = {
   className: PT.string,
   payments: PT.array,
-  weeklyRate: PT.string.isRequired,
+  paymentTotal: PT.number.isRequired,
+  daysPaid: PT.number.isRequired,
 };
 
 function negate(value) {
   return !value;
 }
 
-export default PeriodsHistoryWeeklyRate;
+export default PeriodsHistoryPaymentTotal;

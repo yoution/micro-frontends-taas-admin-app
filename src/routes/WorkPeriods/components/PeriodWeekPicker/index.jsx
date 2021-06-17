@@ -1,10 +1,12 @@
 import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PT from "prop-types";
+import cn from "classnames";
 import moment from "moment";
 import WeekPicker from "components/WeekPicker";
 import { getWorkPeriodsDateRange } from "store/selectors/workPeriods";
 import { setWorkPeriodsDateRange } from "store/actions/workPeriods";
+import styles from "./styles.module.scss";
 
 /**
  * Displays working periods' week picker.
@@ -34,7 +36,7 @@ const PeriodWeekPicker = ({ className }) => {
 
   return (
     <WeekPicker
-      className={className}
+      className={cn(styles.container, className)}
       startDate={startDate}
       endDate={endDate}
       onWeekSelect={onWeekSelect}

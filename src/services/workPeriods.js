@@ -110,10 +110,20 @@ export const fetchResourceBookings = (params) => {
  *
  * @param {string} periodId working period id
  * @param {number} daysWorked new number of working days
- * @returns {Promise}
+ * @returns {[Promise, Object]}
  */
 export const patchWorkPeriodWorkingDays = (periodId, daysWorked) => {
-  return axios.patch(`${WORK_PERIODS_API_URL}/${periodId}`, { daysWorked });
+  const source = CancelToken.source();
+  return [
+    axios
+      .patch(
+        `${WORK_PERIODS_API_URL}/${periodId}`,
+        { daysWorked },
+        { cancelToken: source.token }
+      )
+      .then(extractResponseData),
+    source,
+  ];
 };
 
 /**

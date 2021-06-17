@@ -17,7 +17,11 @@ import {
   updateWorkPeriodWorkingDays,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
+import {
+  currencyFormatter,
+  formatUserHandleLink,
+  formatWeeklyRate,
+} from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
 
@@ -29,6 +33,7 @@ import styles from "./styles.module.scss";
  * @param {boolean} [props.isFailed] whether the item should be highlighted as failed
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
+ * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
  * @returns {JSX.Element}
  */
@@ -37,6 +42,7 @@ const PeriodItem = ({
   isFailed = false,
   isSelected,
   item,
+  data,
   details,
 }) => {
   const dispatch = useDispatch();
@@ -53,16 +59,16 @@ const PeriodItem = ({
   }, [dispatch, item]);
 
   const onWorkingDaysChange = useCallback(
-    (workingDays) => {
-      dispatch(setWorkPeriodWorkingDays({ periodId: item.id, workingDays }));
+    (daysWorked) => {
+      dispatch(setWorkPeriodWorkingDays(item.id, daysWorked));
     },
     [dispatch, item.id]
   );
 
   const updateWorkingDays = useCallback(
     debounce(
-      (workingDays) => {
-        dispatch(updateWorkPeriodWorkingDays(item.id, workingDays));
+      (daysWorked) => {
+        dispatch(updateWorkPeriodWorkingDays(item.id, daysWorked));
       },
       300,
       { leading: false }
@@ -72,8 +78,8 @@ const PeriodItem = ({
 
   // Update working days on server if working days change.
   useUpdateEffect(() => {
-    updateWorkingDays(item.workingDays);
-  }, [item.workingDays]);
+    updateWorkingDays(data.daysWorked);
+  }, [data.daysWorked]);
 
   return (
     <>
@@ -115,18 +121,24 @@ const PeriodItem = ({
         <td className={styles.weeklyRate}>
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
-        <td>
-          <PaymentStatus status={item.paymentStatus} />
+        <td className={styles.paymentTotal}>
+          <span className={styles.paymentTotalSum}>
+            {currencyFormatter.format(data.paymentTotal)}
+          </span>
+          <span className={styles.daysPaid}> ({data.daysPaid})</span>
         </td>
-        <td className={styles.workingDays}>
+        <td>
+          <PaymentStatus status={data.paymentStatus} />
+        </td>
+        <td className={styles.daysWorked}>
           <IntegerField
-            className={styles.workingDaysControl}
+            className={styles.daysWorkedControl}
             isDisabled={isDisabled}
             name={`wp_wrk_days_${item.id}`}
             onChange={onWorkingDaysChange}
             maxValue={5}
-            minValue={0}
-            value={item.workingDays}
+            minValue={data.daysPaid}
+            value={data.daysWorked}
           />
         </td>
       </tr>
@@ -155,9 +167,13 @@ PeriodItem.propTypes = {
     startDate: PT.string.isRequired,
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
+  }).isRequired,
+  data: PT.shape({
+    daysWorked: PT.number.isRequired,
+    daysPaid: PT.number.isRequired,
     paymentStatus: PT.string.isRequired,
-    workingDays: PT.number.isRequired,
-  }),
+    paymentTotal: PT.number.isRequired,
+  }).isRequired,
   details: PT.shape({
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,

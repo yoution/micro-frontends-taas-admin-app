@@ -7,7 +7,6 @@ export function normalizePeriodItems(items) {
   for (let item of items) {
     const workPeriod = item.workPeriods?.[0] || empty;
     const billingAccountId = item.billingAccountId;
-    const daysWorked = workPeriod.daysWorked;
     periods.push({
       id: workPeriod.id || item.id,
       rbId: item.id,
@@ -21,11 +20,30 @@ export function normalizePeriodItems(items) {
         : "",
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
       weeklyRate: item.memberRate,
-      paymentStatus: normalizePaymentStatus(workPeriod.paymentStatus),
-      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
+      data: normalizePeriodData(workPeriod),
     });
   }
   return periods;
+}
+
+/**
+ * Normalizes specific working period data (daysWorked, daysPaid,
+ * paymentStatus, paymentTotal).
+ *
+ * @param {Object} period
+ * @param {number} period.daysWorked
+ * @param {number} period.daysPaid
+ * @param {string} period.paymentStatus
+ * @param {number} period.paymentTotal
+ * @returns {Object}
+ */
+export function normalizePeriodData(period) {
+  return {
+    daysWorked: period.daysWorked === null ? 5 : +period.daysWorked || 0,
+    daysPaid: +period.daysPaid || 0,
+    paymentStatus: normalizePaymentStatus(period.paymentStatus),
+    paymentTotal: +period.paymentTotal || 0,
+  };
 }
 
 /**
@@ -63,15 +81,13 @@ export function createAssignedBillingAccountOption(accountId) {
 export function normalizeDetailsPeriodItems(items) {
   const periods = [];
   for (let item of items) {
-    const daysWorked = item.daysWorked;
     periods.push({
       id: item.id,
       startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
       endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
-      paymentStatus: normalizePaymentStatus(item.paymentStatus),
       payments: item.payments || [],
       weeklyRate: item.memberRate,
-      workingDays: daysWorked === null ? 5 : +daysWorked || 0,
+      data: normalizePeriodData(item),
     });
   }
   periods.sort(sortByStartDate);

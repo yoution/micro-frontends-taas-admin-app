@@ -1,4 +1,5 @@
 @import "styles/mixins";
+@import "styles/variables";
 
 .container {
   display: inline-block;
@@ -40,4 +41,5 @@
   line-height: 20px;
   letter-spacing: normal;
   background: transparent;
+  color: $text-color;
 }
