@@ -1,4 +1,5 @@
 @import "styles/mixins";
+@import "styles/variables";
 
 .container {
   display: inline-block;
@@ -25,7 +26,10 @@
   background: #9d41c9;
 }
 
-.cancelled,
+.cancelled {
+  background: #999;
+}
+
 .failed {
   background: #da0000;
 }
@@ -37,4 +41,5 @@
   line-height: 20px;
   letter-spacing: normal;
   background: transparent;
+  color: $text-color;
 }

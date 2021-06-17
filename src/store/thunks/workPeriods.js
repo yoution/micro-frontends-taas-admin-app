@@ -19,6 +19,7 @@ import {
 import {
   normalizeBillingAccounts,
   normalizeDetailsPeriodItems,
+  normalizePeriodData,
   normalizePeriodItems,
 } from "utils/workPeriods";
 import { makeToast } from "components/ToastrMessage";
@@ -217,20 +218,49 @@ export const updateWorkPeriodBillingAccount =
   };
 
 /**
+ * Sends an update request to the server to update the number of working
+ * period's working days. The working period is also updated with the data
+ * from response.
  *
- * @param {string} periodId
- * @param {number} workingDays
+ * @param {string} periodId working period id
+ * @param {number} daysWorked working period's working days
  * @returns {function}
  */
 export const updateWorkPeriodWorkingDays =
-  (periodId, workingDays) => async () => {
+  (periodId, daysWorked) => async (dispatch, getState) => {
+    let [periodsData] = selectors.getWorkPeriodsData(getState());
+    periodsData[periodId]?.cancelSource?.cancel();
+    const [promise, source] = services.patchWorkPeriodWorkingDays(
+      periodId,
+      daysWorked
+    );
+    dispatch(actions.setWorkPeriodDataPending(periodId, source));
+    let periodData = null;
+    let errorMessage = null;
     try {
-      await services.patchWorkPeriodWorkingDays(periodId, workingDays);
+      const data = await promise;
+      periodData = normalizePeriodData(data);
     } catch (error) {
-      makeToast(
-        `Failed to update working days for working period ${periodId}.\n` +
-          error.toString()
-      );
+      if (!axios.isCancel(error)) {
+        errorMessage = error.toString();
+        makeToast(
+          `Failed to update working days for working period ${periodId}.\n` +
+            errorMessage
+        );
+      }
+    }
+    [periodsData] = selectors.getWorkPeriodsData(getState());
+    const currentDaysWorked = periodsData[periodId]?.daysWorked;
+    // If periodData is null it means the request was cancelled right before
+    // another request was sent and so we don't need to update the state.
+    // If periodData's daysWorked is not equal to the current daysWorked
+    // it means that the state was changed while the data was in transit
+    // and there will be a new request at the end of which the period's data
+    // will be updated so again we don't need to update the state.
+    if (periodData && periodData.daysWorked === currentDaysWorked) {
+      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+    } else if (errorMessage) {
+      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
     }
   };
 

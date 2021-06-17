@@ -3,7 +3,10 @@ import { useSelector } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import PeriodHistoryItem from "../PeriodsHistoryItem";
-import { getWorkPeriodsDateRange } from "store/selectors/workPeriods";
+import {
+  getWorkPeriodsData,
+  getWorkPeriodsDateRange,
+} from "store/selectors/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -12,7 +15,8 @@ import styles from "./styles.module.scss";
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const PeriodsHistory = ({ className, isDisabled, periodId, periods }) => {
+const PeriodsHistory = ({ className, isDisabled, periods }) => {
+  const [periodsData] = useSelector(getWorkPeriodsData);
   const [startDate] = useSelector(getWorkPeriodsDateRange);
   return (
     <div className={cn(styles.container, className)}>
@@ -21,9 +25,9 @@ const PeriodsHistory = ({ className, isDisabled, periodId, periods }) => {
           {periods.map((period) => (
             <PeriodHistoryItem
               key={period.id}
-              periodId={periodId}
               isDisabled={isDisabled}
               item={period}
+              data={periodsData[period.id]}
               currentStartDate={startDate}
             />
           ))}
@@ -36,7 +40,6 @@ const PeriodsHistory = ({ className, isDisabled, periodId, periods }) => {
 PeriodsHistory.propTypes = {
   className: PT.string,
   isDisabled: PT.bool.isRequired,
-  periodId: PT.string.isRequired,
   periods: PT.arrayOf(PT.object),
 };
 

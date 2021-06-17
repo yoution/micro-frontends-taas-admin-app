@@ -159,18 +159,13 @@ export const setBillingAccount = (periodId, accountId) => ({
  * Creates an action denoting the change of working period's working days in
  * details view.
  *
- * @param {string} parentPeriodId parent working period id
  * @param {string} periodId working period id
- * @param {number} workingDays number of working days
+ * @param {number} daysWorked number of working days
  * @returns {Object}
  */
-export const setDetailsWorkingDays = (
-  parentPeriodId,
-  periodId,
-  workingDays
-) => ({
+export const setDetailsWorkingDays = (periodId, daysWorked) => ({
   type: ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS,
-  payload: { parentPeriodId, periodId, workingDays },
+  payload: { periodId, daysWorked },
 });
 
 /**
@@ -314,14 +309,35 @@ export const setWorkPeriodsUserHandle = (handle) => ({
 /**
  * Creates an action to change working days for specific working period.
  *
- * @param {Object} payload object containing period id and days number
- * @param {string|number} payload.periodId period id
- * @param {number} payload.workingDays number of working days
+ * @param {string|number} periodId period id
+ * @param {number} daysWorked number of working days
  * @returns {Object}
  */
-export const setWorkPeriodWorkingDays = (payload) => ({
+export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
   type: ACTION_TYPE.WP_SET_WORKING_DAYS,
-  payload,
+  payload: { periodId, daysWorked },
+});
+
+/**
+ * Creates an action denoting the update of working period's changeable data.
+ *
+ * @param {Object} periodId working period id
+ * @param {Object} cancelSource axios cancel token source
+ * @returns {Object}
+ */
+export const setWorkPeriodDataPending = (periodId, cancelSource) => ({
+  type: ACTION_TYPE.WP_SET_DATA_PENDING,
+  payload: { periodId, cancelSource },
+});
+
+export const setWorkPeriodDataSuccess = (periodId, data) => ({
+  type: ACTION_TYPE.WP_SET_DATA_SUCCESS,
+  payload: { periodId, data },
+});
+
+export const setWorkPeriodDataError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_SET_DATA_ERROR,
+  payload: { periodId, message },
 });
 
 /**

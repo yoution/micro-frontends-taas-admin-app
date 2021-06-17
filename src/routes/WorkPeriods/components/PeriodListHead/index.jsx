@@ -74,6 +74,7 @@ const HEAD_CELLS = [
   { label: "Start Date", id: SORT_BY.START_DATE },
   { label: "End Date", id: SORT_BY.END_DATE },
   { label: "Weekly Rate", id: SORT_BY.WEEKLY_RATE },
+  { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL },
   { label: "Status", id: SORT_BY.PAYMENT_STATUS },
   { label: "Working Days", id: SORT_BY.WORKING_DAYS },
 ];
