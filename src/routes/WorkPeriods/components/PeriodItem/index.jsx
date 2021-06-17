@@ -29,6 +29,7 @@ import styles from "./styles.module.scss";
  * @param {boolean} [props.isFailed] whether the item should be highlighted as failed
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
+ * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
  * @returns {JSX.Element}
  */
@@ -37,6 +38,7 @@ const PeriodItem = ({
   isFailed = false,
   isSelected,
   item,
+  data,
   details,
 }) => {
   const dispatch = useDispatch();
@@ -72,8 +74,8 @@ const PeriodItem = ({
 
   // Update working days on server if working days change.
   useUpdateEffect(() => {
-    updateWorkingDays(item.daysWorked);
-  }, [item.daysWorked]);
+    updateWorkingDays(data.daysWorked);
+  }, [data.daysWorked]);
 
   return (
     <>
@@ -125,8 +127,8 @@ const PeriodItem = ({
             name={`wp_wrk_days_${item.id}`}
             onChange={onWorkingDaysChange}
             maxValue={5}
-            minValue={0}
-            value={item.daysWorked}
+            minValue={data.daysPaid}
+            value={data.daysWorked}
           />
         </td>
       </tr>
@@ -156,8 +158,11 @@ PeriodItem.propTypes = {
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
     paymentStatus: PT.string.isRequired,
+  }).isRequired,
+  data: PT.shape({
     daysWorked: PT.number.isRequired,
-  }),
+    daysPaid: PT.number.isRequired,
+  }).isRequired,
   details: PT.shape({
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,

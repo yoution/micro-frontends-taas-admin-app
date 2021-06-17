@@ -64,6 +64,8 @@ export const getWorkPeriodsPageSize = (state) =>
 
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 
+export const getWorkPeriodsData = (state) => state.workPeriods.periodsData;
+
 export const getWorkPeriodsTotalCount = (state) =>
   state.workPeriods.pagination.totalCount;
 

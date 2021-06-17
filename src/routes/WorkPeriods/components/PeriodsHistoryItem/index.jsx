@@ -16,6 +16,7 @@ import {
 } from "utils/formatters";
 import styles from "./styles.module.scss";
 import PeriodsHistoryWeeklyRate from "../PeriodsHistoryWeeklyRate";
+import moment from "moment";
 
 /**
  * Displays working period row in history table in details view.
@@ -23,22 +24,18 @@ import PeriodsHistoryWeeklyRate from "../PeriodsHistoryWeeklyRate";
  * @param {Object} props component properties
  * @returns {JSX.Element}
  */
-const PeriodsHistoryItem = ({
-  periodId,
-  isDisabled,
-  item,
-  currentStartDate,
-}) => {
+const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
   const dispatch = useDispatch();
 
   const dateLabel = formatDateLabel(item.startDate, currentStartDate);
-  const daysWorked = item.daysWorked;
+  const daysWorked = data.daysWorked;
+  const isCurrent = moment(item.startDate).isSame(currentStartDate, "date");
 
   const onWorkingDaysChange = useCallback(
     (daysWorked) => {
-      dispatch(setDetailsWorkingDays(periodId, item.id, daysWorked));
+      dispatch(setDetailsWorkingDays(item.id, daysWorked));
     },
-    [dispatch, periodId, item.id]
+    [dispatch, item.id]
   );
 
   const updateWorkingDays = useCallback(
@@ -54,8 +51,10 @@ const PeriodsHistoryItem = ({
 
   // Update working days on server if working days change.
   useUpdateEffect(() => {
-    updateWorkingDays(item.daysWorked);
-  }, [item.daysWorked]);
+    if (!isCurrent) {
+      updateWorkingDays(data.daysWorked);
+    }
+  }, [data.daysWorked, isCurrent]);
 
   return (
     <tr
@@ -88,7 +87,7 @@ const PeriodsHistoryItem = ({
             onChange={onWorkingDaysChange}
             value={daysWorked}
             maxValue={5}
-            minValue={0}
+            minValue={data.daysPaid}
           />
         )}
       </td>
@@ -97,7 +96,6 @@ const PeriodsHistoryItem = ({
 };
 
 PeriodsHistoryItem.propTypes = {
-  periodId: PT.string.isRequired,
   isDisabled: PT.bool.isRequired,
   item: PT.shape({
     id: PT.string.isRequired,
@@ -106,7 +104,10 @@ PeriodsHistoryItem.propTypes = {
     paymentStatus: PT.string.isRequired,
     payments: PT.array,
     weeklyRate: PT.number,
+  }).isRequired,
+  data: PT.shape({
     daysWorked: PT.number.isRequired,
+    daysPaid: PT.number.isRequired,
   }).isRequired,
   currentStartDate: PT.oneOfType([PT.string, PT.number, PT.object]).isRequired,
 };

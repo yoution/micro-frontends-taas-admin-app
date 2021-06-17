@@ -146,7 +146,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
               </div>
               <PeriodsHistory
                 isDisabled={isDisabled}
-                periodId={periodId}
                 periods={periodsVisible}
               />
             </div>

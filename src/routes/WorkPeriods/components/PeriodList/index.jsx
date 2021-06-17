@@ -7,6 +7,7 @@ import PeriodItem from "../PeriodItem";
 import PeriodListHead from "../PeriodListHead";
 import {
   getWorkPeriods,
+  getWorkPeriodsData,
   getWorkPeriodsDetails,
   getWorkPeriodsFailed,
   getWorkPeriodsIsProcessingPayments,
@@ -23,6 +24,7 @@ import styles from "./styles.module.scss";
  */
 const PeriodList = ({ className }) => {
   const periods = useSelector(getWorkPeriods);
+  const [periodsData] = useSelector(getWorkPeriodsData);
   const periodsDetails = useSelector(getWorkPeriodsDetails);
   const periodsFailed = useSelector(getWorkPeriodsFailed);
   const periodsSelected = useSelector(getWorkPeriodsSelected);
@@ -46,6 +48,7 @@ const PeriodList = ({ className }) => {
                 isFailed={period.id in periodsFailed}
                 isSelected={period.id in periodsSelected}
                 item={period}
+                data={periodsData[period.id]}
                 details={periodsDetails[period.id]}
               />
             ))}

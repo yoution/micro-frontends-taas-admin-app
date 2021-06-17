@@ -77,6 +77,7 @@ export function normalizeDetailsPeriodItems(items) {
       payments: item.payments || [],
       weeklyRate: item.memberRate,
       daysWorked: daysWorked === null ? 5 : +daysWorked || 0,
+      daysPaid: +item.daysPaid || 0,
     });
   }
   periods.sort(sortByStartDate);

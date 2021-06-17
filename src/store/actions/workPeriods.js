@@ -159,18 +159,13 @@ export const setBillingAccount = (periodId, accountId) => ({
  * Creates an action denoting the change of working period's working days in
  * details view.
  *
- * @param {string} parentPeriodId parent working period id
  * @param {string} periodId working period id
  * @param {number} daysWorked number of working days
  * @returns {Object}
  */
-export const setDetailsWorkingDays = (
-  parentPeriodId,
-  periodId,
-  daysWorked
-) => ({
+export const setDetailsWorkingDays = (periodId, daysWorked) => ({
   type: ACTION_TYPE.WP_SET_DETAILS_WORKING_DAYS,
-  payload: { parentPeriodId, periodId, daysWorked },
+  payload: { periodId, daysWorked },
 });
 
 /**
