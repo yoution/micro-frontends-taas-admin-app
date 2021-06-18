@@ -98,6 +98,16 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
   scheduled: PAYMENT_STATUS.SCHEDULED,
 };
 
+export const URL_QUERY_PARAM_MAP = new Map([
+  ["startDate", "startDate"],
+  ["paymentStatuses", "status"],
+  ["userHandle", "user"],
+  ["criteria", "by"],
+  ["order", "order"],
+  ["pageSize", "perPage"],
+  ["pageNumber", "page"],
+]);
+
 export const JOB_NAME_LOADING = "Loading...";
 export const JOB_NAME_NONE = "<Job is not assigned>";
 export const JOB_NAME_ERROR = "<Error loading job>";

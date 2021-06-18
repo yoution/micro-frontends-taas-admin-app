@@ -70,6 +70,9 @@ export const getWorkPeriodsPageSize = (state) =>
 
 export const getWorkPeriodsUrlQuery = (state) => state.workPeriods.query;
 
+export const getWorkPeriodsIsQueryFromState = (state) =>
+  state.workPeriods.isQueryFromState;
+
 export const getWorkPeriodsCount = (state) => state.workPeriods.periods.length;
 
 export const getWorkPeriodsData = (state) => state.workPeriods.periodsData;

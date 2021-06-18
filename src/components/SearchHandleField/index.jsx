@@ -24,6 +24,9 @@ const noOptionsMessage = () => "No suggestions";
  * @param {string} props.name name for input element
  * @param {'medium'|'small'} [props.size] field size
  * @param {function} props.onChange function called when input value changes
+ * @param {function} [props.onInputChange] function called when input value changes
+ * @param {function} [props.onBlur] function called when input is blurred
+ * @param {function} [props.onMenuClose] function called when option list is closed
  * @param {string} props.value input value
  * @returns {JSX.Element}
  */
@@ -33,6 +36,9 @@ const SearchHandleField = ({
   name,
   size = "medium",
   onChange,
+  onInputChange,
+  onBlur,
+  onMenuClose,
   placeholder,
   value,
 }) => {
@@ -47,13 +53,13 @@ const SearchHandleField = ({
     [onChange]
   );
 
-  const onInputChange = useCallback(
+  const onInputValueChange = useCallback(
     (value, { action }) => {
       if (action === "input-change") {
-        onChange(value);
+        onInputChange(value);
       }
     },
-    [onChange]
+    [onInputChange]
   );
 
   return (
@@ -71,7 +77,9 @@ const SearchHandleField = ({
         value={null}
         inputValue={value}
         onChange={onValueChange}
-        onInputChange={onInputChange}
+        onInputChange={onInputValueChange}
+        onBlur={onBlur}
+        onMenuClose={onMenuClose}
         openMenuOnClick={false}
         placeholder={placeholder}
         noOptionsMessage={noOptionsMessage}
@@ -108,6 +116,9 @@ SearchHandleField.propTypes = {
   size: PT.oneOf(["medium", "small"]),
   name: PT.string.isRequired,
   onChange: PT.func.isRequired,
+  onInputChange: PT.func,
+  onBlur: PT.func,
+  onMenuClose: PT.func,
   placeholder: PT.string,
   value: PT.oneOfType([PT.number, PT.string]),
 };

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { globalHistory } from "@reach/router";
 import ContentMessage from "components/ContentMessage";
 import PeriodList from "../PeriodList";
 import {
@@ -8,8 +9,8 @@ import {
   getWorkPeriodsPagination,
   getWorkPeriodsSorting,
 } from "store/selectors/workPeriods";
+import { updateStateFromQuery } from "store/actions/workPeriods";
 import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
-import { useUpdateEffect } from "utils/hooks";
 
 /**
  * Displays working periods' list or a "Loading..." message or an error message.
@@ -23,20 +24,18 @@ const Periods = () => {
   const isLoading = useSelector(getWorkPeriodsIsLoading);
   const dispatch = useDispatch();
 
-  // Load working periods' page once the page is loaded.
+  // Load working periods' page only if page number, page size or sorting changes.
   useEffect(() => {
-    dispatch(loadWorkPeriodsPage());
+    dispatch(loadWorkPeriodsPage);
+  }, [dispatch, pagination.pageNumber, pagination.pageSize, sorting]);
+
+  useEffect(() => {
+    return globalHistory.listen(({ action, location }) => {
+      if (action === "POP") {
+        dispatch(updateStateFromQuery(location.search));
+      }
+    });
   }, [dispatch]);
-
-  // Load working periods' first page only if page size or sorting changes.
-  useUpdateEffect(() => {
-    dispatch(loadWorkPeriodsPage(1));
-  }, [dispatch, pagination.pageSize, sorting]);
-
-  // Load working periods' new page if page number changes.
-  useUpdateEffect(() => {
-    dispatch(loadWorkPeriodsPage());
-  }, [dispatch, pagination.pageNumber]);
 
   return (
     <>

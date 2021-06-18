@@ -7,12 +7,11 @@ let nextErrorId = 1;
  * Creates an action denoting the start of loading specific challenge page.
  *
  * @param {Object} cancelSource object that can be used to cancel network request
- * @param {number} pageNumber the requested challenge page number
  * @returns {Object}
  */
-export const loadWorkPeriodsPagePending = (cancelSource, pageNumber) => ({
+export const loadWorkPeriodsPagePending = (cancelSource) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_PENDING,
-  payload: { cancelSource, pageNumber },
+  payload: cancelSource,
 });
 
 /**

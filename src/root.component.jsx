@@ -19,7 +19,7 @@ export default function Root() {
 
   return (
     <Provider store={store}>
-      <Router primary={false}>
+      <Router>
         <Redirect from={APP_BASE_PATH} to={WORK_PERIODS_PATH} exact noThrow />
         <WorkPeriods path={WORK_PERIODS_PATH} />
         <Freelancers path={FREELANCERS_PATH} />

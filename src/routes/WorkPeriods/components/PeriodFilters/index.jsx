@@ -14,7 +14,10 @@ import {
   setWorkPeriodsPaymentStatuses,
   setWorkPeriodsUserHandle,
 } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage as loadWorkingPeriodsPage } from "store/thunks/workPeriods";
+import {
+  loadWorkPeriodsPage,
+  updateQueryFromState,
+} from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
 
@@ -34,25 +37,39 @@ const PeriodFilters = ({ className }) => {
   const onUserHandleChange = useCallback(
     (value) => {
       dispatch(setWorkPeriodsUserHandle(value));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
 
+  const onUserHandleInputChange = useCallback(
+    (value) => {
+      dispatch(setWorkPeriodsUserHandle(value));
+    },
+    [dispatch]
+  );
+
+  const updateUrlQuery = useCallback(() => {
+    dispatch(updateQueryFromState());
+  }, [dispatch]);
+
   const onPaymentStatusesChange = useCallback(
     (statuses) => {
       dispatch(setWorkPeriodsPaymentStatuses(statuses));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
+    dispatch(updateQueryFromState());
   }, [dispatch]);
 
   const loadWorkingPeriodsFirstPage = useCallback(
     debounce(
       () => {
-        dispatch(loadWorkingPeriodsPage(1));
+        dispatch(loadWorkPeriodsPage);
       },
       300,
       { leading: false }
@@ -71,6 +88,9 @@ const PeriodFilters = ({ className }) => {
           name="topcoder_handle"
           placeholder="Search Topcoder Handle"
           onChange={onUserHandleChange}
+          onInputChange={onUserHandleInputChange}
+          onBlur={updateUrlQuery}
+          // onMenuClose={updateUrlQuery}
           value={userHandle}
         />
       </div>

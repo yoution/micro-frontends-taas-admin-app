@@ -8,7 +8,6 @@ import PeriodsContentHeader from "./components/PeriodsContentHeader";
 import PeriodFilters from "./components/PeriodFilters";
 import Periods from "./components/Periods";
 import PeriodCount from "./components/PeriodCount";
-import PeriodsUrl from "./components/PeriodsUrl";
 import PeriodsPagination from "./components/PeriodsPagination";
 import PeriodsSelectionMessage from "./components/PeriodsSelectionMessage";
 import PeriodWeekPicker from "./components/PeriodWeekPicker";
@@ -46,7 +45,6 @@ const WorkPeriods = () => (
         </div>
       </ContentBlock>
     </Content>
-    <PeriodsUrl />
   </Page>
 );
 

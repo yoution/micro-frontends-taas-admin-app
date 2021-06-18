@@ -2,9 +2,41 @@ import moment from "moment";
 import {
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
+  DATE_FORMAT_API,
   DATE_FORMAT_UI,
   PAYMENT_STATUS,
+  URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
+
+/**
+ * Creates a URL search query from current state.
+ *
+ * @param {Object} state working periods' newly created state slice
+ * @returns {Object}
+ */
+export function makeUrlQuery(state) {
+  const { filters, pagination, sorting } = state;
+  const { dateRange, paymentStatuses, userHandle } = filters;
+  const { pageNumber, pageSize } = pagination;
+  const { criteria, order } = sorting;
+  const params = {
+    startDate: dateRange[0].format(DATE_FORMAT_API),
+    paymentStatuses: Object.keys(paymentStatuses).join(",").toLowerCase(),
+    userHandle,
+    criteria: criteria.toLowerCase(),
+    order,
+    pageNumber,
+    pageSize,
+  };
+  const queryParams = [];
+  for (let [stateKey, queryKey] of URL_QUERY_PARAM_MAP) {
+    let value = params[stateKey];
+    if (value) {
+      queryParams.push(`${queryKey}=${value}`);
+    }
+  }
+  return queryParams.join("&");
+}
 
 export function normalizePeriodItems(items) {
   const empty = {};
