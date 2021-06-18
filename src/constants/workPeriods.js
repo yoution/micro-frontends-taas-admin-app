@@ -90,6 +90,14 @@ export const API_PAYMENT_STATUS_MAP = (function () {
   return obj;
 })();
 
+export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
+  cancelled: PAYMENT_STATUS.CANCELLED,
+  completed: PAYMENT_STATUS.COMPLETED,
+  failed: PAYMENT_STATUS.FAILED,
+  "in-progress": PAYMENT_STATUS.IN_PROGRESS,
+  scheduled: PAYMENT_STATUS.SCHEDULED,
+};
+
 export const JOB_NAME_LOADING = "Loading...";
 export const JOB_NAME_NONE = "<Job is not assigned>";
 export const JOB_NAME_ERROR = "<Error loading job>";

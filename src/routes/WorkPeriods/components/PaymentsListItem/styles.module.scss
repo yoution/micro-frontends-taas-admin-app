@@ -1,27 +1,31 @@
 @import "styles/mixins";
 
-.container {
-  display: flex;
-  align-items: center;
+.challengeId {
+  display: inline-block;
 
   input {
-    display: block;
+    display: inline-block;
     margin: 0;
-    border: none;
+    border: none !important;
     padding: 0;
-    max-width: 70px;
+    width: 70px;
     height: 22px;
     background: #fff;
     @include roboto-medium;
     line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     outline: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
     color: #0d61bf;
   }
 }
 
 .iconLink {
-  flex: 0 0 auto;
   display: inline-block;
+  vertical-align: -2px;
   margin-right: 5px;
   width: 16px;
   height: 16px;
@@ -32,8 +36,8 @@
 }
 
 .iconCopyLink {
-  flex: 0 0 auto;
   display: inline-block;
+  vertical-align: -2px;
   margin-left: 18px;
   width: 16px;
   height: 16px;
@@ -45,8 +49,8 @@
 }
 
 .iconOpenLink {
-  flex: 0 0 auto;
   display: inline-block;
+  vertical-align: -2px;
   margin-left: 16px;
   width: 16px;
   height: 16px;
@@ -55,6 +59,12 @@
   background-size: contain;
   background-position: center;
   background-image: url("./../../../../assets/images/icon-open-outside.png");
+}
+
+.weeklyRate,
+.days,
+.amount {
+  text-align: right;
 }
 
 .hidden {

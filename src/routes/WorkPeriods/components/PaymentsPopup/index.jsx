@@ -13,12 +13,23 @@ import PaymentsListItem from "../PaymentsListItem";
 const PaymentsPopup = ({ className, payments }) => {
   return (
     <form className={cn(styles.container, className)} action="#">
-      <div className={styles.title}>Challenges for Payments</div>
-      <div className={styles.paymentsList}>
-        {payments.map((payment) => (
-          <PaymentsListItem key={payment.id} item={payment} />
-        ))}
-      </div>
+      {/* <div className={styles.title}>Challenges for Payments</div> */}
+      <table className={styles.paymentsList}>
+        <thead>
+          <tr>
+            <th>Challenge ID</th>
+            <th>Weekly Rate</th>
+            <th>Days</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {payments.map((payment) => (
+            <PaymentsListItem key={payment.id} item={payment} />
+          ))}
+        </tbody>
+      </table>
     </form>
   );
 };

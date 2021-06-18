@@ -1,5 +1,10 @@
 import moment from "moment";
-import { API_PAYMENT_STATUS_MAP, DATE_FORMAT_UI } from "constants/workPeriods";
+import {
+  API_CHALLENGE_PAYMENT_STATUS_MAP,
+  API_PAYMENT_STATUS_MAP,
+  DATE_FORMAT_UI,
+  PAYMENT_STATUS,
+} from "constants/workPeriods";
 
 export function normalizePeriodItems(items) {
   const empty = {};
@@ -81,17 +86,27 @@ export function createAssignedBillingAccountOption(accountId) {
 export function normalizeDetailsPeriodItems(items) {
   const periods = [];
   for (let item of items) {
+    let payments = item.payments || [];
     periods.push({
       id: item.id,
       startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
       endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
-      payments: item.payments || [],
+      payments: payments.length ? normalizeDetailsPayments(payments) : payments,
       weeklyRate: item.memberRate,
       data: normalizePeriodData(item),
     });
   }
   periods.sort(sortByStartDate);
   return periods;
+}
+
+function normalizeDetailsPayments(payments) {
+  for (let payment of payments) {
+    payment.status =
+      API_CHALLENGE_PAYMENT_STATUS_MAP[payment.status] ||
+      PAYMENT_STATUS.UNDEFINED;
+  }
+  return payments;
 }
 
 export function normalizePaymentStatus(paymentStatus) {

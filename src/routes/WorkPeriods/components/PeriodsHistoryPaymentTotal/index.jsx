@@ -43,17 +43,19 @@ const PeriodsHistoryPaymentTotal = ({
 
   return (
     <div className={cn(compStyles.container, className)} ref={containerRef}>
-      <div
-        className={cn(compStyles.paymentTotal, {
-          [compStyles.hasPayments]: hasPayments,
-        })}
-        ref={setReferenceElement}
-        onClick={onWeeklyRateClick}
-      >
-        <span className={compStyles.paymentTotalSum}>
-          {currencyFormatter.format(paymentTotal)}
+      <div className={compStyles.paymentTotal}>
+        <span
+          className={cn(compStyles.paymentTotalText, {
+            [compStyles.hasPayments]: hasPayments,
+          })}
+          ref={setReferenceElement}
+          onClick={onWeeklyRateClick}
+        >
+          <span className={compStyles.paymentTotalSum}>
+            {currencyFormatter.format(paymentTotal)}
+          </span>
+          <span className={compStyles.daysPaid}> ({daysPaid})</span>
         </span>
-        <span className={compStyles.daysPaid}> ({daysPaid})</span>
       </div>
       {hasPayments && isShowPopup && (
         <div
