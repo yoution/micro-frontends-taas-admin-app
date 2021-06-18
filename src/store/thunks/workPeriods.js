@@ -7,7 +7,7 @@ import {
   API_SORT_BY,
   DATE_FORMAT_API,
   PAYMENT_STATUS_MAP,
-  FIELDS_QUERY,
+  API_FIELDS_QUERY,
   JOB_NAME_NONE,
 } from "constants/workPeriods";
 import {
@@ -66,7 +66,7 @@ export const loadWorkPeriodsPage =
     // For parameter description see:
     // https://topcoder-platform.github.io/taas-apis/#/ResourceBookings/get_resourceBookings
     const [promise, cancelSource] = services.fetchResourceBookings({
-      fields: FIELDS_QUERY,
+      fields: API_FIELDS_QUERY,
       page: pageNumber,
       perPage: pagination.pageSize,
       sortBy,

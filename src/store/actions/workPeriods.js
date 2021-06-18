@@ -383,3 +383,15 @@ export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
 });
+
+/**
+ * Creates an action denoting an update of working periods state slice using
+ * the provided query.
+ *
+ * @param {string} query URL search query
+ * @returns {Object}
+ */
+export const updateStateFromQuery = (query) => ({
+  type: ACTION_TYPE.WP_UPDATE_STATE_FROM_QUERY,
+  payload: query,
+});

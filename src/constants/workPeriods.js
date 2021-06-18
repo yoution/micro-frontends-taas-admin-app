@@ -19,7 +19,7 @@ export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
-export const REQUIRED_FIELDS = [
+export const API_REQUIRED_FIELDS = [
   "id",
   "jobId",
   "projectId",
@@ -40,15 +40,15 @@ export const REQUIRED_FIELDS = [
 ];
 
 // Valid parameter names for requests.
-export const QUERY_PARAM_NAMES = [
+export const API_QUERY_PARAM_NAMES = [
   "fields",
   "page",
   "perPage",
   "sortBy",
   "sortOrder",
-].concat(REQUIRED_FIELDS);
+].concat(API_REQUIRED_FIELDS);
 
-export const FIELDS_QUERY = REQUIRED_FIELDS.join(",");
+export const API_FIELDS_QUERY = API_REQUIRED_FIELDS.join(",");
 
 export const SORT_BY_DEFAULT = SORT_BY.USER_HANDLE;
 

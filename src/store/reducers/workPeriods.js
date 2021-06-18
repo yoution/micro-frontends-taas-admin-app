@@ -1,13 +1,17 @@
 import moment from "moment";
 import * as ACTION_TYPE from "store/actionTypes/workPeriods";
 import {
-  SORT_BY_DEFAULT,
-  SORT_ORDER_DEFAULT,
-  JOB_NAME_ERROR,
   BILLING_ACCOUNTS_NONE,
-  JOB_NAME_LOADING,
   BILLING_ACCOUNTS_LOADING,
   BILLING_ACCOUNTS_ERROR,
+  DATE_FORMAT_API,
+  JOB_NAME_ERROR,
+  JOB_NAME_LOADING,
+  PAYMENT_STATUS,
+  SORT_BY,
+  SORT_BY_DEFAULT,
+  SORT_ORDER,
+  SORT_ORDER_DEFAULT,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
@@ -17,6 +21,18 @@ import {
 import { createAssignedBillingAccountOption } from "utils/workPeriods";
 
 const cancelSourceDummy = { cancel: () => {} };
+
+const PAGE_SIZES = [10, 20, 50, 100];
+
+const URL_QUERY_PARAM_MAP = new Map([
+  ["startDate", "startDate"],
+  ["paymentStatuses", "status"],
+  // ["userHandle", "user"], // causes search handle field to lose focus
+  ["criteria", "by"],
+  ["order", "order"],
+  ["pageSize", "perPage"],
+  ["pageNumber", "page"],
+]);
 
 const initPagination = () => ({
   totalCount: 0,
@@ -50,30 +66,31 @@ const initPeriodDetails = (
   billingAccountsError: null,
   billingAccountsIsDisabled: true,
   billingAccountsIsLoading: true,
+  hidePastPeriods: false,
   periods: [],
   periodsVisible: [],
   periodsIsLoading: true,
-  hidePastPeriods: false,
 });
 
-const initialState = {
-  error: null,
+const initialState = updateStateFromQuery(window.location.search, {
   cancelSource: cancelSourceDummy,
+  error: null,
+  filters: initFilters(),
+  isProcessingPayments: false,
+  isSelectedPeriodsAll: false,
+  isSelectedPeriodsVisible: false,
+  pagination: initPagination(),
   periods: [],
   periodsData: [{}],
   periodsDetails: {},
   periodsFailed: {},
   periodsSelected: {},
-  isSelectedPeriodsAll: false,
-  isSelectedPeriodsVisible: false,
-  isProcessingPayments: false,
-  pagination: initPagination(),
+  query: "",
   sorting: {
     criteria: SORT_BY_DEFAULT,
     order: SORT_ORDER_DEFAULT,
   },
-  filters: initFilters(),
-};
+});
 
 const reducer = (state = initialState, action) => {
   if (action.type in actionHandlers) {
@@ -82,26 +99,26 @@ const reducer = (state = initialState, action) => {
   return state;
 };
 
+export default reducer;
+
 const actionHandlers = {
-  [ACTION_TYPE.WP_LOAD_PAGE_PENDING]: (
-    state,
-    { cancelSource, pageNumber }
-  ) => ({
-    ...state,
-    cancelSource,
-    error: null,
-    periods: [],
-    periodsData: [{}],
-    periodsDetails: {},
-    periodsFailed: {},
-    periodsSelected: {},
-    isSelectedPeriodsAll: false,
-    isSelectedPeriodsVisible: false,
-    pagination:
-      pageNumber === state.pagination.pageNumber
-        ? state.pagination
-        : { ...state.pagination, pageNumber },
-  }),
+  [ACTION_TYPE.WP_LOAD_PAGE_PENDING]: (state, { cancelSource, pageNumber }) =>
+    updateUrlQuery({
+      ...state,
+      cancelSource,
+      error: null,
+      isSelectedPeriodsAll: false,
+      isSelectedPeriodsVisible: false,
+      pagination:
+        pageNumber === state.pagination.pageNumber
+          ? state.pagination
+          : { ...state.pagination, pageNumber },
+      periods: [],
+      periodsData: [{}],
+      periodsDetails: {},
+      periodsFailed: {},
+      periodsSelected: {},
+    }),
   [ACTION_TYPE.WP_LOAD_PAGE_SUCCESS]: (
     state,
     { periods, totalCount, pageCount }
@@ -122,9 +139,9 @@ const actionHandlers = {
       ...state,
       cancelSource: null,
       error: null,
+      pagination,
       periods,
       periodsData: [periodsData],
-      pagination,
     };
   },
   [ACTION_TYPE.WP_LOAD_PAGE_ERROR]: (state, error) => {
@@ -401,23 +418,24 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
-  [ACTION_TYPE.WP_RESET_FILTERS]: (state) => ({
-    ...state,
-    filters: initFilters(),
-  }),
+  [ACTION_TYPE.WP_RESET_FILTERS]: (state) =>
+    updateUrlQuery({
+      ...state,
+      filters: initFilters(),
+    }),
   [ACTION_TYPE.WP_SET_DATE_RANGE]: (state, date) => {
     const oldRange = state.filters.dateRange;
     const range = getWeekByDate(date);
     if (range[0].isSame(oldRange[0]) && range[1].isSame(oldRange[1])) {
       return state;
     }
-    return {
+    return updateUrlQuery({
       ...state,
       filters: {
         ...state.filters,
         dateRange: range,
       },
-    };
+    });
   },
   [ACTION_TYPE.WP_SELECT_PERIODS]: (state, periods) => {
     let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
@@ -450,27 +468,30 @@ const actionHandlers = {
       periodsSelected,
     };
   },
-  [ACTION_TYPE.WP_SET_PAGE_NUMBER]: (state, pageNumber) => ({
-    ...state,
-    pagination:
-      pageNumber === state.pagination.pageNumber
-        ? state.pagination
-        : { ...state.pagination, pageNumber },
-  }),
-  [ACTION_TYPE.WP_SET_PAGE_SIZE]: (state, pageSize) => ({
-    ...state,
-    pagination:
-      pageSize === state.pagination.pageSize
-        ? state.pagination
-        : { ...state.pagination, pageSize },
-  }),
-  [ACTION_TYPE.WP_SET_SORT_BY]: (state, criteria) => ({
-    ...state,
-    sorting: {
-      ...state.sorting,
-      criteria,
-    },
-  }),
+  [ACTION_TYPE.WP_SET_PAGE_NUMBER]: (state, pageNumber) =>
+    updateUrlQuery({
+      ...state,
+      pagination:
+        pageNumber === state.pagination.pageNumber
+          ? state.pagination
+          : { ...state.pagination, pageNumber },
+    }),
+  [ACTION_TYPE.WP_SET_PAGE_SIZE]: (state, pageSize) =>
+    updateUrlQuery({
+      ...state,
+      pagination:
+        pageSize === state.pagination.pageSize
+          ? state.pagination
+          : { ...state.pagination, pageSize },
+    }),
+  [ACTION_TYPE.WP_SET_SORT_BY]: (state, criteria) =>
+    updateUrlQuery({
+      ...state,
+      sorting: {
+        ...state.sorting,
+        criteria,
+      },
+    }),
   [ACTION_TYPE.WP_SET_SORTING]: (state, { sortBy, sortOrder }) => {
     if (!sortOrder) {
       sortOrder = SORT_ORDER_DEFAULT;
@@ -479,35 +500,36 @@ const actionHandlers = {
     if (!sortBy) {
       sortBy = SORT_BY_DEFAULT;
     }
-    return {
+    return updateUrlQuery({
       ...state,
       sorting: {
         criteria: sortBy,
         order: sortOrder,
       },
-    };
+    });
   },
-  [ACTION_TYPE.WP_SET_PAYMENT_STATUSES]: (state, paymentStatuses) => ({
-    ...state,
-    filters: {
-      ...state.filters,
-      paymentStatuses: updateOptionMap(
-        state.filters.paymentStatuses,
-        paymentStatuses
-      ),
-    },
-  }),
+  [ACTION_TYPE.WP_SET_PAYMENT_STATUSES]: (state, paymentStatuses) =>
+    updateUrlQuery({
+      ...state,
+      filters: {
+        ...state.filters,
+        paymentStatuses: updateOptionMap(
+          state.filters.paymentStatuses,
+          paymentStatuses
+        ),
+      },
+    }),
   [ACTION_TYPE.WP_SET_USER_HANDLE]: (state, userHandle) => {
     if (userHandle === state.filters.userHandle) {
       return state;
     }
-    return {
+    return updateUrlQuery({
       ...state,
       filters: {
         ...state.filters,
         userHandle,
       },
-    };
+    });
   },
   [ACTION_TYPE.WP_SET_DATA_PENDING]: (state, { periodId, cancelSource }) => {
     const periodsData = state.periodsData[0];
@@ -647,6 +669,133 @@ const actionHandlers = {
       isProcessingPayments,
     };
   },
+  [ACTION_TYPE.WP_UPDATE_STATE_FROM_QUERY]: (state, query) =>
+    updateStateFromQuery(query, state),
 };
 
-export default reducer;
+/**
+ * Updates initial state from current URL's query.
+ *
+ * @param {string} queryStr query string
+ * @param {Object} state working periods' state slice
+ * @returns {Object} initial state
+ */
+function updateStateFromQuery(queryStr, state) {
+  const params = {};
+  const query = new URLSearchParams(queryStr);
+  for (let [stateKey, queryKey] of URL_QUERY_PARAM_MAP) {
+    let value = query.get(queryKey);
+    if (value) {
+      params[stateKey] = value;
+    }
+  }
+  let updateFilters = false;
+  let updatePagination = false;
+  let updateSorting = false;
+  const { filters, pagination, sorting } = state;
+  if (params.startDate) {
+    const { dateRange } = filters;
+    let range = getWeekByDate(moment(params.startDate));
+    if (!range[0].isSame(dateRange[0])) {
+      filters.dateRange = range;
+      updateFilters = true;
+    }
+  }
+  if (params.paymentStatuses) {
+    let hasSameStatuses = true;
+    const filtersPaymentStatuses = filters.paymentStatuses;
+    const queryPaymentStatuses = {};
+    for (let status of params.paymentStatuses.split(",")) {
+      status = status.toUpperCase();
+      if (status in PAYMENT_STATUS) {
+        queryPaymentStatuses[status] = true;
+        if (!filtersPaymentStatuses[status]) {
+          hasSameStatuses = false;
+        }
+      }
+    }
+    for (let status in filtersPaymentStatuses) {
+      if (!queryPaymentStatuses[status]) {
+        hasSameStatuses = false;
+        break;
+      }
+    }
+    if (!hasSameStatuses) {
+      filters.paymentStatuses = queryPaymentStatuses;
+      updateFilters = true;
+    }
+  }
+  if (params.userHandle && params.userHandle !== filters.userHandle) {
+    filters.userHandle = params.userHandle.slice(0, 256);
+    updateFilters = true;
+  }
+  if (params.criteria) {
+    const criteria = params.criteria.toUpperCase();
+    if (criteria in SORT_BY && criteria !== sorting.criteria) {
+      sorting.criteria = criteria;
+      updateSorting = true;
+    }
+  }
+  if (params.order in SORT_ORDER && params.order !== sorting.order) {
+    sorting.order = params.order;
+    updateSorting = true;
+  }
+  if (params.pageNumber) {
+    const pageNumber = +params.pageNumber;
+    if (pageNumber && pageNumber !== pagination.pageNumber) {
+      pagination.pageNumber = pageNumber;
+      updatePagination = true;
+    }
+  }
+  if (params.pageSize) {
+    const pageSize = +params.pageSize;
+    if (PAGE_SIZES.includes(pageSize) && pageSize !== pagination.pageSize) {
+      pagination.pageSize = pageSize;
+      updatePagination = true;
+    }
+  }
+  if (updateFilters || updatePagination || updateSorting) {
+    state = { ...state };
+    if (updateFilters) {
+      state.filters = { ...filters };
+    }
+    if (updatePagination) {
+      state.pagination = { ...pagination };
+    }
+    if (updateSorting) {
+      state.sorting = { ...sorting };
+    }
+  }
+  return state;
+}
+
+/**
+ * Creates a URL search query from current state.
+ *
+ * @param {Object} state working periods' newly created state slice
+ * @returns {Object}
+ */
+function updateUrlQuery(state) {
+  const { filters, pagination, sorting } = state;
+  const { dateRange, paymentStatuses, userHandle } = filters;
+  const { pageNumber, pageSize } = pagination;
+  const { criteria, order } = sorting;
+  const params = {
+    startDate: dateRange[0].format(DATE_FORMAT_API),
+    paymentStatuses: Object.keys(paymentStatuses).join(",").toLowerCase(),
+    userHandle,
+    criteria: criteria.toLowerCase(),
+    order,
+    pageNumber,
+    pageSize,
+  };
+  const queryParams = [];
+  for (let [stateKey, queryKey] of URL_QUERY_PARAM_MAP) {
+    let value = params[stateKey];
+    if (value) {
+      queryParams.push(`${queryKey}=${value}`);
+    }
+  }
+  state.query = queryParams.join("&");
+  return state;
+}

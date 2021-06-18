@@ -23,9 +23,13 @@ const Periods = () => {
   const isLoading = useSelector(getWorkPeriodsIsLoading);
   const dispatch = useDispatch();
 
-  // Load working periods' first page once when page loads and then
-  // only if page size or sorting changes.
+  // Load working periods' page once the page is loaded.
   useEffect(() => {
+    dispatch(loadWorkPeriodsPage());
+  }, [dispatch]);
+
+  // Load working periods' first page only if page size or sorting changes.
+  useUpdateEffect(() => {
     dispatch(loadWorkPeriodsPage(1));
   }, [dispatch, pagination.pageSize, sorting]);
 

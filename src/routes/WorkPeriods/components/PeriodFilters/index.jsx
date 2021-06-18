@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import PT from "prop-types";
@@ -103,4 +103,4 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: PAYMENT_STATUS.NO_DAYS, label: "No Days" },
 ];
 
-export default PeriodFilters;
+export default memo(PeriodFilters);
