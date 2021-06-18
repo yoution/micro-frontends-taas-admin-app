@@ -727,8 +727,9 @@ function updateStateFromQuery(queryStr, state) {
     updateFilters = true;
   }
   // checking user handle
+  params.userHandle = params.userHandle || "";
   if (params.userHandle !== filters.userHandle) {
-    filters.userHandle = params.userHandle?.slice(0, 256) || "";
+    filters.userHandle = params.userHandle.slice(0, 256);
     updateFilters = true;
   }
   // checking sorting criteria
