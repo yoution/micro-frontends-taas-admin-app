@@ -157,8 +157,13 @@ input.input {
     }
   }
 
-  :global(.custom__option--is-focused) {
+  :global(.custom__option--is-focused),
+  :global(.custom__option--is-selected) {
     background-color: $primary-text-color !important;
     color: #fff;
+  }
+
+  :global(.custom__clear-indicator) {
+    display: none;
   }
 }

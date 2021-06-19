@@ -67,6 +67,10 @@ export function replaceItems(array, map) {
   return result;
 }
 
+export function preventDefault(event) {
+  event.preventDefault();
+}
+
 /**
  * Stops event propagation.
  *

@@ -1,18 +1,56 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import PT from "prop-types";
 import cn from "classnames";
-import AsyncSelect from "react-select/async";
+import throttle from "lodash/throttle";
+import Select, { components } from "react-select";
 import { getMemberSuggestions } from "services/teams";
+import { useUpdateEffect } from "utils/hooks";
 import styles from "./styles.module.scss";
-
-const selectComponents = {
-  DropdownIndicator: () => null,
-  IndicatorSeparator: () => null,
-};
 
 const loadingMessage = () => "Loading...";
 
 const noOptionsMessage = () => "No suggestions";
+
+function MenuList(props) {
+  let focusedOption = props.focusedOption;
+  focusedOption = props.selectProps.isMenuFocused
+    ? focusedOption
+    : props.getValue()[0];
+
+  return <components.MenuList {...props} focusedOption={focusedOption} />;
+}
+MenuList.propTypes = {
+  focusedOption: PT.object,
+  getValue: PT.func,
+  selectProps: PT.shape({
+    isMenuFocused: PT.oneOfType([PT.bool, PT.number]),
+  }),
+};
+
+function Option(props) {
+  return (
+    <components.Option
+      {...props}
+      isFocused={props.selectProps.isMenuFocused && props.isFocused}
+      isSelected={!props.selectProps.isMenuFocused && props.isSelected}
+    />
+  );
+}
+Option.propTypes = {
+  isFocused: PT.bool,
+  isSelected: PT.bool,
+  selectProps: PT.shape({
+    isMenuFocused: PT.oneOfType([PT.bool, PT.number]),
+  }),
+};
+
+const selectComponents = {
+  DropdownIndicator: () => null,
+  ClearIndicator: () => null,
+  IndicatorSeparator: () => null,
+  MenuList,
+  Option,
+};
 
 /**
  * Displays search input field.
@@ -23,10 +61,9 @@ const noOptionsMessage = () => "No suggestions";
  * @param {string} props.placeholder placeholder text
  * @param {string} props.name name for input element
  * @param {'medium'|'small'} [props.size] field size
- * @param {function} props.onChange function called when input value changes
+ * @param {function} props.onChange function called when value changes
  * @param {function} [props.onInputChange] function called when input value changes
- * @param {function} [props.onBlur] function called when input is blurred
- * @param {function} [props.onMenuClose] function called when option list is closed
+ * @param {function} [props.onBlur] function called on input blur
  * @param {string} props.value input value
  * @returns {JSX.Element}
  */
@@ -38,34 +75,95 @@ const SearchHandleField = ({
   onChange,
   onInputChange,
   onBlur,
-  onMenuClose,
   placeholder,
   value,
 }) => {
-  const onValueChange = useCallback(
-    (option, { action }) => {
-      if (action === "clear") {
-        onChange("");
-      } else {
+  const [inputValue, setInputValue] = useState(value);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuFocused, setIsMenuFocused] = useState(false);
+  const [options, setOptions] = useState([]);
+
+  const loadOptions = useCallback(
+    throttle(
+      async (value) => {
+        setIsLoading(true);
+        const options = await loadSuggestions(value);
+        setOptions(options);
+        setIsLoading(false);
+        setIsMenuOpen(true);
+        setIsMenuFocused(options.length && options[0].value === value);
+      },
+      300,
+      { leading: false }
+    ),
+    []
+  );
+
+  const onValueChange = (option, { action }) => {
+    if (action === "input-change" || action === "select-option") {
+      setIsMenuFocused(false);
+      setIsMenuOpen(false);
+      if (!isMenuFocused) {
+        onChange(inputValue);
+      } else if (option) {
         onChange(option.value);
       }
-    },
-    [onChange]
-  );
+    } else if (action === "clear") {
+      setIsMenuFocused(false);
+      setIsMenuOpen(false);
+      onChange("");
+    }
+  };
 
   const onInputValueChange = useCallback(
     (value, { action }) => {
       if (action === "input-change") {
-        onInputChange(value);
+        setIsMenuFocused(false);
+        setInputValue(value);
+        onInputChange && onInputChange(value);
+        loadOptions(value);
       }
     },
-    [onInputChange]
+    [onInputChange, loadOptions]
   );
+
+  const onKeyDown = (event) => {
+    const key = event.key;
+    if (key === "Enter" || key === "Escape") {
+      setIsMenuFocused(false);
+      setIsMenuOpen(false);
+      if (!inputValue) {
+        onChange(inputValue);
+      }
+    } else if (key === "ArrowDown") {
+      if (!isMenuFocused) {
+        event.preventDefault();
+        event.stopPropagation();
+        setIsMenuFocused(true);
+      }
+    } else if (key === "Backspace") {
+      if (!inputValue) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+  };
+
+  const onSelectBlur = useCallback(() => {
+    setIsMenuFocused(false);
+    setIsMenuOpen(false);
+    onBlur && onBlur();
+  }, [onBlur]);
+
+  useUpdateEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   return (
     <div className={cn(styles.container, styles[size], className)}>
       <span className={styles.icon} />
-      <AsyncSelect
+      <Select
         className={styles.select}
         classNamePrefix="custom"
         components={selectComponents}
@@ -73,35 +171,43 @@ const SearchHandleField = ({
         name={name}
         isClearable={true}
         isSearchable={true}
-        // menuIsOpen={true} // for debugging
+        isLoading={isLoading}
+        isMenuFocused={isMenuFocused}
+        menuIsOpen={isMenuOpen}
         value={null}
-        inputValue={value}
+        inputValue={inputValue}
+        options={options}
         onChange={onValueChange}
         onInputChange={onInputValueChange}
-        onBlur={onBlur}
-        onMenuClose={onMenuClose}
-        openMenuOnClick={false}
+        onKeyDown={onKeyDown}
+        onBlur={onSelectBlur}
         placeholder={placeholder}
         noOptionsMessage={noOptionsMessage}
         loadingMessage={loadingMessage}
-        loadOptions={loadSuggestions}
-        cacheOptions
       />
     </div>
   );
 };
 
-const loadSuggestions = async (inputVal) => {
+const loadSuggestions = async (inputValue) => {
   let options = [];
-  if (inputVal.length < 3) {
+  if (inputValue.length < 3) {
     return options;
   }
   try {
-    const res = await getMemberSuggestions(inputVal);
+    const res = await getMemberSuggestions(inputValue);
     const users = res.data.result.content;
+    let match = null;
     for (let i = 0, len = users.length; i < len; i++) {
       let value = users[i].handle;
-      options.push({ value, label: value });
+      if (value === inputValue) {
+        match = { value, label: value };
+      } else {
+        options.push({ value, label: value });
+      }
+    }
+    if (match) {
+      options.unshift(match);
     }
   } catch (error) {
     console.error(error);
@@ -118,7 +224,6 @@ SearchHandleField.propTypes = {
   onChange: PT.func.isRequired,
   onInputChange: PT.func,
   onBlur: PT.func,
-  onMenuClose: PT.func,
   placeholder: PT.string,
   value: PT.oneOfType([PT.number, PT.string]),
 };

@@ -19,6 +19,7 @@ import {
   updateQueryFromState,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
+import { preventDefault } from "utils/misc";
 import styles from "./styles.module.scss";
 
 /**
@@ -41,17 +42,6 @@ const PeriodFilters = ({ className }) => {
     },
     [dispatch]
   );
-
-  const onUserHandleInputChange = useCallback(
-    (value) => {
-      dispatch(setWorkPeriodsUserHandle(value));
-    },
-    [dispatch]
-  );
-
-  const updateUrlQuery = useCallback(() => {
-    dispatch(updateQueryFromState());
-  }, [dispatch]);
 
   const onPaymentStatusesChange = useCallback(
     (statuses) => {
@@ -81,16 +71,17 @@ const PeriodFilters = ({ className }) => {
   useUpdateEffect(loadWorkingPeriodsFirstPage, [filters]);
 
   return (
-    <form className={cn(styles.container, className)} action="#">
+    <form
+      className={cn(styles.container, className)}
+      action="#"
+      onSubmit={preventDefault}
+    >
       <div className={styles.handleSection}>
         <SearchHandleField
           id="topcoder-handle"
           name="topcoder_handle"
           placeholder="Search Topcoder Handle"
           onChange={onUserHandleChange}
-          onInputChange={onUserHandleInputChange}
-          onBlur={updateUrlQuery}
-          // onMenuClose={updateUrlQuery}
           value={userHandle}
         />
       </div>
