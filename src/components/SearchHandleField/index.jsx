@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import PT from "prop-types";
 import cn from "classnames";
 import throttle from "lodash/throttle";
@@ -93,35 +93,22 @@ const SearchHandleField = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMenuFocused, setIsMenuFocused] = useState(false);
   const [options, setOptions] = useState([]);
-
-  const loadOptions = useCallback(
-    throttle(
-      async (value) => {
-        setIsLoading(true);
-        const options = await loadSuggestions(value);
-        setOptions(options);
-        setIsLoading(false);
-        setIsMenuOpen(true);
-        setIsMenuFocused(options.length && options[0].value === value);
-      },
-      300,
-      { leading: false }
-    ),
-    []
-  );
+  const isChangeAppliedRef = useRef(false);
 
   const onValueChange = (option, { action }) => {
     if (action === "input-change" || action === "select-option") {
-      setIsMenuFocused(false);
-      setIsMenuOpen(false);
-      if (!isMenuFocused) {
-        onChange(inputValue);
-      } else if (option) {
+      if (isMenuFocused && !isLoading && option) {
+        isChangeAppliedRef.current = true;
+        setIsMenuFocused(false);
+        setIsMenuOpen(false);
+        setIsLoading(false);
         onChange(option.value);
       }
     } else if (action === "clear") {
+      isChangeAppliedRef.current = true;
       setIsMenuFocused(false);
       setIsMenuOpen(false);
+      setIsLoading(false);
       onChange("");
     }
   };
@@ -129,21 +116,23 @@ const SearchHandleField = ({
   const onInputValueChange = useCallback(
     (value, { action }) => {
       if (action === "input-change") {
+        isChangeAppliedRef.current = false;
         setIsMenuFocused(false);
         setInputValue(value);
         onInputChange && onInputChange(value);
-        loadOptions(value);
       }
     },
-    [onInputChange, loadOptions]
+    [onInputChange]
   );
 
   const onKeyDown = (event) => {
     const key = event.key;
     if (key === "Enter" || key === "Escape") {
-      setIsMenuFocused(false);
-      setIsMenuOpen(false);
-      if (!isMenuFocused) {
+      if (!isMenuFocused || isLoading) {
+        isChangeAppliedRef.current = true;
+        setIsMenuFocused(false);
+        setIsMenuOpen(false);
+        setIsLoading(false);
         onChange(inputValue);
       }
     } else if (key === "ArrowDown") {
@@ -160,15 +149,39 @@ const SearchHandleField = ({
     }
   };
 
-  const onSelectBlur = useCallback(() => {
+  const onSelectBlur = () => {
     setIsMenuFocused(false);
     setIsMenuOpen(false);
+    onChange(inputValue);
     onBlur && onBlur();
-  }, [onBlur]);
+  };
+
+  const loadOptions = useCallback(
+    throttle(
+      async (value) => {
+        if (!isChangeAppliedRef.current) {
+          setIsLoading(true);
+          const options = await loadSuggestions(value);
+          if (!isChangeAppliedRef.current) {
+            setOptions(options);
+            setIsLoading(false);
+            setIsMenuOpen(true);
+          }
+        }
+      },
+      300,
+      { leading: false }
+    ),
+    []
+  );
 
   useUpdateEffect(() => {
     setInputValue(value);
   }, [value]);
+
+  useUpdateEffect(() => {
+    loadOptions(inputValue);
+  }, [inputValue]);
 
   return (
     <div
@@ -214,7 +227,7 @@ const loadSuggestions = async (inputValue) => {
   }
   try {
     const res = await getMemberSuggestions(inputValue);
-    const users = res.data.result.content;
+    const users = res.data.result.content.slice(0, 100);
     let match = null;
     for (let i = 0, len = users.length; i < len; i++) {
       let value = users[i].handle;
