@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import debounce from "lodash/debounce";
 import PT from "prop-types";
@@ -14,8 +14,12 @@ import {
   setWorkPeriodsPaymentStatuses,
   setWorkPeriodsUserHandle,
 } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage as loadWorkingPeriodsPage } from "store/thunks/workPeriods";
+import {
+  loadWorkPeriodsPage,
+  updateQueryFromState,
+} from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
+import { preventDefault } from "utils/misc";
 import styles from "./styles.module.scss";
 
 /**
@@ -34,6 +38,7 @@ const PeriodFilters = ({ className }) => {
   const onUserHandleChange = useCallback(
     (value) => {
       dispatch(setWorkPeriodsUserHandle(value));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
@@ -41,18 +46,20 @@ const PeriodFilters = ({ className }) => {
   const onPaymentStatusesChange = useCallback(
     (statuses) => {
       dispatch(setWorkPeriodsPaymentStatuses(statuses));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
 
   const onClearFilter = useCallback(() => {
     dispatch(resetWorkPeriodsFilters());
+    dispatch(updateQueryFromState());
   }, [dispatch]);
 
   const loadWorkingPeriodsFirstPage = useCallback(
     debounce(
       () => {
-        dispatch(loadWorkingPeriodsPage(1));
+        dispatch(loadWorkPeriodsPage);
       },
       300,
       { leading: false }
@@ -64,7 +71,11 @@ const PeriodFilters = ({ className }) => {
   useUpdateEffect(loadWorkingPeriodsFirstPage, [filters]);
 
   return (
-    <form className={cn(styles.container, className)} action="#">
+    <form
+      className={cn(styles.container, className)}
+      action="#"
+      onSubmit={preventDefault}
+    >
       <div className={styles.handleSection}>
         <SearchHandleField
           id="topcoder-handle"
@@ -103,4 +114,4 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: PAYMENT_STATUS.NO_DAYS, label: "No Days" },
 ];
 
-export default PeriodFilters;
+export default memo(PeriodFilters);

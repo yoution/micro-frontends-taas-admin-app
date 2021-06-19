@@ -74,7 +74,7 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
         <PaymentStatus status={data.paymentStatus} />
       </td>
       <td className={styles.daysWorked}>
-        {data.paymentStatus === PAYMENT_STATUS.PAID ? (
+        {data.paymentStatus === PAYMENT_STATUS.COMPLETED ? (
           `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
         ) : (
           <IntegerField

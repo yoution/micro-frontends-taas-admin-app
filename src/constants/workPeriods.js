@@ -19,7 +19,7 @@ export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
-export const REQUIRED_FIELDS = [
+export const API_REQUIRED_FIELDS = [
   "id",
   "jobId",
   "projectId",
@@ -40,15 +40,15 @@ export const REQUIRED_FIELDS = [
 ];
 
 // Valid parameter names for requests.
-export const QUERY_PARAM_NAMES = [
+export const API_QUERY_PARAM_NAMES = [
   "fields",
   "page",
   "perPage",
   "sortBy",
   "sortOrder",
-].concat(REQUIRED_FIELDS);
+].concat(API_REQUIRED_FIELDS);
 
-export const FIELDS_QUERY = REQUIRED_FIELDS.join(",");
+export const API_FIELDS_QUERY = API_REQUIRED_FIELDS.join(",");
 
 export const SORT_BY_DEFAULT = SORT_BY.USER_HANDLE;
 
@@ -89,6 +89,24 @@ export const API_PAYMENT_STATUS_MAP = (function () {
   }
   return obj;
 })();
+
+export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
+  cancelled: PAYMENT_STATUS.CANCELLED,
+  completed: PAYMENT_STATUS.COMPLETED,
+  failed: PAYMENT_STATUS.FAILED,
+  "in-progress": PAYMENT_STATUS.IN_PROGRESS,
+  scheduled: PAYMENT_STATUS.SCHEDULED,
+};
+
+export const URL_QUERY_PARAM_MAP = new Map([
+  ["startDate", "startDate"],
+  ["paymentStatuses", "status"],
+  ["userHandle", "user"],
+  ["criteria", "by"],
+  ["order", "order"],
+  ["pageSize", "perPage"],
+  ["pageNumber", "page"],
+]);
 
 export const JOB_NAME_LOADING = "Loading...";
 export const JOB_NAME_NONE = "<Job is not assigned>";

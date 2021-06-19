@@ -7,12 +7,11 @@ let nextErrorId = 1;
  * Creates an action denoting the start of loading specific challenge page.
  *
  * @param {Object} cancelSource object that can be used to cancel network request
- * @param {number} pageNumber the requested challenge page number
  * @returns {Object}
  */
-export const loadWorkPeriodsPagePending = (cancelSource, pageNumber) => ({
+export const loadWorkPeriodsPagePending = (cancelSource) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_PENDING,
-  payload: { cancelSource, pageNumber },
+  payload: cancelSource,
 });
 
 /**
@@ -382,4 +381,16 @@ export const toggleWorkingPeriodsVisible = (on = null) => ({
 export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
+});
+
+/**
+ * Creates an action denoting an update of working periods state slice using
+ * the provided query.
+ *
+ * @param {string} query URL search query
+ * @returns {Object}
+ */
+export const updateStateFromQuery = (query) => ({
+  type: ACTION_TYPE.WP_UPDATE_STATE_FROM_QUERY,
+  payload: query,
 });

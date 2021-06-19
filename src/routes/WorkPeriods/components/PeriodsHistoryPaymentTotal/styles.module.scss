@@ -1,3 +1,5 @@
+@import "styles/variables";
+
 .container {
   position: relative;
 
@@ -7,21 +9,23 @@
 }
 
 .paymentTotal {
+  width: 90px;
+  text-align: right;
   white-space: nowrap;
 }
 
-.paymentTotalSum {
+.paymentTotalText {
   display: inline-block;
-  width: 70px;
-  text-align: right;
+  line-height: 16px;
+
+  &.hasPayments {
+    border-bottom: 1px dashed $text-color;
+    cursor: pointer;
+  }
 }
 
 .daysPaid {
   color: #aaa;
-}
-
-.hasPayments {
-  cursor: pointer;
 }
 
 .popup {

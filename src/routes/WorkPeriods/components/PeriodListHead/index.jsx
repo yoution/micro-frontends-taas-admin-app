@@ -12,6 +12,7 @@ import {
   setWorkPeriodsSorting,
   toggleWorkingPeriodsVisible,
 } from "store/actions/workPeriods";
+import { updateQueryFromState } from "store/thunks/workPeriods";
 import styles from "./styles.module.scss";
 
 /**
@@ -29,6 +30,7 @@ const PeriodListHead = () => {
   const onSortingChange = useCallback(
     (sorting) => {
       dispatch(setWorkPeriodsSorting(sorting));
+      dispatch(updateQueryFromState());
     },
     [dispatch]
   );
