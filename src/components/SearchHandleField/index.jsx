@@ -16,14 +16,24 @@ function MenuList(props) {
   focusedOption = props.selectProps.isMenuFocused
     ? focusedOption
     : props.getValue()[0];
+  const setIsMenuFocused = props.selectProps.setIsMenuFocused;
 
-  return <components.MenuList {...props} focusedOption={focusedOption} />;
+  const onMouseEnter = useCallback(() => {
+    setIsMenuFocused(true);
+  }, [setIsMenuFocused]);
+
+  return (
+    <div className={styles.menuList} onMouseEnter={onMouseEnter}>
+      <components.MenuList {...props} focusedOption={focusedOption} />
+    </div>
+  );
 }
 MenuList.propTypes = {
   focusedOption: PT.object,
   getValue: PT.func,
   selectProps: PT.shape({
     isMenuFocused: PT.oneOfType([PT.bool, PT.number]),
+    setIsMenuFocused: PT.func,
   }),
 };
 
@@ -133,7 +143,7 @@ const SearchHandleField = ({
     if (key === "Enter" || key === "Escape") {
       setIsMenuFocused(false);
       setIsMenuOpen(false);
-      if (!inputValue) {
+      if (!isMenuFocused) {
         onChange(inputValue);
       }
     } else if (key === "ArrowDown") {
@@ -161,7 +171,14 @@ const SearchHandleField = ({
   }, [value]);
 
   return (
-    <div className={cn(styles.container, styles[size], className)}>
+    <div
+      className={cn(
+        styles.container,
+        styles[size],
+        { [styles.isMenuFocused]: isMenuFocused },
+        className
+      )}
+    >
       <span className={styles.icon} />
       <Select
         className={styles.select}
@@ -173,6 +190,7 @@ const SearchHandleField = ({
         isSearchable={true}
         isLoading={isLoading}
         isMenuFocused={isMenuFocused}
+        setIsMenuFocused={setIsMenuFocused}
         menuIsOpen={isMenuOpen}
         value={null}
         inputValue={inputValue}
