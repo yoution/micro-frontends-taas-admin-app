@@ -739,8 +739,9 @@ function updateStateFromQuery(queryStr, state) {
     updateSorting = true;
   }
   // checking sorting order
-  if (params.order in SORT_ORDER && params.order !== sorting.order) {
-    sorting.order = params.order;
+  const order = params.order;
+  if (order && order.toUpperCase() in SORT_ORDER && order !== sorting.order) {
+    sorting.order = order;
     updateSorting = true;
   }
   // checking page number
