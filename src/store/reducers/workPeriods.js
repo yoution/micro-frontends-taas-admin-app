@@ -33,6 +33,7 @@ const initPagination = () => ({
 
 const initFilters = () => ({
   dateRange: getWeekByDate(moment()),
+  onlyFailedPayments: false,
   paymentStatuses: {}, // all disabled by default
   userHandle: "",
 });
@@ -532,7 +533,10 @@ const actionHandlers = {
       },
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_PENDING]: (state, { periodId, cancelSource }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_PENDING]: (
+    state,
+    { periodId, cancelSource }
+  ) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -547,7 +551,7 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_SUCCESS]: (state, { periodId, data }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_SUCCESS]: (state, { periodId, data }) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -563,7 +567,7 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_ERROR]: (state, { periodId }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId }) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -592,6 +596,20 @@ const actionHandlers = {
     return {
       ...state,
       periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS]: (state, on) => {
+    const filters = state.filters;
+    on = on === null ? !filters.onlyFailedPayments : on;
+    if (on === filters.onlyFailedPayments) {
+      return state;
+    }
+    return {
+      ...state,
+      filters: {
+        ...filters,
+        onlyFailedPayments: on,
+      },
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PERIOD]: (state, periodId) => {
@@ -694,13 +712,14 @@ function updateStateFromQuery(queryStr, state) {
   let updatePagination = false;
   let updateSorting = false;
   const { filters, pagination, sorting } = state;
-  // checking payment statuses
   const { dateRange } = filters;
+  // checking start date
   let range = getWeekByDate(moment(params.startDate));
   if (!range[0].isSame(dateRange[0])) {
     filters.dateRange = range;
     updateFilters = true;
   }
+  // checking payment statuses
   let hasSameStatuses = true;
   const filtersPaymentStatuses = filters.paymentStatuses;
   const queryPaymentStatuses = {};
@@ -726,21 +745,32 @@ function updateStateFromQuery(queryStr, state) {
     filters.paymentStatuses = queryPaymentStatuses;
     updateFilters = true;
   }
+  // chacking only failed payments flag
+  const onlyFailedFlag = params.onlyFailedPayments?.slice(0, 1);
+  const onlyFailedPayments = onlyFailedFlag === "y";
+  if (onlyFailedPayments !== filters.onlyFailedPayments) {
+    filters.onlyFailedPayments = onlyFailedPayments;
+    updateFilters = true;
+  }
   // checking user handle
-  params.userHandle = params.userHandle || "";
-  if (params.userHandle !== filters.userHandle) {
-    filters.userHandle = params.userHandle.slice(0, 256);
+  const userHandle = params.userHandle?.slice(0, 256) || "";
+  if (userHandle !== filters.userHandle) {
+    filters.userHandle = userHandle;
     updateFilters = true;
   }
   // checking sorting criteria
-  const criteria = params.criteria?.toUpperCase();
-  if (criteria in SORT_BY && criteria !== sorting.criteria) {
+  let criteria = params.criteria?.toUpperCase();
+  criteria = criteria in SORT_BY ? criteria : SORT_BY_DEFAULT;
+  if (criteria !== sorting.criteria) {
     sorting.criteria = criteria;
     updateSorting = true;
   }
   // checking sorting order
-  if (params.order in SORT_ORDER && params.order !== sorting.order) {
-    sorting.order = params.order;
+  let order = params.order;
+  order =
+    order && order.toUpperCase() in SORT_ORDER ? order : SORT_ORDER_DEFAULT;
+  if (order !== sorting.order) {
+    sorting.order = order;
     updateSorting = true;
   }
   // checking page number

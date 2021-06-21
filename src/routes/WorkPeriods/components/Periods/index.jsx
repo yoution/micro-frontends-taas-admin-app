@@ -10,7 +10,10 @@ import {
   getWorkPeriodsSorting,
 } from "store/selectors/workPeriods";
 import { updateStateFromQuery } from "store/actions/workPeriods";
-import { loadWorkPeriodsPage } from "store/thunks/workPeriods";
+import {
+  loadWorkPeriodsPage,
+  updateQueryFromState,
+} from "store/thunks/workPeriods";
 
 /**
  * Displays working periods' list or a "Loading..." message or an error message.
@@ -30,6 +33,7 @@ const Periods = () => {
   }, [dispatch, pagination.pageNumber, pagination.pageSize, sorting]);
 
   useEffect(() => {
+    dispatch(updateQueryFromState(true));
     return globalHistory.listen(({ action, location }) => {
       if (action === "POP") {
         dispatch(updateStateFromQuery(location.search));

@@ -1,9 +1,9 @@
-export const PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED";
+export const CANCELLED = "CANCELLED";
 export const COMPLETED = "COMPLETED";
-export const PENDING = "PENDING";
+export const FAILED = "FAILED";
 export const IN_PROGRESS = "IN_PROGRESS";
 export const NO_DAYS = "NO_DAYS";
+export const PARTIALLY_COMPLETED = "PARTIALLY_COMPLETED";
+export const PENDING = "PENDING";
 export const SCHEDULED = "SCHEDULED";
-export const FAILED = "FAILED";
-export const CANCELLED = "CANCELLED";
 export const UNDEFINED = "UNDEFINED";

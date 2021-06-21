@@ -10,6 +10,7 @@ import {
   PAYMENT_STATUS_MAP,
   API_FIELDS_QUERY,
   JOB_NAME_NONE,
+  API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import {
   extractJobName,
@@ -54,6 +55,7 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
   const sortOrder = sorting.order;
   const sortBy = SORT_BY_MAP[sorting.criteria] || API_SORT_BY.USER_HANDLE;
 
+  const { onlyFailedPayments, userHandle } = filters;
   const [startDate] = filters.dateRange;
   const paymentStatuses = replaceItems(
     Object.keys(filters.paymentStatuses),
@@ -62,7 +64,7 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
 
   // For parameter description see:
   // https://topcoder-platform.github.io/taas-apis/#/ResourceBookings/get_resourceBookings
-  const [promise, cancelSource] = services.fetchResourceBookings({
+  const params = {
     fields: API_FIELDS_QUERY,
     page: pagination.pageNumber,
     perPage: pagination.pageSize,
@@ -70,10 +72,14 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
     sortOrder,
     // we only want to show Resource Bookings with status "placed"
     status: RESOURCE_BOOKING_STATUS.PLACED,
-    ["workPeriods.userHandle"]: filters.userHandle,
+    ["workPeriods.userHandle"]: userHandle,
     ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
     ["workPeriods.paymentStatus"]: paymentStatuses,
-  });
+  };
+  if (onlyFailedPayments) {
+    params["workPeriods.payments.status"] = API_CHALLENGE_PAYMENT_STATUS.FAILED;
+  }
+  const [promise, cancelSource] = services.fetchResourceBookings(params);
   dispatch(actions.loadWorkPeriodsPagePending(cancelSource));
   let totalCount, periods, pageCount;
   try {
