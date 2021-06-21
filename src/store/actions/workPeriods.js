@@ -339,6 +339,11 @@ export const setWorkPeriodDataError = (periodId, message) => ({
   payload: { periodId, message },
 });
 
+export const toggleShowFailedPaymentsOnly = (on = null) => ({
+  type: ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS,
+  payload: on,
+});
+
 /**
  * Creates an action to toggle certain working period by its id.
  *

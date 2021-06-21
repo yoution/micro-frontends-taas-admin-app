@@ -33,6 +33,7 @@ const initPagination = () => ({
 
 const initFilters = () => ({
   dateRange: getWeekByDate(moment()),
+  onlyFailedPayments: false,
   paymentStatuses: {}, // all disabled by default
   userHandle: "",
 });
@@ -597,6 +598,20 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
+  [ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS]: (state, on) => {
+    const filters = state.filters;
+    on = on === null ? !filters.onlyFailedPayments : on;
+    if (on === filters.onlyFailedPayments) {
+      return state;
+    }
+    return {
+      ...state,
+      filters: {
+        ...filters,
+        onlyFailedPayments: on,
+      },
+    };
+  },
   [ACTION_TYPE.WP_TOGGLE_PERIOD]: (state, periodId) => {
     let isSelectedPeriodsAll = state.isSelectedPeriodsAll;
     let isSelectedPeriodsVisible = state.isSelectedPeriodsVisible;
@@ -697,13 +712,14 @@ function updateStateFromQuery(queryStr, state) {
   let updatePagination = false;
   let updateSorting = false;
   const { filters, pagination, sorting } = state;
-  // checking payment statuses
   const { dateRange } = filters;
+  // checking start date
   let range = getWeekByDate(moment(params.startDate));
   if (!range[0].isSame(dateRange[0])) {
     filters.dateRange = range;
     updateFilters = true;
   }
+  // checking payment statuses
   let hasSameStatuses = true;
   const filtersPaymentStatuses = filters.paymentStatuses;
   const queryPaymentStatuses = {};
@@ -729,10 +745,17 @@ function updateStateFromQuery(queryStr, state) {
     filters.paymentStatuses = queryPaymentStatuses;
     updateFilters = true;
   }
+  // chacking only failed payments flag
+  const onlyFailedFlag = params.onlyFailedPayments?.slice(0, 1);
+  const onlyFailedPayments = onlyFailedFlag === "y";
+  if (onlyFailedPayments !== filters.onlyFailedPayments) {
+    filters.onlyFailedPayments = onlyFailedPayments;
+    updateFilters = true;
+  }
   // checking user handle
-  params.userHandle = params.userHandle || "";
-  if (params.userHandle !== filters.userHandle) {
-    filters.userHandle = params.userHandle.slice(0, 256);
+  const userHandle = params.userHandle?.slice(0, 256) || "";
+  if (userHandle !== filters.userHandle) {
+    filters.userHandle = userHandle;
     updateFilters = true;
   }
   // checking sorting criteria

@@ -120,6 +120,7 @@ export const API_CHALLENGE_PAYMENT_STATUS_MAP = {
 export const URL_QUERY_PARAM_MAP = new Map([
   ["startDate", "startDate"],
   ["paymentStatuses", "status"],
+  ["onlyFailedPayments", "onlyFailed"],
   ["userHandle", "user"],
   ["criteria", "by"],
   ["order", "order"],
