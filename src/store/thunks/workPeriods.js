@@ -64,7 +64,7 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
 
   // For parameter description see:
   // https://topcoder-platform.github.io/taas-apis/#/ResourceBookings/get_resourceBookings
-  const params = {
+  const [promise, cancelSource] = services.fetchResourceBookings({
     fields: API_FIELDS_QUERY,
     page: pagination.pageNumber,
     perPage: pagination.pageSize,
@@ -75,11 +75,10 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
     ["workPeriods.userHandle"]: userHandle,
     ["workPeriods.startDate"]: startDate.format(DATE_FORMAT_API),
     ["workPeriods.paymentStatus"]: paymentStatuses,
-  };
-  if (onlyFailedPayments) {
-    params["workPeriods.payments.status"] = API_CHALLENGE_PAYMENT_STATUS.FAILED;
-  }
-  const [promise, cancelSource] = services.fetchResourceBookings(params);
+    ["workPeriods.payments.status"]: onlyFailedPayments
+      ? API_CHALLENGE_PAYMENT_STATUS.FAILED
+      : null,
+  });
   dispatch(actions.loadWorkPeriodsPagePending(cancelSource));
   let totalCount, periods, pageCount;
   try {
@@ -95,7 +94,13 @@ export const loadWorkPeriodsPage = async (dispatch, getState) => {
     }
     return;
   }
-  dispatch(actions.loadWorkPeriodsPageSuccess(periods, totalCount, pageCount));
+  dispatch(
+    actions.loadWorkPeriodsPageSuccess({
+      periods,
+      totalCount,
+      pageCount,
+    })
+  );
 };
 
 /**

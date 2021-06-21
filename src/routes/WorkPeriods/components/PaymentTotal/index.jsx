@@ -17,9 +17,16 @@ import styles from "./styles.module.scss";
  * @param {Array} [props.payments] an array with payments information
  * @param {number} props.paymentTotal total paid sum
  * @param {number} props.daysPaid number of paid days
+ * @param {'absolute'|'fixed'} [props.popupStrategy] popup positioning strategy
  * @returns {JSX.Element}
  */
-const PaymentTotal = ({ className, payments, paymentTotal, daysPaid }) => {
+const PaymentTotal = ({
+  className,
+  payments,
+  paymentTotal,
+  daysPaid,
+  popupStrategy = "absolute",
+}) => {
   const [isShowPopup, setIsShowPopup] = useState(false);
   const [refElem, setRefElem] = useState(null);
   const containerRef = useRef(null);
@@ -56,7 +63,7 @@ const PaymentTotal = ({ className, payments, paymentTotal, daysPaid }) => {
         <span className={styles.daysPaid}>({daysPaid})</span>
       </span>
       {hasPayments && isShowPopup && (
-        <Popup referenceElement={refElem}>
+        <Popup referenceElement={refElem} strategy={popupStrategy}>
           <PaymentsList payments={payments} />
         </Popup>
       )}
@@ -69,6 +76,7 @@ PaymentTotal.propTypes = {
   payments: PT.array,
   paymentTotal: PT.number.isRequired,
   daysPaid: PT.number.isRequired,
+  popupStrategy: PT.oneOf(["absolute", "fixed"]),
 };
 
 export default PaymentTotal;

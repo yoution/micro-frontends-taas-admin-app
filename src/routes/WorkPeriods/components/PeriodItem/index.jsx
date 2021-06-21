@@ -126,6 +126,7 @@ const PeriodItem = ({
               className={styles.paymentError}
               errorDetails={data.paymentErrorLast}
               isImportant={data.paymentStatus !== PAYMENT_STATUS.COMPLETED}
+              popupStrategy="fixed"
             />
           )}
           <PaymentTotal
@@ -133,6 +134,7 @@ const PeriodItem = ({
             daysPaid={data.daysPaid}
             payments={data.payments}
             paymentTotal={data.paymentTotal}
+            popupStrategy="fixed"
           />
         </td>
         <td>
