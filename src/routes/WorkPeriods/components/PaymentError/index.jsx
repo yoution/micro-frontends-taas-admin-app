@@ -14,9 +14,15 @@ import styles from "./styles.module.scss";
  * @param {string} [props.className] class name to be added to root element
  * @param {Object} [props.errorDetails] error details object
  * @param {boolean} [props.isImportant] whether the error deemed important
+ * @param {'absolute'|'fixed'} [props.popupStrategy] popup positioning strategy
  * @returns {JSX.Element}
  */
-const PaymentError = ({ className, errorDetails, isImportant = true }) => {
+const PaymentError = ({
+  className,
+  errorDetails,
+  isImportant = true,
+  popupStrategy = "absolute",
+}) => {
   const [isShowPopup, setIsShowPopup] = useState(false);
   const [refElem, setRefElem] = useState(null);
   const containerRef = useRef(null);
@@ -42,7 +48,7 @@ const PaymentError = ({ className, errorDetails, isImportant = true }) => {
         tabIndex={0}
       />
       {isShowPopup && errorDetails && (
-        <Popup referenceElement={refElem}>
+        <Popup referenceElement={refElem} strategy={popupStrategy}>
           <PaymentErrorDetails details={errorDetails} />
         </Popup>
       )}
@@ -54,6 +60,7 @@ PaymentError.propTypes = {
   className: PT.string,
   errorDetails: PT.object,
   isImportant: PT.bool,
+  popupStrategy: PT.oneOf(["absolute", "fixed"]),
 };
 
 export default PaymentError;
