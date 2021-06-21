@@ -759,14 +759,17 @@ function updateStateFromQuery(queryStr, state) {
     updateFilters = true;
   }
   // checking sorting criteria
-  const criteria = params.criteria?.toUpperCase();
-  if (criteria in SORT_BY && criteria !== sorting.criteria) {
+  let criteria = params.criteria?.toUpperCase();
+  criteria = criteria in SORT_BY ? criteria : SORT_BY_DEFAULT;
+  if (criteria !== sorting.criteria) {
     sorting.criteria = criteria;
     updateSorting = true;
   }
   // checking sorting order
-  const order = params.order;
-  if (order && order.toUpperCase() in SORT_ORDER && order !== sorting.order) {
+  let order = params.order;
+  order =
+    order && order.toUpperCase() in SORT_ORDER ? order : SORT_ORDER_DEFAULT;
+  if (order !== sorting.order) {
     sorting.order = order;
     updateSorting = true;
   }
