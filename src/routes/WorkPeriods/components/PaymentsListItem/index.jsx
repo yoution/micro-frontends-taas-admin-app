@@ -2,9 +2,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useCallback, useRef } from "react";
 import PT from "prop-types";
-import styles from "./styles.module.scss";
 import { currencyFormatter, formatChallengeUrl } from "utils/formatters";
+import { PAYMENT_STATUS } from "constants/workPeriods";
 import PaymentStatus from "../PaymentStatus";
+import styles from "./styles.module.scss";
+import PaymentError from "../PaymentError";
 
 const PaymentsListItem = ({ item }) => {
   const inputRef = useRef();
@@ -45,8 +47,16 @@ const PaymentsListItem = ({ item }) => {
       </td>
       <td className={styles.days}>{item.days}</td>
       <td className={styles.amount}>{currencyFormatter.format(item.amount)}</td>
-      <td>
-        <PaymentStatus status={item.status} />
+      <td className={styles.paymentStatus}>
+        <div className={styles.statusWithError}>
+          <PaymentStatus status={item.status} />
+          {item.status === PAYMENT_STATUS.FAILED && (
+            <PaymentError
+              className={styles.paymentError}
+              errorDetails={item.statusDetails}
+            />
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -60,6 +70,7 @@ PaymentsListItem.propTypes = {
     days: PT.number.isRequired,
     memberRate: PT.number.isRequired,
     status: PT.string.isRequired,
+    statusDetails: PT.object,
   }),
 };
 

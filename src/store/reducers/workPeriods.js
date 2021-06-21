@@ -532,7 +532,10 @@ const actionHandlers = {
       },
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_PENDING]: (state, { periodId, cancelSource }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_PENDING]: (
+    state,
+    { periodId, cancelSource }
+  ) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -547,7 +550,7 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_SUCCESS]: (state, { periodId, data }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_SUCCESS]: (state, { periodId, data }) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -563,7 +566,7 @@ const actionHandlers = {
       periodsData: [periodsData],
     };
   },
-  [ACTION_TYPE.WP_SET_DATA_ERROR]: (state, { periodId }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId }) => {
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {

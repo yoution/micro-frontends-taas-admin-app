@@ -148,4 +148,6 @@ export const extractResponseData = (response) => response.data;
 
 export const increment = (value) => value + 1;
 
+export const negate = (value) => !value;
+
 export const noop = () => {};

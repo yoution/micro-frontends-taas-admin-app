@@ -23,41 +23,32 @@
   }
 }
 
-.iconLink {
+.iconLink,
+.iconCopyLink,
+.iconOpenLink {
   display: inline-block;
   vertical-align: -2px;
-  margin-right: 5px;
   width: 16px;
   height: 16px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+}
+
+.iconLink {
+  margin-right: 5px;
   background-image: url("./../../../../assets/images/icon-link.png");
 }
 
 .iconCopyLink {
-  display: inline-block;
-  vertical-align: -2px;
   margin-left: 18px;
-  width: 16px;
-  height: 16px;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
   background-image: url("./../../../../assets/images/icon-copy.png");
   cursor: pointer;
 }
 
 .iconOpenLink {
-  display: inline-block;
-  vertical-align: -2px;
   margin-left: 16px;
-  width: 16px;
-  height: 16px;
   text-decoration: none;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
   background-image: url("./../../../../assets/images/icon-open-outside.png");
 }
 
@@ -65,6 +56,19 @@
 .days,
 .amount {
   text-align: right;
+}
+
+.paymentStatus {
+  white-space: nowrap;
+}
+
+.statusWithError {
+  display: flex;
+  align-items: baseline;
+}
+
+.paymentError {
+  margin-left: 5px;
 }
 
 .hidden {

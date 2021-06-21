@@ -325,17 +325,17 @@ export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
  * @returns {Object}
  */
 export const setWorkPeriodDataPending = (periodId, cancelSource) => ({
-  type: ACTION_TYPE.WP_SET_DATA_PENDING,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_PENDING,
   payload: { periodId, cancelSource },
 });
 
 export const setWorkPeriodDataSuccess = (periodId, data) => ({
-  type: ACTION_TYPE.WP_SET_DATA_SUCCESS,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_SUCCESS,
   payload: { periodId, data },
 });
 
 export const setWorkPeriodDataError = (periodId, message) => ({
-  type: ACTION_TYPE.WP_SET_DATA_ERROR,
+  type: ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR,
   payload: { periodId, message },
 });
 

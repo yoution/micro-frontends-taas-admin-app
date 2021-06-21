@@ -2,19 +2,10 @@
 
 .container {
   position: relative;
-
-  .dropdown-arrow {
-    display: none;
-  }
+  display: inline-block;
 }
 
 .paymentTotal {
-  width: 90px;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.paymentTotalText {
   display: inline-block;
   line-height: 16px;
 
@@ -26,8 +17,4 @@
 
 .daysPaid {
   color: #aaa;
-}
-
-.popup {
-  z-index: 1;
 }
