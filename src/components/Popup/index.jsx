@@ -9,6 +9,7 @@ const Popup = ({ children, className, referenceElement }) => {
   const [arrowElement, setArrowElement] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: "bottom",
+    strategy: "fixed",
     modifiers: [
       { name: "arrow", options: { element: arrowElement, padding: 10 } },
       { name: "offset", options: { offset: [0, 5] } },

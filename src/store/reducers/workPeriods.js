@@ -610,6 +610,10 @@ const actionHandlers = {
         ...filters,
         onlyFailedPayments: on,
       },
+      pagination: {
+        ...state.pagination,
+        pageNumber: 1,
+      },
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PERIOD]: (state, periodId) => {

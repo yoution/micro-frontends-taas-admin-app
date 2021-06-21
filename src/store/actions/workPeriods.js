@@ -4,7 +4,7 @@ import * as ACTION_TYPE from "store/actionTypes/workPeriods";
 let nextErrorId = 1;
 
 /**
- * Creates an action denoting the start of loading specific challenge page.
+ * Creates an action denoting the start of loading specific working period page.
  *
  * @param {Object} cancelSource object that can be used to cancel network request
  * @returns {Object}
@@ -17,14 +17,15 @@ export const loadWorkPeriodsPagePending = (cancelSource) => ({
 /**
  * Creates an action denoting the saving of fetched working periods' page.
  *
- * @param {Array} periods array of challenge objects
- * @param {number} totalCount total number of periods for current filters' state
- * @param {number} pageCount total number of pages
+ * @param {Object} payload action payload
+ * @param {Array} payload.periods array of working period objects
+ * @param {number} payload.totalCount total number of periods for current filters' state
+ * @param {number} payload.pageCount total number of pages
  * @returns {Object}
  */
-export const loadWorkPeriodsPageSuccess = (periods, totalCount, pageCount) => ({
+export const loadWorkPeriodsPageSuccess = (payload) => ({
   type: ACTION_TYPE.WP_LOAD_PAGE_SUCCESS,
-  payload: { periods, totalCount, pageCount },
+  payload,
 });
 
 /**
