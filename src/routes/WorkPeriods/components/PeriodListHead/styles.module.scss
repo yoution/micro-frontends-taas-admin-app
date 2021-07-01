@@ -1,7 +1,7 @@
 @import "styles/mixins";
 
 .container {
-  th {
+  > th {
     text-align: left;
     background: #f4f4f4;
 
@@ -34,13 +34,19 @@
 
     &:last-child {
       .colHead {
-        padding: 12px 10px;
+        padding: 12px 10px 12px 50px;
 
         &::before {
           right: -20px;
           width: 20px;
         }
       }
+    }
+
+    :global(.startDate),
+    :global(.endDate) {
+      padding-left: 10px;
+      padding-right: 10px;
     }
 
     :global(.weeklyRate),
@@ -54,7 +60,7 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  padding: 12px 17px;
+  padding: 12px 15px;
   height: 40px;
 }
 

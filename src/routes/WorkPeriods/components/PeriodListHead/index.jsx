@@ -73,8 +73,8 @@ const PeriodListHead = () => {
 const HEAD_CELLS = [
   { label: "Topcoder Handle", id: SORT_BY.USER_HANDLE },
   { label: "Team Name", id: SORT_BY.TEAM_NAME, disableSort: true },
-  { label: "Start Date", id: SORT_BY.START_DATE },
-  { label: "End Date", id: SORT_BY.END_DATE },
+  { label: "Start Date", id: SORT_BY.START_DATE, className: "startDate" },
+  { label: "End Date", id: SORT_BY.END_DATE, className: "endDate" },
   { label: "Weekly Rate", id: SORT_BY.WEEKLY_RATE, className: "weeklyRate" },
   { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL, className: "totalPaid" },
   { label: "Status", id: SORT_BY.PAYMENT_STATUS },

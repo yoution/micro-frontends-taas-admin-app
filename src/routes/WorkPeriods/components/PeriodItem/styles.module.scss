@@ -4,7 +4,7 @@
 .container {
   > td {
     padding-left: 15px;
-    padding-right: 18px;
+    padding-right: 15px;
     background: #fff;
   }
 
@@ -40,6 +40,20 @@
   }
 }
 
+:global(.period-details) {
+  + .container.hasDetails {
+    > td {
+      &.toggle {
+        padding-top: 12px;
+      }
+
+      &.daysWorked {
+        padding-top: 5px;
+      }
+    }
+  }
+}
+
 td.toggle {
   padding: 12px 18px 12px 15px;
   line-height: 15px;
@@ -67,6 +81,8 @@ td.teamName {
 
 td.startDate,
 td.endDate {
+  padding-left: 10px;
+  padding-right: 10px;
   white-space: nowrap;
 }
 
@@ -89,8 +105,4 @@ td.paymentTotal {
 
 td.daysWorked {
   padding: 5px 10px;
-}
-
-.daysWorkedControl {
-  width: 100px;
 }
