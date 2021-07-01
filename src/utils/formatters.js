@@ -72,6 +72,18 @@ export function formatPaymentStatus(status) {
 }
 
 /**
+ * Creates the string with the number of items and the word describing the item
+ * possibly in plural form.
+ *
+ * @param {number} count number of items
+ * @param {string} baseWord word describing the item
+ * @returns {string}
+ */
+export function formatPlural(count, baseWord) {
+  return `${count} ${baseWord}${count > 1 ? "s" : ""}`;
+}
+
+/**
  * Formats user handle link.
  *
  * @param {number|string} rbProjectId ResourceBooking project id
