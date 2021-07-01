@@ -384,7 +384,7 @@ export const toggleWorkingPeriodsVisible = (on = null) => ({
  * @param {?boolean} on whether to turn processing-payments state on or off
  * @returns {Object}
  */
-export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
+export const toggleWorkPeriodsProcessingPayments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
 });
