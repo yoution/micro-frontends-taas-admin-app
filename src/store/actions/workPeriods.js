@@ -90,30 +90,6 @@ export const loadWorkPeriodDetailsError = (periodId, message) => ({
 });
 
 /**
- * Creates an action denoting successful loading of resource booking's job name.
- *
- * @param {string} periodId working period id
- * @param {string} jobName working period job name
- * @returns {Object}
- */
-export const loadJobNameSuccess = (periodId, jobName) => ({
-  type: ACTION_TYPE.WP_LOAD_JOB_NAME_SUCCESS,
-  payload: { periodId, jobName },
-});
-
-/**
- * Creates an action denoting an error for loading resource booking's job name.
- *
- * @param {string} periodId working period id
- * @param {string} message error message
- * @returns {Object}
- */
-export const loadJobNameError = (periodId, message) => ({
-  type: ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR,
-  payload: { periodId, message, id: nextErrorId++ },
-});
-
-/**
  * Creates an action denoting successful load of billing accounts.
  *
  * @param {string} periodId working period id

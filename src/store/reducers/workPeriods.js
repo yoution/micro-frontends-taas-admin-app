@@ -4,8 +4,6 @@ import {
   BILLING_ACCOUNTS_NONE,
   BILLING_ACCOUNTS_LOADING,
   BILLING_ACCOUNTS_ERROR,
-  JOB_NAME_ERROR,
-  JOB_NAME_LOADING,
   PAYMENT_STATUS,
   SORT_BY,
   SORT_BY_DEFAULT,
@@ -51,9 +49,6 @@ const initPeriodDetails = (period, cancelSource = cancelSourceDummy) => ({
   rbId: period.rbId,
   cancelSource,
   jobId: period.jobId,
-  jobName: JOB_NAME_LOADING,
-  jobNameError: null,
-  jobNameIsLoading: true,
   billingAccountId: period.billingAccountId || 0,
   billingAccounts: [
     { value: period.billingAccountId || 0, label: BILLING_ACCOUNTS_LOADING },
@@ -204,6 +199,9 @@ const actionHandlers = {
       periods: details.periods,
       periodsIsLoading: false,
     };
+    if (!periodDetails.billingAccountsIsLoading) {
+      periodDetails.cancelSource = null;
+    }
     if (periodDetails.hidePastPeriods) {
       periodDetails.periodsVisible = filterPeriodsByStartDate(
         periodDetails.periods,
@@ -232,49 +230,6 @@ const actionHandlers = {
       periodsDetails,
     };
   },
-  [ACTION_TYPE.WP_LOAD_JOB_NAME_SUCCESS]: (state, { periodId, jobName }) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      // Period details may be removed at this point so we must handle this case.
-      return state;
-    }
-    periodDetails = {
-      ...periodDetails,
-      jobName,
-      jobNameError: null,
-      jobNameIsLoading: false,
-    };
-    if (!periodDetails.billingAccountsIsLoading) {
-      periodDetails.cancelSource = null;
-    }
-    periodsDetails[periodId] = periodDetails;
-    return {
-      ...state,
-      periodsDetails,
-    };
-  },
-  [ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR]: (state, { periodId, message }) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      return state;
-    }
-    periodDetails = {
-      ...periodDetails,
-      jobName: JOB_NAME_ERROR,
-      jobNameError: message,
-      jobNameIsLoading: false,
-    };
-    if (!periodDetails.billingAccountsIsLoading) {
-      periodDetails.cancelSource = null;
-    }
-    periodsDetails[periodId] = periodDetails;
-    return {
-      ...state,
-      periodsDetails,
-    };
-  },
   [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS]: (
     state,
     { periodId, accounts }
@@ -298,7 +253,7 @@ const actionHandlers = {
       billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
-    if (!periodDetails.jobNameIsLoading) {
+    if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
     periodsDetails[periodId] = periodDetails;
@@ -332,7 +287,7 @@ const actionHandlers = {
       billingAccountsIsDisabled,
       billingAccountsIsLoading: false,
     };
-    if (!periodDetails.jobNameIsLoading) {
+    if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
     periodsDetails[periodId] = periodDetails;

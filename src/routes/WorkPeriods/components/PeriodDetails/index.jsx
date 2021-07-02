@@ -34,8 +34,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
     periodId,
     rbId,
     jobId,
-    jobName,
-    jobNameError,
     billingAccountId,
     billingAccounts,
     billingAccountsError,

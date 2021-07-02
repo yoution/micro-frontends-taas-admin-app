@@ -2,7 +2,11 @@ import React, { createContext, useCallback, useState } from "react";
 import PT from "prop-types";
 import { fetchJob } from "services/workPeriods";
 import { increment } from "utils/misc";
-import { JOB_NAME_ERROR, JOB_NAME_LOADING } from "constants/workPeriods";
+import {
+  JOB_NAME_ERROR,
+  JOB_NAME_LOADING,
+  JOB_NAME_NONE,
+} from "constants/workPeriods";
 
 const names = {};
 const errors = {};
@@ -14,7 +18,7 @@ const promises = {};
  * @param {number|string} id job id
  * @returns {Array}
  */
-const getName = (id) => [names[id], errors[id]];
+const getName = (id) => (id ? [names[id], errors[id]] : [JOB_NAME_NONE, null]);
 
 export const JobNameContext = createContext([
   getName,
@@ -27,7 +31,7 @@ const JobNameProvider = ({ children }) => {
   const [, setCount] = useState(Number.MIN_SAFE_INTEGER);
 
   const fetchName = useCallback((id) => {
-    if ((id in names || id in promises) && !(id in errors)) {
+    if (!id || ((id in names || id in promises) && !(id in errors))) {
       return;
     }
     names[id] = JOB_NAME_LOADING;
