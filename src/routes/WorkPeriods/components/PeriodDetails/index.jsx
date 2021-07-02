@@ -104,12 +104,12 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
                 </div>
               </div>
             </div>
-            <div className={styles.billingAccountSection}>
+            <div className={styles.billingAccountsSection}>
               <div className={styles.sectionLabel}>Billing Account</div>
               <SelectField
-                className={
-                  billingAccountsError ? styles.billingAccountsError : ""
-                }
+                className={cn(styles.billingAccountsSelect, {
+                  [styles.billingAccountsError]: billingAccountsError,
+                })}
                 id={`rb_bil_acc_${periodId}`}
                 isDisabled={billingAccountsIsDisabled}
                 size="small"

@@ -38,6 +38,14 @@ const initFilters = () => ({
   userHandle: "",
 });
 
+const initPeriodData = (period) => {
+  const data = period.data;
+  data.cancelSource = null;
+  data.daysWorkedIsUpdated = false;
+  delete period.data;
+  return data;
+};
+
 const initPeriodDetails = (
   periodId,
   rbId,
@@ -114,9 +122,7 @@ const actionHandlers = {
         : oldPagination;
     const periodsData = {};
     for (let period of periods) {
-      period.data.cancelSource = null;
-      periodsData[period.id] = period.data;
-      delete period.data;
+      periodsData[period.id] = initPeriodData(period);
     }
     return {
       ...state,
@@ -200,9 +206,7 @@ const actionHandlers = {
     }
     const periodsData = state.periodsData[0];
     for (let period of details.periods) {
-      period.data.cancelSource = null;
-      periodsData[period.id] = period.data;
-      delete period.data;
+      periodsData[period.id] = initPeriodData(period);
     }
     periodDetails = {
       ...periodDetails,
@@ -545,6 +549,7 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource,
+      daysWorkedIsUpdated: false,
     };
     return {
       ...state,
@@ -561,6 +566,7 @@ const actionHandlers = {
       ...periodData,
       ...data,
       cancelSource: null,
+      daysWorkedIsUpdated: true,
     };
     return {
       ...state,
@@ -576,6 +582,7 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource: null,
+      daysWorkedIsUpdated: false,
     };
     return {
       ...state,
@@ -678,6 +685,21 @@ const actionHandlers = {
       periodsSelected,
       isSelectedPeriodsAll,
       isSelectedPeriodsVisible,
+    };
+  },
+  [ACTION_TYPE.WP_TOGGLE_WORKING_DAYS_UPDATED]: (state, { periodId, on }) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData || periodData.daysWorkedIsUpdated === on) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      daysWorkedIsUpdated: on,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
     };
   },
   [ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS]: (state, on) => {

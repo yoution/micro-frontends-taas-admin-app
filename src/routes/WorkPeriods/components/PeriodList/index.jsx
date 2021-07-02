@@ -32,7 +32,13 @@ const PeriodList = ({ className }) => {
 
   return (
     <ProjectNameContextProvider>
-      <div className={cn(styles.container, className)}>
+      <div
+        className={cn(
+          styles.container,
+          { [styles.hasItems]: periods.length },
+          className
+        )}
+      >
         <table className={styles.table}>
           <thead>
             <PeriodListHead />

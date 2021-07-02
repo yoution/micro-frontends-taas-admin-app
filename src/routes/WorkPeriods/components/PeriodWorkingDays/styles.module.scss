@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  align-items: baseline;
+}
+
+.iconPlaceholder {
+  align-self: center;
+  margin-right: 10px;
+  width: 30px;
+  height: 30px;
+}
+
+.checkmarkIcon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.daysWorkedControl {
+  width: 100px;
+}

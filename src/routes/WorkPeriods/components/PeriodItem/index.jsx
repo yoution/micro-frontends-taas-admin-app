@@ -4,7 +4,6 @@ import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
-import IntegerField from "components/IntegerField";
 import ProjectName from "components/ProjectName";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
@@ -13,6 +12,7 @@ import PeriodDetails from "../PeriodDetails";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
+  toggleWorkingDaysUpdated,
   toggleWorkPeriod,
 } from "store/actions/workPeriods";
 import {
@@ -23,6 +23,7 @@ import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -56,6 +57,10 @@ const PeriodItem = ({
   const onToggleItemDetails = useCallback(() => {
     dispatch(toggleWorkPeriodDetails(item));
   }, [dispatch, item]);
+
+  const onWorkingDaysUpdateHintTimeout = useCallback(() => {
+    dispatch(toggleWorkingDaysUpdated(item.id, false));
+  }, [dispatch, item.id]);
 
   const onWorkingDaysChange = useCallback(
     (daysWorked) => {
@@ -141,19 +146,19 @@ const PeriodItem = ({
           <PaymentStatus status={data.paymentStatus} />
         </td>
         <td className={styles.daysWorked}>
-          <IntegerField
-            className={styles.daysWorkedControl}
+          <PeriodWorkingDays
+            updateHintTimeout={2000}
+            controlName={`wp_wrk_days_${item.id}`}
+            data={data}
             isDisabled={isDisabled}
-            name={`wp_wrk_days_${item.id}`}
-            onChange={onWorkingDaysChange}
-            maxValue={5}
-            minValue={data.daysPaid}
-            value={data.daysWorked}
+            onWorkingDaysChange={onWorkingDaysChange}
+            onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
           />
         </td>
       </tr>
       {details && (
         <PeriodDetails
+          className={styles.periodDetails}
           details={details}
           isDisabled={isDisabled}
           isFailed={isFailed}

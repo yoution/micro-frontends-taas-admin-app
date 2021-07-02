@@ -293,16 +293,26 @@ export const updateWorkPeriodWorkingDays =
  * @param {function} getState function returning redux store root state
  */
 export const processPayments = async (dispatch, getState) => {
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(true));
   const state = getState();
+  const isProcessing = selectors.getWorkPeriodsIsProcessingPayments(state);
+  if (isProcessing) {
+    return;
+  }
+  dispatch(actions.toggleWorkPeriodsProcessingPayments(true));
   const isSelectedAll = selectors.getWorkPeriodsIsSelectedAll(state);
   const { pageSize, totalCount } = selectors.getWorkPeriodsPagination(state);
-  if (isSelectedAll && totalCount > pageSize) {
-    processPaymentsAll(dispatch, getState);
-  } else {
-    processPaymentsSpecific(dispatch, getState);
+  const promise =
+    isSelectedAll && totalCount > pageSize
+      ? processPaymentsAll(dispatch, getState)
+      : processPaymentsSpecific(dispatch, getState);
+  // The promise returned by processPaymentsAll or processPaymentsSpecific
+  // should never be rejected but adding try-catch block just in case.
+  try {
+    await promise;
+  } catch (error) {
+    console.error(error);
   }
-  dispatch(actions.toggleWorkPeriodsProcessingPeyments(false));
+  dispatch(actions.toggleWorkPeriodsProcessingPayments(false));
 };
 
 const processPaymentsAll = async (dispatch, getState) => {

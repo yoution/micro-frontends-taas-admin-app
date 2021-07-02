@@ -4,12 +4,15 @@ import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import moment from "moment";
-import IntegerField from "components/IntegerField";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 import { PAYMENT_STATUS } from "constants/workPeriods";
-import { setDetailsWorkingDays } from "store/actions/workPeriods";
+import {
+  setDetailsWorkingDays,
+  toggleWorkingDaysUpdated,
+} from "store/actions/workPeriods";
 import { updateWorkPeriodWorkingDays } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
 import { formatDateLabel, formatDateRange } from "utils/formatters";
@@ -34,6 +37,10 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
     },
     [dispatch, item.id]
   );
+
+  const onWorkingDaysUpdateHintTimeout = useCallback(() => {
+    dispatch(toggleWorkingDaysUpdated(item.id, false));
+  }, [dispatch, item.id]);
 
   const updateWorkingDays = useCallback(
     debounce(
@@ -85,14 +92,13 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
         {data.paymentStatus === PAYMENT_STATUS.COMPLETED ? (
           `${daysWorked} ${daysWorked === 1 ? "Day" : "Days"}`
         ) : (
-          <IntegerField
-            className={styles.daysWorkedControl}
-            name={`wp_det_wd_${item.id}`}
+          <PeriodWorkingDays
+            updateHintTimeout={2000}
+            controlName={`wp_det_wd_${item.id}`}
+            data={data}
             isDisabled={isDisabled}
-            onChange={onWorkingDaysChange}
-            value={daysWorked}
-            maxValue={5}
-            minValue={data.daysPaid}
+            onWorkingDaysChange={onWorkingDaysChange}
+            onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
           />
         )}
       </td>

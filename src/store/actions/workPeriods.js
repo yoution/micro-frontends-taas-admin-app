@@ -384,9 +384,22 @@ export const toggleWorkingPeriodsVisible = (on = null) => ({
  * @param {?boolean} on whether to turn processing-payments state on or off
  * @returns {Object}
  */
-export const toggleWorkPeriodsProcessingPeyments = (on = null) => ({
+export const toggleWorkPeriodsProcessingPayments = (on = null) => ({
   type: ACTION_TYPE.WP_TOGGLE_PROCESSING_PAYMENTS,
   payload: on,
+});
+
+/**
+ * Creates an action denoting the change of working-days-updated flag for
+ * working period with the specified id.
+ *
+ * @param {string} periodId working period id
+ * @param {boolean} on whether to toggle working-days-updated flag on or off.
+ * @returns {Object}
+ */
+export const toggleWorkingDaysUpdated = (periodId, on) => ({
+  type: ACTION_TYPE.WP_TOGGLE_WORKING_DAYS_UPDATED,
+  payload: { periodId, on },
 });
 
 /**

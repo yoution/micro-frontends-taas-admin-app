@@ -35,12 +35,16 @@ const Popup = ({
   return (
     <div
       ref={setPopperElement}
-      className={cn(compStyles.container, styles.container, className)}
+      className={cn(compStyles.container, className)}
       style={styles.popper}
       {...attributes.popper}
     >
       {children}
-      <div className="popup-arrow" ref={setArrowElement} style={styles.arrow} />
+      <div
+        className={compStyles.popupArrow}
+        ref={setArrowElement}
+        style={styles.arrow}
+      />
     </div>
   );
 };
