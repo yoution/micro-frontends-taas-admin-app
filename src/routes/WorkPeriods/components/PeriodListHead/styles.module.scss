@@ -43,14 +43,14 @@
       }
     }
 
-    :global(.startDate),
-    :global(.endDate) {
+    .startDate,
+    .endDate {
       padding-left: 10px;
       padding-right: 10px;
     }
 
-    :global(.weeklyRate),
-    :global(.totalPaid) {
+    .weeklyRate,
+    .totalPaid {
       justify-content: flex-end;
     }
   }

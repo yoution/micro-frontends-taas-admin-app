@@ -158,7 +158,7 @@ const PeriodItem = ({
       </tr>
       {details && (
         <PeriodDetails
-          className="period-details"
+          className={styles.periodDetails}
           details={details}
           isDisabled={isDisabled}
           isFailed={isFailed}

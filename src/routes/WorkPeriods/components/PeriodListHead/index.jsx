@@ -53,7 +53,7 @@ const PeriodListHead = () => {
       </th>
       {HEAD_CELLS.map(({ id, className, label, disableSort }) => (
         <th key={id}>
-          <div className={cn(styles.colHead, className)}>
+          <div className={cn(styles.colHead, styles[className])}>
             <span className={styles.colLabel}>{label}</span>
             {!disableSort && (
               <SortingControl

@@ -40,7 +40,7 @@
   }
 }
 
-:global(.period-details) {
+.periodDetails {
   + .container.hasDetails {
     > td {
       &.toggle {
