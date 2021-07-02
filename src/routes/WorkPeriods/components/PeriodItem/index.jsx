@@ -1,13 +1,16 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
+import JobName from "components/JobName";
 import ProjectName from "components/ProjectName";
+import Tooltip from "components/Tooltip";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import {
@@ -23,7 +26,6 @@ import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
-import PeriodWorkingDays from "../PeriodWorkingDays";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -85,6 +87,26 @@ const PeriodItem = ({
     updateWorkingDays(data.daysWorked);
   }, [data.daysWorked]);
 
+  const jobName = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Job Title:</span>&nbsp;
+        <JobName jobId={item.jobId} />
+      </span>
+    ),
+    [item.jobId]
+  );
+
+  const projectId = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Project ID:</span>&nbsp;
+        {item.projectId}
+      </span>
+    ),
+    [item.projectId]
+  );
+
   return (
     <>
       <tr
@@ -106,7 +128,10 @@ const PeriodItem = ({
           />
         </td>
         <td className={styles.userHandle}>
-          <span>
+          <Tooltip
+            content={jobName}
+            targetClassName={styles.userHandleContainer}
+          >
             <a
               href={formatUserHandleLink(item.projectId, item.rbId)}
               onClick={stopPropagation}
@@ -115,10 +140,12 @@ const PeriodItem = ({
             >
               {item.userHandle}
             </a>
-          </span>
+          </Tooltip>
         </td>
         <td className={styles.teamName}>
-          <ProjectName projectId={item.projectId} />
+          <Tooltip content={projectId}>
+            <ProjectName projectId={item.projectId} />
+          </Tooltip>
         </td>
         <td className={styles.startDate}>{item.startDate}</td>
         <td className={styles.endDate}>{item.endDate}</td>
@@ -175,6 +202,7 @@ PeriodItem.propTypes = {
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
+    jobId: PT.string.isRequired,
     rbId: PT.string.isRequired,
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
