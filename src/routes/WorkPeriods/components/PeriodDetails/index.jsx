@@ -6,6 +6,7 @@ import debounce from "lodash/debounce";
 import Button from "components/Button";
 import Toggle from "components/Toggle";
 import SelectField from "components/SelectField";
+import JobName from "components/JobName";
 import PeriodsHistory from "../PeriodsHistory";
 import IconComputer from "../../../../assets/images/icon-computer.svg";
 import {
@@ -13,9 +14,9 @@ import {
   setBillingAccount,
   setDetailsHidePastPeriods,
 } from "store/actions/workPeriods";
-import styles from "./styles.module.scss";
 import { updateWorkPeriodBillingAccount } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
+import styles from "./styles.module.scss";
 
 /**
  * Displays working period details.
@@ -32,6 +33,7 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
   const {
     periodId,
     rbId,
+    jobId,
     jobName,
     jobNameError,
     billingAccountId,
@@ -95,13 +97,7 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
               <IconComputer className={styles.jobNameIcon} />
               <div className={styles.sectionField}>
                 <div className={styles.label}>Job Name</div>
-                <div
-                  className={cn(styles.jobName, {
-                    [styles.jobNameError]: !!jobNameError,
-                  })}
-                >
-                  {jobName}
-                </div>
+                <JobName jobId={jobId} className={styles.jobName} />
               </div>
             </div>
             <div className={styles.billingAccountsSection}>
@@ -161,6 +157,7 @@ PeriodDetails.propTypes = {
   details: PT.shape({
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,
+    jobId: PT.string.isRequired,
     jobName: PT.string,
     jobNameError: PT.string,
     jobNameIsLoading: PT.bool.isRequired,

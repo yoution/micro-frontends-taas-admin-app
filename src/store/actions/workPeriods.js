@@ -54,20 +54,14 @@ export const hideWorkPeriodDetails = (periodId) => ({
 /**
  * Creates an action denoting the loading of working period's details.
  *
- * @param {string} periodId working period id
- * @param {string} rbId resource booking id
- * @param {number} billingAccountId billing account id
+ * @param {Object} period working period object with basic data such as id,
+ * rbId, jobId, billingAccountId and etc
  * @param {Object} cancelSource axios cancel token source
  * @returns {Object}
  */
-export const loadWorkPeriodDetailsPending = (
-  periodId,
-  rbId,
-  billingAccountId,
-  cancelSource
-) => ({
+export const loadWorkPeriodDetailsPending = (period, cancelSource) => ({
   type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING,
-  payload: { periodId, rbId, billingAccountId, cancelSource },
+  payload: { period, cancelSource },
 });
 
 /**

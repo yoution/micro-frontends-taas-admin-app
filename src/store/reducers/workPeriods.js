@@ -46,21 +46,17 @@ const initPeriodData = (period) => {
   return data;
 };
 
-const initPeriodDetails = (
-  periodId,
-  rbId,
-  billingAccountId = 0,
-  cancelSource = cancelSourceDummy
-) => ({
-  periodId,
-  rbId,
+const initPeriodDetails = (period, cancelSource = cancelSourceDummy) => ({
+  periodId: period.id,
+  rbId: period.rbId,
   cancelSource,
+  jobId: period.jobId,
   jobName: JOB_NAME_LOADING,
   jobNameError: null,
   jobNameIsLoading: true,
-  billingAccountId,
+  billingAccountId: period.billingAccountId || 0,
   billingAccounts: [
-    { value: billingAccountId, label: BILLING_ACCOUNTS_LOADING },
+    { value: period.billingAccountId || 0, label: BILLING_ACCOUNTS_LOADING },
   ],
   billingAccountsError: null,
   billingAccountsIsDisabled: true,
@@ -179,15 +175,10 @@ const actionHandlers = {
   },
   [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING]: (
     state,
-    { periodId, rbId, billingAccountId, cancelSource }
+    { period, cancelSource }
   ) => {
     const periodsDetails = { ...state.periodsDetails };
-    periodsDetails[periodId] = initPeriodDetails(
-      periodId,
-      rbId,
-      billingAccountId,
-      cancelSource
-    );
+    periodsDetails[period.id] = initPeriodDetails(period, cancelSource);
     return {
       ...state,
       periodsDetails,

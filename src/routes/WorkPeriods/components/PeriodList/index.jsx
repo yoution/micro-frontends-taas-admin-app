@@ -2,7 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
-import ProjectNameContextProvider from "components/ProjectNameContextProvider";
+import JobNameProvider from "components/JobNameProvider";
+import ProjectNameProvider from "components/ProjectNameProvider";
 import PeriodItem from "../PeriodItem";
 import PeriodListHead from "../PeriodListHead";
 import {
@@ -31,37 +32,39 @@ const PeriodList = ({ className }) => {
   const isProcessingPayments = useSelector(getWorkPeriodsIsProcessingPayments);
 
   return (
-    <ProjectNameContextProvider>
-      <div
-        className={cn(
-          styles.container,
-          { [styles.hasItems]: periods.length },
-          className
-        )}
-      >
-        <table className={styles.table}>
-          <thead>
-            <PeriodListHead />
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={9} className={styles.listTopMargin}></td>
-            </tr>
-            {periods.map((period) => (
-              <PeriodItem
-                key={period.id}
-                isDisabled={isProcessingPayments}
-                isFailed={period.id in periodsFailed}
-                isSelected={period.id in periodsSelected}
-                item={period}
-                data={periodsData[period.id]}
-                details={periodsDetails[period.id]}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </ProjectNameContextProvider>
+    <JobNameProvider>
+      <ProjectNameProvider>
+        <div
+          className={cn(
+            styles.container,
+            { [styles.hasItems]: periods.length },
+            className
+          )}
+        >
+          <table className={styles.table}>
+            <thead>
+              <PeriodListHead />
+            </thead>
+            <tbody>
+              <tr>
+                <td colSpan={9} className={styles.listTopMargin}></td>
+              </tr>
+              {periods.map((period) => (
+                <PeriodItem
+                  key={period.id}
+                  isDisabled={isProcessingPayments}
+                  isFailed={period.id in periodsFailed}
+                  isSelected={period.id in periodsSelected}
+                  item={period}
+                  data={periodsData[period.id]}
+                  details={periodsDetails[period.id]}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ProjectNameProvider>
+    </JobNameProvider>
   );
 };
 

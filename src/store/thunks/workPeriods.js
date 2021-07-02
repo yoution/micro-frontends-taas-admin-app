@@ -150,30 +150,23 @@ export const toggleWorkPeriodDetails =
         // reload details?
       } else {
         const source = axios.CancelToken.source();
-        dispatch(
-          actions.loadWorkPeriodDetailsPending(
-            period.id,
-            period.rbId,
-            period.billingAccountId,
-            source
-          )
-        );
+        dispatch(actions.loadWorkPeriodDetailsPending(period, source));
 
-        if (period.jobId) {
-          const [jobNamePromise] = services.fetchJob(period.jobId, source);
-          jobNamePromise
-            .then((data) => {
-              const jobName = extractJobName(data);
-              dispatch(actions.loadJobNameSuccess(period.id, jobName));
-            })
-            .catch((error) => {
-              if (!axios.isCancel(error)) {
-                dispatch(actions.loadJobNameError(period.id, error.toString()));
-              }
-            });
-        } else {
-          dispatch(actions.loadJobNameSuccess(period.id, JOB_NAME_NONE));
-        }
+        // if (period.jobId) {
+        //   const [jobNamePromise] = services.fetchJob(period.jobId, source);
+        //   jobNamePromise
+        //     .then((data) => {
+        //       const jobName = extractJobName(data);
+        //       dispatch(actions.loadJobNameSuccess(period.id, jobName));
+        //     })
+        //     .catch((error) => {
+        //       if (!axios.isCancel(error)) {
+        //         dispatch(actions.loadJobNameError(period.id, error.toString()));
+        //       }
+        //     });
+        // } else {
+        //   dispatch(actions.loadJobNameSuccess(period.id, JOB_NAME_NONE));
+        // }
 
         const [bilAccsPromise] = services.fetchBillingAccounts(
           period.projectId,
