@@ -6,6 +6,7 @@ import {
   getWorkPeriodsIsSelectedAll,
   getWorkPeriodsIsSelectedVisible,
   getWorkPeriodsPageSize,
+  getWorkPeriodsSelectedCount,
   getWorkPeriodsTotalCount,
 } from "store/selectors/workPeriods";
 import { toggleWorkingPeriodsAll } from "store/actions/workPeriods";
@@ -21,6 +22,7 @@ import styles from "./styles.module.scss";
 const PeriodsSelectionMessage = ({ className }) => {
   const isSelectedAll = useSelector(getWorkPeriodsIsSelectedAll);
   const isSelectedVisible = useSelector(getWorkPeriodsIsSelectedVisible);
+  const selectedCount = useSelector(getWorkPeriodsSelectedCount);
   const pageSize = useSelector(getWorkPeriodsPageSize);
   const totalCount = useSelector(getWorkPeriodsTotalCount);
   const dispatch = useDispatch();
@@ -35,6 +37,8 @@ const PeriodsSelectionMessage = ({ className }) => {
         <span className={styles.message}>
           {isSelectedAll
             ? `All ${totalCount} Records are selected. `
+            : selectedCount < pageSize
+            ? `${selectedCount} Records on this page are selected. `
             : `All ${pageSize} Records on this page are selected. `}
           <span
             className={styles.button}

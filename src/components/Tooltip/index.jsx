@@ -12,6 +12,7 @@ import compStyles from "./styles.module.scss";
  * @param {string} [props.className] class name to be added to root element
  * @param {any} props.content tooltip content
  * @param {number} [props.delay] postpone showing the tooltip after this delay
+ * @param {boolean} [props.isDisabled] whether the tooltip is disabled
  * @param {import('@popperjs/core').Placement} [props.placement] tooltip's
  * preferred placement as defined in PopperJS documentation
  * @param {'absolute'|'fixed'} [props.strategy] tooltip positioning strategy
@@ -27,6 +28,7 @@ const Tooltip = ({
   className,
   content,
   delay = 150,
+  isDisabled = false,
   placement = "top",
   strategy = "absolute",
   targetClassName,
@@ -83,8 +85,8 @@ const Tooltip = ({
     <div
       className={cn(compStyles.container, className)}
       ref={containerRef}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={isDisabled ? null : onMouseEnter}
+      onMouseLeave={isDisabled ? null : onMouseLeave}
     >
       <span
         className={cn(compStyles.target, targetClassName)}
@@ -92,7 +94,7 @@ const Tooltip = ({
       >
         {children}
       </span>
-      {isTooltipShown && (
+      {!isDisabled && isTooltipShown && (
         <div
           ref={setPopperElement}
           className={cn(compStyles.tooltip, tooltipClassName)}
@@ -116,6 +118,7 @@ Tooltip.propTypes = {
   className: PT.string,
   content: PT.node,
   delay: PT.number,
+  isDisabled: PT.bool,
   placement: PT.string,
   strategy: PT.oneOf(["absolute", "fixed"]),
   targetClassName: PT.string,

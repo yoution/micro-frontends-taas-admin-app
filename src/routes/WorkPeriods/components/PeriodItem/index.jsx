@@ -12,7 +12,10 @@ import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
 import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
-import { PAYMENT_STATUS } from "constants/workPeriods";
+import {
+  PAYMENT_STATUS,
+  REASON_DISABLED_MESSAGE_MAP,
+} from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
   toggleWorkingDaysUpdated,
@@ -37,6 +40,7 @@ import styles from "./styles.module.scss";
  * @param {Object} props.item object describing a working period
  * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
+ * @param {Array} [props.reasonsDisabled] array of REASON_DISABLED values.
  * @returns {JSX.Element}
  */
 const PeriodItem = ({
@@ -46,6 +50,7 @@ const PeriodItem = ({
   item,
   data,
   details,
+  reasonsDisabled,
 }) => {
   const dispatch = useDispatch();
 
@@ -107,6 +112,15 @@ const PeriodItem = ({
     [item.projectId]
   );
 
+  const reasonsDisabledElement = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        {formatReasonsDisabled(reasonsDisabled)}
+      </span>
+    ),
+    [reasonsDisabled]
+  );
+
   return (
     <>
       <tr
@@ -117,15 +131,22 @@ const PeriodItem = ({
         onClick={onToggleItemDetails}
       >
         <td className={styles.toggle}>
-          <Checkbox
-            size="small"
-            isDisabled={isDisabled}
-            checked={isSelected}
-            name={`wp_chb_${item.id}`}
-            onChange={onToggleItem}
-            option={{ value: item.id }}
-            stopClickPropagation={true}
-          />
+          <Tooltip
+            content={reasonsDisabledElement}
+            isDisabled={!reasonsDisabled}
+            strategy="fixed"
+            targetClassName={styles.checkboxContainer}
+          >
+            <Checkbox
+              size="small"
+              isDisabled={isDisabled || !!reasonsDisabled}
+              checked={isSelected}
+              name={`wp_chb_${item.id}`}
+              onChange={onToggleItem}
+              option={{ value: item.id }}
+              stopClickPropagation={true}
+            />
+          </Tooltip>
         </td>
         <td className={styles.userHandle}>
           <Tooltip
@@ -235,6 +256,27 @@ PeriodItem.propTypes = {
     periods: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
   }),
+  reasonsDisabled: PT.arrayOf(PT.string),
 };
 
 export default memo(PeriodItem);
+
+/**
+ * Returns a string produced by concatenation of all provided reasons some
+ * working period is disabled.
+ *
+ * @param {Array} reasonIds array of REASON_DISABLED values
+ * @returns {?Array}
+ */
+function formatReasonsDisabled(reasonIds) {
+  if (!reasonIds) {
+    return null;
+  }
+  const reasons = [];
+  reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[0]]);
+  for (let i = 1, len = reasonIds.length; i < len; i++) {
+    reasons.push(<br />);
+    reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[i]]);
+  }
+  return reasons;
+}

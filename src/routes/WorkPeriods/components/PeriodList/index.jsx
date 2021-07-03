@@ -10,6 +10,7 @@ import {
   getWorkPeriods,
   getWorkPeriodsData,
   getWorkPeriodsDetails,
+  getWorkPeriodsDisabled,
   getWorkPeriodsFailed,
   getWorkPeriodsIsProcessingPayments,
   getWorkPeriodsSelected,
@@ -27,8 +28,9 @@ const PeriodList = ({ className }) => {
   const periods = useSelector(getWorkPeriods);
   const [periodsData] = useSelector(getWorkPeriodsData);
   const periodsDetails = useSelector(getWorkPeriodsDetails);
+  const [periodsDisabledMap] = useSelector(getWorkPeriodsDisabled);
   const periodsFailed = useSelector(getWorkPeriodsFailed);
-  const periodsSelected = useSelector(getWorkPeriodsSelected);
+  const [periodsSelectedSet] = useSelector(getWorkPeriodsSelected);
   const isProcessingPayments = useSelector(getWorkPeriodsIsProcessingPayments);
 
   return (
@@ -54,10 +56,11 @@ const PeriodList = ({ className }) => {
                   key={period.id}
                   isDisabled={isProcessingPayments}
                   isFailed={period.id in periodsFailed}
-                  isSelected={period.id in periodsSelected}
+                  isSelected={periodsSelectedSet.has(period.id)}
                   item={period}
                   data={periodsData[period.id]}
                   details={periodsDetails[period.id]}
+                  reasonsDisabled={periodsDisabledMap.get(period.id)}
                 />
               ))}
             </tbody>

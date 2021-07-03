@@ -146,6 +146,13 @@ export const extractJobName = (data) => data.title;
 
 export const extractResponseData = (response) => response.data;
 
+export const hasKey = (obj) => {
+  for (let key in obj) {
+    return true;
+  }
+  return false;
+};
+
 export const increment = (value) => value + 1;
 
 export const negate = (value) => !value;

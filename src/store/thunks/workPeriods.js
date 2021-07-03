@@ -337,13 +337,10 @@ const processPaymentsAll = async (dispatch, getState) => {
 
 const processPaymentsSpecific = async (dispatch, getState) => {
   const state = getState();
-  const periods = selectors.getWorkPeriods(state);
-  const periodsSelected = selectors.getWorkPeriodsSelected(state);
+  const [periodsSelectedSet] = selectors.getWorkPeriodsSelected(state);
   const payments = [];
-  for (let period of periods) {
-    if (period.id in periodsSelected) {
-      payments.push({ workPeriodId: period.id });
-    }
+  for (let workPeriodId of periodsSelectedSet) {
+    payments.push({ workPeriodId });
   }
   makeToastPaymentsProcessing(payments.length);
   let results = null;
