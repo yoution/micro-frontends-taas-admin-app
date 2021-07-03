@@ -5,8 +5,54 @@ import {
   DATE_FORMAT_API,
   DATE_FORMAT_UI,
   PAYMENT_STATUS,
+  REASON_DISABLED,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
+
+/**
+ * Checks for reasons the specified working period should be disabled for
+ * payment processing.
+ *
+ * @param {Object} period working period object
+ * @returns {?string[]}
+ */
+export function findReasonsDisabled(period) {
+  const reasons = [];
+  if (!period.billingAccountId) {
+    reasons.push(REASON_DISABLED.NO_BILLING_ACCOUNT);
+  }
+  if (!period.weeklyRate) {
+    reasons.push(REASON_DISABLED.NO_MEMBER_RATE);
+  }
+  const data = period.data;
+  if (data && data.daysWorked === data.daysPaid) {
+    reasons.push(REASON_DISABLED.NO_DAYS_TO_PAY_FOR);
+  }
+  return reasons.length ? reasons : undefined;
+}
+
+export function addReasonDisabled(reasons, reason) {
+  if (!reasons) {
+    return [reason];
+  }
+  if (reasons.indexOf(reason) < 0) {
+    reasons = [...reasons, reason];
+  }
+  return reasons;
+}
+
+export function removeReasonDisabled(reasons, reason) {
+  if (!reasons) {
+    return undefined;
+  }
+  let index = reasons.indexOf(reason);
+  if (index >= 0) {
+    let newReasons = [...reasons];
+    newReasons.splice(index, 1);
+    return newReasons.length ? newReasons : undefined;
+  }
+  return reasons;
+}
 
 /**
  * Creates a URL search query from current state.

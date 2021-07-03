@@ -9,11 +9,9 @@ import {
   DATE_FORMAT_API,
   PAYMENT_STATUS_MAP,
   API_FIELDS_QUERY,
-  JOB_NAME_NONE,
   API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import {
-  extractJobName,
   extractResponseData,
   extractResponsePagination,
   replaceItems,
@@ -150,30 +148,7 @@ export const toggleWorkPeriodDetails =
         // reload details?
       } else {
         const source = axios.CancelToken.source();
-        dispatch(
-          actions.loadWorkPeriodDetailsPending(
-            period.id,
-            period.rbId,
-            period.billingAccountId,
-            source
-          )
-        );
-
-        if (period.jobId) {
-          const [jobNamePromise] = services.fetchJob(period.jobId, source);
-          jobNamePromise
-            .then((data) => {
-              const jobName = extractJobName(data);
-              dispatch(actions.loadJobNameSuccess(period.id, jobName));
-            })
-            .catch((error) => {
-              if (!axios.isCancel(error)) {
-                dispatch(actions.loadJobNameError(period.id, error.toString()));
-              }
-            });
-        } else {
-          dispatch(actions.loadJobNameSuccess(period.id, JOB_NAME_NONE));
-        }
+        dispatch(actions.loadWorkPeriodDetailsPending(period, source));
 
         const [bilAccsPromise] = services.fetchBillingAccounts(
           period.projectId,
@@ -362,13 +337,10 @@ const processPaymentsAll = async (dispatch, getState) => {
 
 const processPaymentsSpecific = async (dispatch, getState) => {
   const state = getState();
-  const periods = selectors.getWorkPeriods(state);
-  const periodsSelected = selectors.getWorkPeriodsSelected(state);
+  const [periodsSelectedSet] = selectors.getWorkPeriodsSelected(state);
   const payments = [];
-  for (let period of periods) {
-    if (period.id in periodsSelected) {
-      payments.push({ workPeriodId: period.id });
-    }
+  for (let workPeriodId of periodsSelectedSet) {
+    payments.push({ workPeriodId });
   }
   makeToastPaymentsProcessing(payments.length);
   let results = null;

@@ -54,20 +54,14 @@ export const hideWorkPeriodDetails = (periodId) => ({
 /**
  * Creates an action denoting the loading of working period's details.
  *
- * @param {string} periodId working period id
- * @param {string} rbId resource booking id
- * @param {number} billingAccountId billing account id
+ * @param {Object} period working period object with basic data such as id,
+ * rbId, jobId, billingAccountId and etc
  * @param {Object} cancelSource axios cancel token source
  * @returns {Object}
  */
-export const loadWorkPeriodDetailsPending = (
-  periodId,
-  rbId,
-  billingAccountId,
-  cancelSource
-) => ({
+export const loadWorkPeriodDetailsPending = (period, cancelSource) => ({
   type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_PENDING,
-  payload: { periodId, rbId, billingAccountId, cancelSource },
+  payload: { period, cancelSource },
 });
 
 /**
@@ -92,30 +86,6 @@ export const loadWorkPeriodDetailsSuccess = (periodId, details) => ({
  */
 export const loadWorkPeriodDetailsError = (periodId, message) => ({
   type: ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_ERROR,
-  payload: { periodId, message, id: nextErrorId++ },
-});
-
-/**
- * Creates an action denoting successful loading of resource booking's job name.
- *
- * @param {string} periodId working period id
- * @param {string} jobName working period job name
- * @returns {Object}
- */
-export const loadJobNameSuccess = (periodId, jobName) => ({
-  type: ACTION_TYPE.WP_LOAD_JOB_NAME_SUCCESS,
-  payload: { periodId, jobName },
-});
-
-/**
- * Creates an action denoting an error for loading resource booking's job name.
- *
- * @param {string} periodId working period id
- * @param {string} message error message
- * @returns {Object}
- */
-export const loadJobNameError = (periodId, message) => ({
-  type: ACTION_TYPE.WP_LOAD_JOB_NAME_ERROR,
   payload: { periodId, message, id: nextErrorId++ },
 });
 

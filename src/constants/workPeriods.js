@@ -6,6 +6,7 @@ import * as API_SORT_BY from "./workPeriods/apiSortBy";
 import * as SORT_BY from "./workPeriods/sortBy";
 import * as SORT_ORDER from "./workPeriods/sortOrder";
 import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
+import * as REASON_DISABLED from "./workPeriods/reasonDisabled";
 
 export {
   API_CHALLENGE_PAYMENT_STATUS,
@@ -14,6 +15,7 @@ export {
   SORT_BY,
   SORT_ORDER,
   PAYMENT_STATUS,
+  REASON_DISABLED,
 };
 
 // resource bookings API url
@@ -135,3 +137,10 @@ export const JOB_NAME_ERROR = "<Error loading job>";
 export const BILLING_ACCOUNTS_LOADING = "Loading...";
 export const BILLING_ACCOUNTS_NONE = "<No accounts available>";
 export const BILLING_ACCOUNTS_ERROR = "<Error loading accounts>";
+
+export const REASON_DISABLED_MESSAGE_MAP = {
+  [REASON_DISABLED.NO_BILLING_ACCOUNT]:
+    "Billing Account is not set for the Resorce Booking",
+  [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
+  [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
+};

@@ -64,14 +64,14 @@ td.toggle {
     @include roboto-bold;
     color: #0d61bf;
   }
+}
 
-  span {
-    display: block;
-    max-width: 20em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.userHandleContainer {
+  display: inline-block;
+  max-width: 20em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 td.teamName {
@@ -105,4 +105,15 @@ td.paymentTotal {
 
 td.daysWorked {
   padding: 5px 10px;
+}
+
+.tooltipContent {
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.tooltipLabel {
+  margin-right: 5px;
+  white-space: nowrap;
+  font-weight: 500;
 }

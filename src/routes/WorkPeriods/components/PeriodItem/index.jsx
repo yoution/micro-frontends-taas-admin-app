@@ -1,15 +1,21 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import Checkbox from "components/Checkbox";
+import JobName from "components/JobName";
 import ProjectName from "components/ProjectName";
+import Tooltip from "components/Tooltip";
 import PaymentError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
+import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
-import { PAYMENT_STATUS } from "constants/workPeriods";
+import {
+  PAYMENT_STATUS,
+  REASON_DISABLED_MESSAGE_MAP,
+} from "constants/workPeriods";
 import {
   setWorkPeriodWorkingDays,
   toggleWorkingDaysUpdated,
@@ -23,7 +29,6 @@ import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
-import PeriodWorkingDays from "../PeriodWorkingDays";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -35,6 +40,7 @@ import PeriodWorkingDays from "../PeriodWorkingDays";
  * @param {Object} props.item object describing a working period
  * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
+ * @param {Array} [props.reasonsDisabled] array of REASON_DISABLED values.
  * @returns {JSX.Element}
  */
 const PeriodItem = ({
@@ -44,6 +50,7 @@ const PeriodItem = ({
   item,
   data,
   details,
+  reasonsDisabled,
 }) => {
   const dispatch = useDispatch();
 
@@ -85,6 +92,35 @@ const PeriodItem = ({
     updateWorkingDays(data.daysWorked);
   }, [data.daysWorked]);
 
+  const jobName = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Job Title:</span>&nbsp;
+        <JobName jobId={item.jobId} />
+      </span>
+    ),
+    [item.jobId]
+  );
+
+  const projectId = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        <span className={styles.tooltipLabel}>Project ID:</span>&nbsp;
+        {item.projectId}
+      </span>
+    ),
+    [item.projectId]
+  );
+
+  const reasonsDisabledElement = useMemo(
+    () => (
+      <span className={styles.tooltipContent}>
+        {formatReasonsDisabled(reasonsDisabled)}
+      </span>
+    ),
+    [reasonsDisabled]
+  );
+
   return (
     <>
       <tr
@@ -95,18 +131,28 @@ const PeriodItem = ({
         onClick={onToggleItemDetails}
       >
         <td className={styles.toggle}>
-          <Checkbox
-            size="small"
-            isDisabled={isDisabled}
-            checked={isSelected}
-            name={`wp_chb_${item.id}`}
-            onChange={onToggleItem}
-            option={{ value: item.id }}
-            stopClickPropagation={true}
-          />
+          <Tooltip
+            content={reasonsDisabledElement}
+            isDisabled={!reasonsDisabled}
+            strategy="fixed"
+            targetClassName={styles.checkboxContainer}
+          >
+            <Checkbox
+              size="small"
+              isDisabled={isDisabled || !!reasonsDisabled}
+              checked={isSelected}
+              name={`wp_chb_${item.id}`}
+              onChange={onToggleItem}
+              option={{ value: item.id }}
+              stopClickPropagation={true}
+            />
+          </Tooltip>
         </td>
         <td className={styles.userHandle}>
-          <span>
+          <Tooltip
+            content={jobName}
+            targetClassName={styles.userHandleContainer}
+          >
             <a
               href={formatUserHandleLink(item.projectId, item.rbId)}
               onClick={stopPropagation}
@@ -115,10 +161,12 @@ const PeriodItem = ({
             >
               {item.userHandle}
             </a>
-          </span>
+          </Tooltip>
         </td>
         <td className={styles.teamName}>
-          <ProjectName projectId={item.projectId} />
+          <Tooltip content={projectId}>
+            <ProjectName projectId={item.projectId} />
+          </Tooltip>
         </td>
         <td className={styles.startDate}>{item.startDate}</td>
         <td className={styles.endDate}>{item.endDate}</td>
@@ -175,6 +223,7 @@ PeriodItem.propTypes = {
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
+    jobId: PT.string.isRequired,
     rbId: PT.string.isRequired,
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
@@ -207,6 +256,27 @@ PeriodItem.propTypes = {
     periods: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
   }),
+  reasonsDisabled: PT.arrayOf(PT.string),
 };
 
 export default memo(PeriodItem);
+
+/**
+ * Returns a string produced by concatenation of all provided reasons some
+ * working period is disabled.
+ *
+ * @param {Array} reasonIds array of REASON_DISABLED values
+ * @returns {?Array}
+ */
+function formatReasonsDisabled(reasonIds) {
+  if (!reasonIds) {
+    return null;
+  }
+  const reasons = [];
+  reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[0]]);
+  for (let i = 1, len = reasonIds.length; i < len; i++) {
+    reasons.push(<br />);
+    reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[i]]);
+  }
+  return reasons;
+}
