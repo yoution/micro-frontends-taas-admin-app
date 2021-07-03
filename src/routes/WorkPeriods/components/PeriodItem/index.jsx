@@ -95,7 +95,7 @@ const PeriodItem = ({
   const jobName = useMemo(
     () => (
       <span className={styles.tooltipContent}>
-        <span className={styles.tooltipLabel}>Job Title:</span>&nbsp;
+        <span className={styles.tooltipLabel}>Job Name:</span>&nbsp;
         <JobName jobId={item.jobId} />
       </span>
     ),
