@@ -6,7 +6,7 @@ import { currencyFormatter, formatChallengeUrl } from "utils/formatters";
 import { PAYMENT_STATUS } from "constants/workPeriods";
 import PaymentStatus from "../PaymentStatus";
 import styles from "./styles.module.scss";
-import PaymentError from "../PaymentError";
+import ProcessingError from "../PaymentError";
 
 const PaymentsListItem = ({ item }) => {
   const inputRef = useRef();
@@ -51,7 +51,7 @@ const PaymentsListItem = ({ item }) => {
         <div className={styles.statusWithError}>
           <PaymentStatus status={item.status} />
           {item.status === PAYMENT_STATUS.FAILED && (
-            <PaymentError
+            <ProcessingError
               className={styles.paymentError}
               errorDetails={item.statusDetails}
             />

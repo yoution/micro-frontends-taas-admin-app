@@ -355,9 +355,9 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     const resourcesSucceeded = [];
     const resourcesFailed = [];
     for (let result of results) {
-      let isFailed = "error" in result;
-      periodsToHighlight[result.workPeriodId] = isFailed;
-      if (isFailed) {
+      let error = result.error;
+      periodsToHighlight[result.workPeriodId] = error;
+      if (error) {
         resourcesFailed.push(result);
       } else {
         resourcesSucceeded.push(result);
@@ -369,7 +369,6 @@ const processPaymentsSpecific = async (dispatch, getState) => {
       if (resourcesFailed.length) {
         makeToastPaymentsWarning({
           resourcesSucceededCount: resourcesSucceeded.length,
-          resourcesFailed,
           resourcesFailedCount: resourcesFailed.length,
         });
       } else {

@@ -4,7 +4,7 @@ import PT from "prop-types";
 import cn from "classnames";
 import debounce from "lodash/debounce";
 import moment from "moment";
-import PaymentError from "../PaymentError";
+import ProcessingError from "../PaymentError";
 import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
 import PeriodWorkingDays from "../PeriodWorkingDays";
@@ -72,7 +72,7 @@ const PeriodsHistoryItem = ({ isDisabled, item, data, currentStartDate }) => {
       <td className={styles.dateLabel}>{dateLabel}</td>
       <td className={styles.paymentTotal}>
         {data.paymentErrorLast && (
-          <PaymentError
+          <ProcessingError
             className={styles.paymentError}
             errorDetails={data.paymentErrorLast}
             isImportant={data.paymentStatus !== PAYMENT_STATUS.COMPLETED}

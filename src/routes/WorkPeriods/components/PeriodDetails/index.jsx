@@ -156,9 +156,6 @@ PeriodDetails.propTypes = {
     periodId: PT.string.isRequired,
     rbId: PT.string.isRequired,
     jobId: PT.string.isRequired,
-    jobName: PT.string,
-    jobNameError: PT.string,
-    jobNameIsLoading: PT.bool.isRequired,
     billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({

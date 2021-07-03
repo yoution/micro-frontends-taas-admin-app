@@ -164,12 +164,13 @@ const actionHandlers = {
     if (!periodIds.length) {
       return state;
     }
-    const periodsFailed = { ...state.periodsFailed };
+    const periodsFailed = {};
     const periodsSelectedSet = state.periodsSelected[0];
     const oldPeriodsSelectedCount = periodsSelectedSet.size;
     for (let periodId of periodIds) {
-      if (periods[periodId]) {
-        periodsFailed[periodId] = true;
+      let error = periods[periodId];
+      if (error) {
+        periodsFailed[periodId] = error;
         periodsSelectedSet.add(periodId);
       } else {
         periodsSelectedSet.delete(periodId);

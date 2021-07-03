@@ -55,11 +55,11 @@ const PeriodList = ({ className }) => {
                 <PeriodItem
                   key={period.id}
                   isDisabled={isProcessingPayments}
-                  isFailed={period.id in periodsFailed}
                   isSelected={periodsSelectedSet.has(period.id)}
                   item={period}
                   data={periodsData[period.id]}
                   details={periodsDetails[period.id]}
+                  reasonFailed={periodsFailed[period.id]}
                   reasonsDisabled={periodsDisabledMap.get(period.id)}
                 />
               ))}

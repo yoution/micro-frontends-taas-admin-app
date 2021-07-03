@@ -59,6 +59,16 @@ td.toggle {
   line-height: 15px;
 }
 
+.selectionCheckbox {
+  display: inline-block;
+}
+
+.processingError {
+  display: inline-block;
+  margin-left: 10px;
+  width: 15px;
+}
+
 .userHandle {
   a {
     @include roboto-bold;
