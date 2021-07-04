@@ -49,14 +49,13 @@ const initPeriodData = (period) => {
   return data;
 };
 
-const initPeriodDetails = (period, cancelSource = cancelSourceDummy) => ({
-  periodId: period.id,
-  rbId: period.rbId,
+const initPeriodDetails = (
+  billingAccountId = 0,
+  cancelSource = cancelSourceDummy
+) => ({
   cancelSource,
-  jobId: period.jobId,
-  billingAccountId: period.billingAccountId || 0,
   billingAccounts: [
-    { value: period.billingAccountId || 0, label: BILLING_ACCOUNTS_LOADING },
+    { value: billingAccountId, label: BILLING_ACCOUNTS_LOADING },
   ],
   billingAccountsError: null,
   billingAccountsIsDisabled: true,
@@ -191,7 +190,10 @@ const actionHandlers = {
     { period, cancelSource }
   ) => {
     const periodsDetails = { ...state.periodsDetails };
-    periodsDetails[period.id] = initPeriodDetails(period, cancelSource);
+    periodsDetails[period.id] = initPeriodDetails(
+      period.billingAccountId,
+      cancelSource
+    );
     return {
       ...state,
       periodsDetails,
@@ -201,7 +203,7 @@ const actionHandlers = {
     state,
     { periodId, details }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
+    const periodsDetails = state.periodsDetails;
     let periodDetails = periodsDetails[periodId];
     // period details object must already be initialized
     if (!periodDetails) {
@@ -232,7 +234,7 @@ const actionHandlers = {
     return {
       ...state,
       periodsData: [periodsData],
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_ERROR]: (
@@ -250,16 +252,26 @@ const actionHandlers = {
   },
   [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS]: (
     state,
-    { periodId, accounts }
+    { period, accounts }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
+    const periodsDetails = state.periodsDetails;
+    let periodDetails = periodsDetails[period.id];
     if (!periodDetails) {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
+    let accountId = period.billingAccountId;
+    let hasAssignedAccount = false;
+    for (let account of accounts) {
+      if (account.value === accountId) {
+        hasAssignedAccount = true;
+        break;
+      }
+    }
+    if (accountId > 0 && !hasAssignedAccount) {
+      accounts.unshift(createAssignedBillingAccountOption(accountId));
+    }
     let billingAccountsIsDisabled = false;
-    let accountId = periodDetails.billingAccountId;
     if (!accounts.length) {
       accounts.push({ value: accountId, label: BILLING_ACCOUNTS_NONE });
       billingAccountsIsDisabled = true;
@@ -274,24 +286,24 @@ const actionHandlers = {
     if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
-    periodsDetails[periodId] = periodDetails;
+    periodsDetails[period.id] = periodDetails;
     return {
       ...state,
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR]: (
     state,
-    { periodId, message }
+    { period, message }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
+    const periodsDetails = state.periodsDetails;
+    let periodDetails = periodsDetails[period.id];
     if (!periodDetails) {
       return state;
     }
     let billingAccounts = [];
     let billingAccountsIsDisabled = true;
-    let accountId = periodDetails.billingAccountId;
+    let accountId = period.billingAccountId;
     if (accountId) {
       billingAccounts.push(createAssignedBillingAccountOption(accountId));
       billingAccountsIsDisabled = false;
@@ -308,27 +320,26 @@ const actionHandlers = {
     if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
-    periodsDetails[periodId] = periodDetails;
+    periodsDetails[period.id] = periodDetails;
     return {
       ...state,
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_SET_BILLING_ACCOUNT]: (state, { periodId, accountId }) => {
-    let periodsDetails = state.periodsDetails;
-    const periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      return state;
+    const periods = state.periods;
+    for (let i = 0, len = periods.length; i < len; i++) {
+      let period = periods[i];
+      if (period.id === periodId) {
+        periods[i] = { ...period, billingAccountId: accountId };
+        break;
+      }
     }
-    periodsDetails[periodId] = {
-      ...periodDetails,
-      billingAccountId: accountId,
-    };
-    periodsDetails = { ...periodsDetails };
     state = {
       ...state,
-      periodsDetails,
+      periods: [...periods],
     };
+    // updating reasons for which the period's selection may be disabled
     const periodsDisabledMap = state.periodsDisabled[0];
     const oldReasonsDisabled = periodsDisabledMap.get(periodId);
     const reasonsDisabled = removeReasonDisabled(

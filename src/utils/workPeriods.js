@@ -31,6 +31,8 @@ export function findReasonsDisabled(period) {
   return reasons.length ? reasons : undefined;
 }
 
+export function createAlerts(period, bookingEndDate) {}
+
 export function addReasonDisabled(reasons, reason) {
   if (!reasons) {
     return [reason];
@@ -171,15 +173,12 @@ export function normalizePaymentStatus(paymentStatus) {
  * billing account.
  *
  * @param {Array} accounts array of billing accounts received for specific project
- * @param {number} accountId resource booking's billing account id
  * @returns {Array}
  */
-export function normalizeBillingAccounts(accounts, accountId = -1) {
+export function normalizeBillingAccounts(accounts) {
   const accs = [];
-  let hasSelectedAccount = false;
   for (let acc of accounts) {
     const value = +acc.tcBillingAccountId;
-    hasSelectedAccount = hasSelectedAccount || value === accountId;
     const endDate = acc.endDate
       ? moment(acc.endDate).format("DD MMM YYYY")
       : "";
@@ -187,9 +186,6 @@ export function normalizeBillingAccounts(accounts, accountId = -1) {
       value,
       label: `${acc.name} (${value})` + (endDate ? ` - ${endDate}` : ""),
     });
-  }
-  if (!hasSelectedAccount && accountId > 0) {
-    accs.unshift(createAssignedBillingAccountOption(accountId));
   }
   return accs;
 }

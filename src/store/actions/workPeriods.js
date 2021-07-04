@@ -92,25 +92,25 @@ export const loadWorkPeriodDetailsError = (periodId, message) => ({
 /**
  * Creates an action denoting successful load of billing accounts.
  *
- * @param {string} periodId working period id
+ * @param {Object} period working period basic data object
  * @param {Array} accounts billing accounts
  * @returns {Object}
  */
-export const loadBillingAccountsSuccess = (periodId, accounts) => ({
+export const loadBillingAccountsSuccess = (period, accounts) => ({
   type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS,
-  payload: { periodId, accounts },
+  payload: { period, accounts },
 });
 
 /**
  * Creates an action denoting an error while loading billing accounts.
  *
- * @param {string} periodId working period id
+ * @param {Object} period working period basic data object
  * @param {string} message error message
  * @returns {Object}
  */
-export const loadBillingAccountsError = (periodId, message) => ({
+export const loadBillingAccountsError = (period, message) => ({
   type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR,
-  payload: { periodId, message, id: nextErrorId++ },
+  payload: { period, message, id: nextErrorId++ },
 });
 
 /**

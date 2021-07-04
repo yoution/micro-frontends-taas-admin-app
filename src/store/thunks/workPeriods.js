@@ -156,18 +156,13 @@ export const toggleWorkPeriodDetails =
         );
         bilAccsPromise
           .then((data) => {
-            const periodsDetails = selectors.getWorkPeriodsDetails(getState());
-            const periodDetails = periodsDetails[period.id];
-            const billingAccountId =
-              (periodDetails && periodDetails.billingAccountId) ||
-              period.billingAccountId;
-            const accounts = normalizeBillingAccounts(data, billingAccountId);
-            dispatch(actions.loadBillingAccountsSuccess(period.id, accounts));
+            const accounts = normalizeBillingAccounts(data);
+            dispatch(actions.loadBillingAccountsSuccess(period, accounts));
           })
           .catch((error) => {
             if (!axios.isCancel(error)) {
               dispatch(
-                actions.loadBillingAccountsError(period.id, error.toString())
+                actions.loadBillingAccountsError(period, error.toString())
               );
             }
           });

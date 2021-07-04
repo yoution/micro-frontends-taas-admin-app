@@ -214,6 +214,7 @@ const PeriodItem = ({
       {details && (
         <PeriodDetails
           className={styles.periodDetails}
+          period={item}
           details={details}
           isDisabled={isDisabled}
           isFailed={!!reasonFailed}
@@ -252,6 +253,7 @@ PeriodItem.propTypes = {
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
     jobId: PT.string,
     rbId: PT.string.isRequired,
+    billingAccountId: PT.number.isRequired,
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
@@ -268,10 +270,6 @@ PeriodItem.propTypes = {
     paymentTotal: PT.number.isRequired,
   }).isRequired,
   details: PT.shape({
-    periodId: PT.string.isRequired,
-    rbId: PT.string.isRequired,
-    jobId: PT.string.isRequired,
-    billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,

@@ -26,15 +26,19 @@ import styles from "./styles.module.scss";
  * @param {Object} props.details working period details object
  * @param {boolean} props.isDisabled whether the details are disabled
  * @param {boolean} props.isFailed whether the payments for the period has failed
+ * @param {Object} props.period working period basic data object
  * @returns {JSX.Element}
  */
-const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
+const PeriodDetails = ({
+  className,
+  details,
+  isDisabled,
+  isFailed,
+  period,
+}) => {
   const dispatch = useDispatch();
+  const { id: periodId, rbId, jobId, billingAccountId } = period;
   const {
-    periodId,
-    rbId,
-    jobId,
-    billingAccountId,
     billingAccounts,
     billingAccountsError,
     billingAccountsIsDisabled,
@@ -153,10 +157,6 @@ const PeriodDetails = ({ className, details, isDisabled, isFailed }) => {
 PeriodDetails.propTypes = {
   className: PT.string,
   details: PT.shape({
-    periodId: PT.string.isRequired,
-    rbId: PT.string.isRequired,
-    jobId: PT.string.isRequired,
-    billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,
@@ -172,6 +172,12 @@ PeriodDetails.propTypes = {
   }).isRequired,
   isDisabled: PT.bool.isRequired,
   isFailed: PT.bool.isRequired,
+  period: PT.shape({
+    id: PT.string.isRequired,
+    rbId: PT.string.isRequired,
+    jobId: PT.string.isRequired,
+    billingAccountId: PT.number.isRequired,
+  }).isRequired,
 };
 
 export default memo(PeriodDetails);
