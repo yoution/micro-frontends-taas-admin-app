@@ -15,6 +15,14 @@ export const getWorkPeriodsStateSlice = (state) => state.workPeriods;
 export const getWorkPeriods = (state) => state.workPeriods.periods;
 
 /**
+ * Returns an object with period ids as keys and alerts' arrays as values;
+ *
+ * @param {Object} state redux root state
+ * @returns {Object}
+ */
+export const getWorkPeriodsAlerts = (state) => state.workPeriods.periodsAlerts;
+
+/**
  * Returns working periods' details.
  *
  * @param {Object} state redux root state

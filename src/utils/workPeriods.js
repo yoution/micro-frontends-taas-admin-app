@@ -1,5 +1,6 @@
 import moment from "moment";
 import {
+  ALERT,
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
   DATE_FORMAT_API,
@@ -8,6 +9,24 @@ import {
   REASON_DISABLED,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
+
+/**
+ * Returns an array of working period's alert ids.
+ *
+ * @param {Object} period working period basic data object
+ * @param {Object} periodEndDate Moment object with current period end date
+ * @returns {Array}
+ */
+export function createPeriodAlerts(period, periodEndDate) {
+  const alerts = [];
+  if (!period.billingAccountId) {
+    alerts.push(ALERT.BA_NOT_ASSIGNED);
+  }
+  if (periodEndDate.isSameOrAfter(period.endDate)) {
+    alerts.push(ALERT.LAST_BOOKING_WEEK);
+  }
+  return alerts.length ? alerts : undefined;
+}
 
 /**
  * Checks for reasons the specified working period should be disabled for
@@ -31,29 +50,27 @@ export function findReasonsDisabled(period) {
   return reasons.length ? reasons : undefined;
 }
 
-export function createAlerts(period, bookingEndDate) {}
-
-export function addReasonDisabled(reasons, reason) {
-  if (!reasons) {
-    return [reason];
+export function addValueImmutable(items, value) {
+  if (!items) {
+    return [value];
   }
-  if (reasons.indexOf(reason) < 0) {
-    reasons = [...reasons, reason];
+  if (items.indexOf(value) < 0) {
+    items = [...items, value];
   }
-  return reasons;
+  return items;
 }
 
-export function removeReasonDisabled(reasons, reason) {
-  if (!reasons) {
+export function removeValueImmutable(items, value) {
+  if (!items) {
     return undefined;
   }
-  let index = reasons.indexOf(reason);
+  let index = items.indexOf(value);
   if (index >= 0) {
-    let newReasons = [...reasons];
-    newReasons.splice(index, 1);
-    return newReasons.length ? newReasons : undefined;
+    let newItems = [...items];
+    newItems.splice(index, 1);
+    return newItems.length ? newItems : undefined;
   }
-  return reasons;
+  return items;
 }
 
 /**
@@ -102,9 +119,11 @@ export function normalizePeriodItems(items) {
       billingAccountId: billingAccountId === null ? 0 : billingAccountId,
       teamName: "",
       userHandle: workPeriod.userHandle || "",
+      // resource booking period start date
       startDate: item.startDate
         ? moment(item.startDate).format(DATE_FORMAT_UI)
         : "",
+      // resource booking period end date
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
       weeklyRate: item.memberRate,
       data: normalizePeriodData(workPeriod),
@@ -118,7 +137,9 @@ export function normalizeDetailsPeriodItems(items) {
   for (let item of items) {
     periods.push({
       id: item.id,
+      // working period start date
       startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
+      // working period end date
       endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
       weeklyRate: item.memberRate,
       data: normalizePeriodData(item),

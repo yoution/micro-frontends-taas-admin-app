@@ -30,6 +30,7 @@ import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
+import PeriodAlerts from "../PeriodAlerts";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
@@ -38,6 +39,7 @@ import styles from "./styles.module.scss";
  * @param {boolean} [props.isDisabled] whether the item is disabled
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
+ * @param {Array} [props.alerts] array with alert ids
  * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
  * @param {Object} [props.reasonFailed] error object denoting payment processing failure
@@ -48,6 +50,7 @@ const PeriodItem = ({
   isDisabled = false,
   isSelected,
   item,
+  alerts,
   data,
   details,
   reasonFailed,
@@ -177,6 +180,9 @@ const PeriodItem = ({
         </td>
         <td className={styles.startDate}>{item.startDate}</td>
         <td className={styles.endDate}>{item.endDate}</td>
+        <td className={styles.alert}>
+          <PeriodAlerts alerts={alerts} />
+        </td>
         <td className={styles.weeklyRate}>
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
@@ -261,6 +267,7 @@ PeriodItem.propTypes = {
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
+  alerts: PT.arrayOf(PT.string),
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,

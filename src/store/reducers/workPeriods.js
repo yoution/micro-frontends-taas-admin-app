@@ -11,6 +11,7 @@ import {
   SORT_ORDER_DEFAULT,
   URL_QUERY_PARAM_MAP,
   REASON_DISABLED,
+  ALERT,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
@@ -18,10 +19,11 @@ import {
   updateOptionMap,
 } from "utils/misc";
 import {
-  addReasonDisabled,
+  addValueImmutable,
+  createPeriodAlerts,
   createAssignedBillingAccountOption,
   findReasonsDisabled,
-  removeReasonDisabled,
+  removeValueImmutable,
 } from "utils/workPeriods";
 
 const cancelSourceDummy = { cancel: () => {} };
@@ -75,6 +77,7 @@ const initialState = updateStateFromQuery(window.location.search, {
   isSelectedPeriodsVisible: false,
   pagination: initPagination(),
   periods: [],
+  periodsAlerts: {},
   periodsById: {},
   periodsData: [{}],
   periodsDetails: {},
@@ -102,6 +105,7 @@ const actionHandlers = {
     isSelectedPeriodsAll: false,
     isSelectedPeriodsVisible: false,
     periods: [],
+    periodsAlerts: {},
     periodsById: {},
     periodsData: [{}],
     periodsDetails: {},
@@ -119,15 +123,21 @@ const actionHandlers = {
       oldPagination.pageCount !== pageCount
         ? { ...oldPagination, totalCount, pageCount }
         : oldPagination;
+    const periodsAlerts = {};
     const periodsById = {};
     const periodsData = {};
     const periodsDisabledMap = new Map();
+    const periodEndDate = state.filters.dateRange[1];
     for (let period of periods) {
       periodsById[period.id] = true;
       periodsData[period.id] = initPeriodData(period);
       let reasonsDisabled = findReasonsDisabled(period);
       if (reasonsDisabled) {
         periodsDisabledMap.set(period.id, reasonsDisabled);
+      }
+      let alerts = createPeriodAlerts(period, periodEndDate);
+      if (alerts) {
+        periodsAlerts[period.id] = alerts;
       }
       delete period.data;
     }
@@ -137,6 +147,7 @@ const actionHandlers = {
       error: null,
       pagination,
       periods,
+      periodsAlerts,
       periodsById,
       periodsData: [periodsData],
       periodsDisabled: [periodsDisabledMap],
@@ -342,7 +353,7 @@ const actionHandlers = {
     // updating reasons for which the period's selection may be disabled
     const periodsDisabledMap = state.periodsDisabled[0];
     const oldReasonsDisabled = periodsDisabledMap.get(periodId);
-    const reasonsDisabled = removeReasonDisabled(
+    const reasonsDisabled = removeValueImmutable(
       oldReasonsDisabled,
       REASON_DISABLED.NO_BILLING_ACCOUNT
     );
@@ -354,6 +365,18 @@ const actionHandlers = {
       }
       state.periodsDisabled = [periodsDisabledMap];
       updateSelectedPeriodsFlags(state);
+    }
+    // updating period's alerts
+    const periodsAlerts = state.periodsAlerts;
+    const oldAlerts = periodsAlerts[periodId];
+    const alerts = removeValueImmutable(oldAlerts, ALERT.BA_NOT_ASSIGNED);
+    if (oldAlerts !== alerts) {
+      if (alerts) {
+        periodsAlerts[periodId] = alerts;
+      } else {
+        delete periodsAlerts[periodId];
+      }
+      state.periodsAlerts = { ...periodsAlerts };
     }
     return state;
   },
@@ -699,11 +722,11 @@ function updateStateAfterWorkingDaysChange(periodId, state) {
   const oldReasonsDisabled = periodsDisabledMap.get(periodId);
   let reasonsDisabled =
     periodData.daysWorked === periodData.daysPaid
-      ? addReasonDisabled(
+      ? addValueImmutable(
           oldReasonsDisabled,
           REASON_DISABLED.NO_DAYS_TO_PAY_FOR
         )
-      : removeReasonDisabled(
+      : removeValueImmutable(
           oldReasonsDisabled,
           REASON_DISABLED.NO_DAYS_TO_PAY_FOR
         );
