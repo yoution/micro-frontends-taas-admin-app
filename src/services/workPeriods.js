@@ -6,6 +6,7 @@ import {
   PROJECTS_API_URL,
   API_QUERY_PARAM_NAMES,
   WORK_PERIODS_API_URL,
+  TAAS_TEAM_API_URL,
 } from "constants/workPeriods";
 import { buildRequestQuery, extractResponseData } from "utils/misc";
 
@@ -38,7 +39,7 @@ export const fetchJob = (jobId, source) => {
  */
 export const fetchProject = (projectId) => {
   return axios
-    .get(`${PROJECTS_API_URL}/${projectId}?fields=projectId,name`)
+    .get(`${TAAS_TEAM_API_URL}/${projectId}`)
     .then(extractResponseData);
 };
 

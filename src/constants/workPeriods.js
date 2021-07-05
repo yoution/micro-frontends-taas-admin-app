@@ -24,6 +24,7 @@ export const JOBS_API_URL = `${API.V5}/jobs`;
 export const PAYMENTS_API_URL = `${API.V5}/work-period-payments`;
 export const PROJECTS_API_URL = `${API.V5}/projects`;
 export const WORK_PERIODS_API_URL = `${API.V5}/work-periods`;
+export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 
 export const DATE_FORMAT_API = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
