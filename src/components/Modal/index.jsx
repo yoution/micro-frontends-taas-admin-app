@@ -33,6 +33,8 @@ const Modal = ({
   >
     <div
       className={styles.wrapper}
+      onMouseDown={stopImmediatePropagation}
+      onMouseUp={stopImmediatePropagation}
       onClick={stopImmediatePropagation}
       role="button"
       tabIndex={0}
