@@ -1,12 +1,13 @@
 import axios, { CancelToken } from "./axios";
 import {
-  RB_API_URL,
+  API_CHALLENGE_PAYMENT_STATUS,
+  API_QUERY_PARAM_NAMES,
   JOBS_API_URL,
   PAYMENTS_API_URL,
   PROJECTS_API_URL,
-  API_QUERY_PARAM_NAMES,
+  RB_API_URL,
+  TAAS_TEAM_API_URL,
   WORK_PERIODS_API_URL,
-  API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import { buildRequestQuery, extractResponseData } from "utils/misc";
 
@@ -39,7 +40,7 @@ export const fetchJob = (jobId, source) => {
  */
 export const fetchProject = (projectId) => {
   return axios
-    .get(`${PROJECTS_API_URL}/${projectId}?fields=projectId,name`)
+    .get(`${TAAS_TEAM_API_URL}/${projectId}`)
     .then(extractResponseData);
 };
 
