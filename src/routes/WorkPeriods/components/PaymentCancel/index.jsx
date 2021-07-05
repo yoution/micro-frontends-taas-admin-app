@@ -75,7 +75,10 @@ const PaymentCancel = ({ className, item, timeout = 3000 }) => {
   return (
     <div className={cn(styles.container, className)}>
       <Button
-        isDisabled={item.status === PAYMENT_STATUS.SCHEDULED}
+        isDisabled={
+          item.status === PAYMENT_STATUS.CANCELLED ||
+          item.status === PAYMENT_STATUS.SCHEDULED
+        }
         size="small"
         color="error"
         variant="contained"

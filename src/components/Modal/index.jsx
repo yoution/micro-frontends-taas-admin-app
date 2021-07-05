@@ -13,6 +13,21 @@ const classNames = {
 };
 const closeIcon = <IconCross />;
 
+/**
+ * Displays a modal with Approve- and Dismiss-button and an overlay.
+ *
+ * @param {Object} props component properties
+ * @param {string} [props.approveText] text for Approve-button
+ * @param {Object} props.children elements that will be shown inside modal
+ * @param {?Object} [props.controls] custom controls that will be shown below
+ * modal's contents
+ * @param {string} [props.dismissText] text for Dismiss-button
+ * @param {boolean} props.isOpen whether to show or hide the modal
+ * @param {() => void} [props.onApprove] function called on approve action
+ * @param {() => void} props.onDismiss function called on dismiss action
+ * @param {string} [props.title] text for modal title
+ * @returns {JSX.Element}
+ */
 const Modal = ({
   approveText = "Apply",
   children,
