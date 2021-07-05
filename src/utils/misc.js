@@ -80,6 +80,11 @@ export function stopPropagation(event) {
   event.stopPropagation();
 }
 
+export function stopImmediatePropagation(event) {
+  event.stopPropagation();
+  event.nativeEvent.stopImmediatePropagation();
+}
+
 /**
  * This function takes keys referring to truthy values in `newOptions`
  * and adds them to `oldOptions` returning a new object.

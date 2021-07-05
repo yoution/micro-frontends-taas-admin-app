@@ -554,7 +554,6 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource,
-      daysWorkedIsUpdated: false,
     };
     return {
       ...state,
@@ -567,11 +566,10 @@ const actionHandlers = {
     if (!periodData) {
       return state;
     }
-    periodData = periodsData[periodId] = {
+    periodsData[periodId] = {
       ...periodData,
       ...data,
       cancelSource: null,
-      daysWorkedIsUpdated: true,
     };
     state = {
       ...state,
@@ -581,7 +579,8 @@ const actionHandlers = {
       ? updateStateAfterWorkingDaysChange(periodId, state)
       : state;
   },
-  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId, message }) => {
+    console.error(message);
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -590,7 +589,35 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource: null,
-      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_PAYMENT_DATA]: (state, paymentData) => {
+    const periodId = paymentData.workPeriodId;
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    const paymentId = paymentData.id;
+    const payments = periodData.payments;
+    let lastFailedPayment = null;
+    for (let i = 0, len = payments.length; i < len; i++) {
+      let payment = payments[i];
+      if (payment.id === paymentId) {
+        payments[i] = paymentData;
+        periodData.payments = [...payments];
+      }
+      if (payment.status === PAYMENT_STATUS.FAILED) {
+        lastFailedPayment = payment;
+      }
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      paymentErrorLast: lastFailedPayment?.statusDetails,
     };
     return {
       ...state,
@@ -612,6 +639,62 @@ const actionHandlers = {
       ...state,
       periodsData: [periodsData],
     });
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_PENDING]: (
+    state,
+    { periodId, cancelSource }
+  ) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource,
+      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_SUCCESS]: (state, { periodId, data }) => {
+    const periodsData = state.periodsData[0];
+    let periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodData = periodsData[periodId] = {
+      ...periodData,
+      ...data,
+      cancelSource: null,
+      daysWorkedIsUpdated: true,
+    };
+    state = {
+      ...state,
+      periodsData: [periodsData],
+    };
+    return periodId in state.periodsById
+      ? updateStateAfterWorkingDaysChange(periodId, state)
+      : state;
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_ERROR]: (state, { periodId, message }) => {
+    console.error(message);
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource: null,
+      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
   },
   [ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS]: (state, on) => {
     const filters = state.filters;
@@ -754,7 +837,8 @@ function updateSelectedPeriodsFlags(state) {
   const selectedCount = state.periodsSelected[0].size;
   const pageSize = state.pagination.pageSize;
   const totalCount = state.pagination.totalCount;
-  const maxSelectedOnPageCount = pageSize - state.periodsDisabled[0].size;
+  const maxSelectedOnPageCount =
+    Math.min(pageSize, totalCount) - state.periodsDisabled[0].size;
   if (totalCount > pageSize) {
     if (selectedCount === maxSelectedOnPageCount) {
       isSelectedPeriodsVisible = true;

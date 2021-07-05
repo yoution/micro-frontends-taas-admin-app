@@ -172,9 +172,7 @@ export function normalizePeriodData(period) {
   if (payments) {
     let lastFailedPayment = null;
     for (let payment of payments) {
-      payment.status =
-        API_CHALLENGE_PAYMENT_STATUS_MAP[payment.status] ||
-        PAYMENT_STATUS.UNDEFINED;
+      payment.status = normalizeChallengePaymentStatus(payment.status);
       if (payment.status === PAYMENT_STATUS.FAILED) {
         lastFailedPayment = payment;
       }
@@ -183,6 +181,12 @@ export function normalizePeriodData(period) {
     data.payments = payments;
   }
   return data;
+}
+
+export function normalizeChallengePaymentStatus(paymentStatus) {
+  return (
+    API_CHALLENGE_PAYMENT_STATUS_MAP[paymentStatus] || PAYMENT_STATUS.UNDEFINED
+  );
 }
 
 export function normalizePaymentStatus(paymentStatus) {

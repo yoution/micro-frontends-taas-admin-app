@@ -56,6 +56,7 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.payments.memberRate",
   "workPeriods.payments.status",
   "workPeriods.payments.statusDetails",
+  "workPeriods.payments.workPeriodId",
 ];
 
 // Valid parameter names for requests.

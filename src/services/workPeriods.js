@@ -6,6 +6,7 @@ import {
   PROJECTS_API_URL,
   API_QUERY_PARAM_NAMES,
   WORK_PERIODS_API_URL,
+  API_CHALLENGE_PAYMENT_STATUS,
 } from "constants/workPeriods";
 import { buildRequestQuery, extractResponseData } from "utils/misc";
 
@@ -100,10 +101,18 @@ export const fetchResourceBookings = (params) => {
   return [
     axios.get(
       `${RB_API_URL}?${buildRequestQuery(params, API_QUERY_PARAM_NAMES)}`,
-      {
-        cancelToken: source.token,
-      }
+      { cancelToken: source.token }
     ),
+    source,
+  ];
+};
+
+export const fetchWorkPeriod = (periodId) => {
+  const source = CancelToken.source();
+  return [
+    axios
+      .get(`${WORK_PERIODS_API_URL}/${periodId}`, { cancelToken: source.token })
+      .then(extractResponseData),
     source,
   ];
 };
@@ -138,6 +147,20 @@ export const patchWorkPeriodWorkingDays = (periodId, daysWorked) => {
  */
 export const patchWorkPeriodBillingAccount = (rbId, billingAccountId) => {
   return axios.patch(`${RB_API_URL}/${rbId}`, { billingAccountId });
+};
+
+/**
+ * Sends request to cancel specific working period's payment.
+ *
+ * @param {string} paymentId payment id
+ * @returns {Promise}
+ */
+export const cancelWorkPeriodPayment = (paymentId) => {
+  return axios
+    .patch(`${PAYMENTS_API_URL}/${paymentId}`, {
+      status: API_CHALLENGE_PAYMENT_STATUS.CANCELLED,
+    })
+    .then(extractResponseData);
 };
 
 /**
