@@ -12,6 +12,17 @@ import { cancelWorkPeriodPayment } from "services/workPeriods";
 import styles from "./styles.module.scss";
 import { loadWorkPeriodAfterPaymentCancel } from "store/thunks/workPeriods";
 
+/**
+ * Displays a Cancel button. Shows a modal with payment cancelling confirmation
+ * when clicking this button.
+ *
+ * @param {Object} props component properties
+ * @param {string} [props.className] class name to be added to root element
+ * @param {Object} props.item payment object with id, workPeriodId and status
+ * @param {number} [props.timeout] timeout the delay after cancelling payment
+ * after which an attempt will be made to update working period's data from the server
+ * @returns {JSX.Element}
+ */
 const PaymentCancel = ({ className, item, timeout = 3000 }) => {
   const { id: paymentId, workPeriodId: periodId } = item;
   const [isModalOpen, setIsModalOpen] = useState(false);
