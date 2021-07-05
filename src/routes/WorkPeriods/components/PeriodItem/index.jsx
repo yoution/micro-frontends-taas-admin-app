@@ -273,10 +273,10 @@ function formatReasonsDisabled(reasonIds) {
     return null;
   }
   const reasons = [];
-  reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[0]]);
+  reasons.push('– ' + REASON_DISABLED_MESSAGE_MAP[reasonIds[0]]);
   for (let i = 1, len = reasonIds.length; i < len; i++) {
     reasons.push(<br />);
-    reasons.push(REASON_DISABLED_MESSAGE_MAP[reasonIds[i]]);
+    reasons.push('– ' + REASON_DISABLED_MESSAGE_MAP[reasonIds[i]]);
   }
   return reasons;
 }
