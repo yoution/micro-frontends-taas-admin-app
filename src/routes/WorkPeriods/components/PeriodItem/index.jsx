@@ -235,20 +235,23 @@ const PeriodItem = ({
  * working period is disabled.
  *
  * @param {Array} reasonIds array of REASON_DISABLED values
- * @returns {?Array}
+ * @returns {any}
  */
 function formatReasonsDisabled(reasonIds) {
   if (!reasonIds) {
     return null;
   }
+  if (reasonIds.length === 1) {
+    return REASON_DISABLED_MESSAGE_MAP[reasonIds[0]];
+  }
   const reasons = [];
   for (let i = 0, len = reasonIds.length; i < len; i++) {
     let reasonId = reasonIds[i];
     reasons.push(
-      <div key={reasonId}>{REASON_DISABLED_MESSAGE_MAP[reasonId]}</div>
+      <li key={reasonId}>{REASON_DISABLED_MESSAGE_MAP[reasonId]}</li>
     );
   }
-  return reasons;
+  return <ul>{reasons}</ul>;
 }
 
 PeriodItem.propTypes = {

@@ -15,11 +15,19 @@ import styles from "./styles.module.scss";
  */
 const PeriodAlerts = ({ alerts, className }) => {
   const alertsTooltipContent = useMemo(() => {
-    return alerts
-      ? alerts.map((alertId) => (
-          <div key={alertId}>{ALERT_MESSAGE_MAP[alertId]}</div>
-        ))
-      : null;
+    if (!alerts) {
+      return null;
+    }
+    if (alerts.length === 1) {
+      return ALERT_MESSAGE_MAP[alerts[0]];
+    }
+    return (
+      <ul>
+        {alerts.map((alertId) => (
+          <li key={alertId}>{ALERT_MESSAGE_MAP[alertId]}</li>
+        ))}
+      </ul>
+    );
   }, [alerts]);
 
   return (
