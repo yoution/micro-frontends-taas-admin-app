@@ -31,6 +31,46 @@ import {
   makeToastPaymentsError,
 } from "routes/WorkPeriods/utils/toasts";
 import { RESOURCE_BOOKING_STATUS, WORK_PERIODS_PATH } from "constants/index.js";
+import { currencyFormatter } from "utils/formatters";
+
+export const loadWorkPeriodAfterPaymentCancel =
+  (periodId, paymentId) => async (dispatch, getState) => {
+    let [periodsData] = selectors.getWorkPeriodsData(getState());
+    periodsData[periodId]?.cancelSource?.cancel();
+    const [promise, source] = services.fetchWorkPeriod(periodId);
+    dispatch(actions.setWorkPeriodDataPending(periodId, source));
+    let periodData = null;
+    let userHandle = null;
+    let errorMessage = null;
+    try {
+      const data = await promise;
+      periodData = normalizePeriodData(data);
+      userHandle = data.userHandle;
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        errorMessage = error.toString();
+      }
+    }
+    if (periodData) {
+      let amount = null;
+      for (let payment of periodData.payments) {
+        if (payment.id === paymentId) {
+          amount = currencyFormatter.format(payment.amount);
+          break;
+        }
+      }
+      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+      makeToast(
+        `Payment ${amount} for ${userHandle} was marked as "cancelled"`,
+        "success"
+      );
+    } else if (errorMessage) {
+      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
+      makeToast(
+        `Failed to load data for working period ${periodId}.\n` + errorMessage
+      );
+    }
+  };
 
 /**
  * Thunk that loads the specified working periods' page. If page number is not
@@ -156,18 +196,13 @@ export const toggleWorkPeriodDetails =
         );
         bilAccsPromise
           .then((data) => {
-            const periodsDetails = selectors.getWorkPeriodsDetails(getState());
-            const periodDetails = periodsDetails[period.id];
-            const billingAccountId =
-              (periodDetails && periodDetails.billingAccountId) ||
-              period.billingAccountId;
-            const accounts = normalizeBillingAccounts(data, billingAccountId);
-            dispatch(actions.loadBillingAccountsSuccess(period.id, accounts));
+            const accounts = normalizeBillingAccounts(data);
+            dispatch(actions.loadBillingAccountsSuccess(period, accounts));
           })
           .catch((error) => {
             if (!axios.isCancel(error)) {
               dispatch(
-                actions.loadBillingAccountsError(period.id, error.toString())
+                actions.loadBillingAccountsError(period, error.toString())
               );
             }
           });
@@ -231,7 +266,7 @@ export const updateWorkPeriodWorkingDays =
       periodId,
       daysWorked
     );
-    dispatch(actions.setWorkPeriodDataPending(periodId, source));
+    dispatch(actions.setWorkPeriodWorkingDaysPending(periodId, source));
     let periodData = null;
     let errorMessage = null;
     try {
@@ -255,9 +290,9 @@ export const updateWorkPeriodWorkingDays =
     // and there will be a new request at the end of which the period's data
     // will be updated so again we don't need to update the state.
     if (periodData && periodData.daysWorked === currentDaysWorked) {
-      dispatch(actions.setWorkPeriodDataSuccess(periodId, periodData));
+      dispatch(actions.setWorkPeriodWorkingDaysSuccess(periodId, periodData));
     } else if (errorMessage) {
-      dispatch(actions.setWorkPeriodDataError(periodId, errorMessage));
+      dispatch(actions.setWorkPeriodWorkingDaysError(periodId, errorMessage));
     }
   };
 
@@ -355,9 +390,9 @@ const processPaymentsSpecific = async (dispatch, getState) => {
     const resourcesSucceeded = [];
     const resourcesFailed = [];
     for (let result of results) {
-      let isFailed = "error" in result;
-      periodsToHighlight[result.workPeriodId] = isFailed;
-      if (isFailed) {
+      let error = result.error;
+      periodsToHighlight[result.workPeriodId] = error;
+      if (error) {
         resourcesFailed.push(result);
       } else {
         resourcesSucceeded.push(result);
@@ -369,7 +404,6 @@ const processPaymentsSpecific = async (dispatch, getState) => {
       if (resourcesFailed.length) {
         makeToastPaymentsWarning({
           resourcesSucceededCount: resourcesSucceeded.length,
-          resourcesFailed,
           resourcesFailedCount: resourcesFailed.length,
         });
       } else {

@@ -92,25 +92,25 @@ export const loadWorkPeriodDetailsError = (periodId, message) => ({
 /**
  * Creates an action denoting successful load of billing accounts.
  *
- * @param {string} periodId working period id
+ * @param {Object} period working period basic data object
  * @param {Array} accounts billing accounts
  * @returns {Object}
  */
-export const loadBillingAccountsSuccess = (periodId, accounts) => ({
+export const loadBillingAccountsSuccess = (period, accounts) => ({
   type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS,
-  payload: { periodId, accounts },
+  payload: { period, accounts },
 });
 
 /**
  * Creates an action denoting an error while loading billing accounts.
  *
- * @param {string} periodId working period id
+ * @param {Object} period working period basic data object
  * @param {string} message error message
  * @returns {Object}
  */
-export const loadBillingAccountsError = (periodId, message) => ({
+export const loadBillingAccountsError = (period, message) => ({
   type: ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR,
-  payload: { periodId, message, id: nextErrorId++ },
+  payload: { period, message, id: nextErrorId++ },
 });
 
 /**
@@ -277,19 +277,8 @@ export const setWorkPeriodsUserHandle = (handle) => ({
 });
 
 /**
- * Creates an action to change working days for specific working period.
- *
- * @param {string|number} periodId period id
- * @param {number} daysWorked number of working days
- * @returns {Object}
- */
-export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
-  type: ACTION_TYPE.WP_SET_WORKING_DAYS,
-  payload: { periodId, daysWorked },
-});
-
-/**
- * Creates an action denoting the update of working period's changeable data.
+ * Creates an action denoting an attempt to update working period's data
+ * on the server.
  *
  * @param {Object} periodId working period id
  * @param {Object} cancelSource axios cancel token source
@@ -307,6 +296,46 @@ export const setWorkPeriodDataSuccess = (periodId, data) => ({
 
 export const setWorkPeriodDataError = (periodId, message) => ({
   type: ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR,
+  payload: { periodId, message },
+});
+
+export const setWorkPeriodPaymentData = (paymentData) => ({
+  type: ACTION_TYPE.WP_SET_PAYMENT_DATA,
+  payload: paymentData,
+});
+
+/**
+ * Creates an action to change working days for specific working period.
+ *
+ * @param {string|number} periodId period id
+ * @param {number} daysWorked number of working days
+ * @returns {Object}
+ */
+export const setWorkPeriodWorkingDays = (periodId, daysWorked) => ({
+  type: ACTION_TYPE.WP_SET_WORKING_DAYS,
+  payload: { periodId, daysWorked },
+});
+
+/**
+ * Creates an action denoting an attempt to update working period's working days
+ * on the server.
+ *
+ * @param {Object} periodId working period id
+ * @param {Object} cancelSource axios cancel token source
+ * @returns {Object}
+ */
+export const setWorkPeriodWorkingDaysPending = (periodId, cancelSource) => ({
+  type: ACTION_TYPE.WP_SET_WORKING_DAYS_PENDING,
+  payload: { periodId, cancelSource },
+});
+
+export const setWorkPeriodWorkingDaysSuccess = (periodId, data) => ({
+  type: ACTION_TYPE.WP_SET_WORKING_DAYS_SUCCESS,
+  payload: { periodId, data },
+});
+
+export const setWorkPeriodWorkingDaysError = (periodId, message) => ({
+  type: ACTION_TYPE.WP_SET_WORKING_DAYS_ERROR,
   payload: { periodId, message },
 });
 

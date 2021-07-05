@@ -8,6 +8,7 @@ import PeriodItem from "../PeriodItem";
 import PeriodListHead from "../PeriodListHead";
 import {
   getWorkPeriods,
+  getWorkPeriodsAlerts,
   getWorkPeriodsData,
   getWorkPeriodsDetails,
   getWorkPeriodsDisabled,
@@ -26,6 +27,7 @@ import styles from "./styles.module.scss";
  */
 const PeriodList = ({ className }) => {
   const periods = useSelector(getWorkPeriods);
+  const periodsAlerts = useSelector(getWorkPeriodsAlerts);
   const [periodsData] = useSelector(getWorkPeriodsData);
   const periodsDetails = useSelector(getWorkPeriodsDetails);
   const [periodsDisabledMap] = useSelector(getWorkPeriodsDisabled);
@@ -49,17 +51,18 @@ const PeriodList = ({ className }) => {
             </thead>
             <tbody>
               <tr>
-                <td colSpan={9} className={styles.listTopMargin}></td>
+                <td colSpan={10} className={styles.listTopMargin}></td>
               </tr>
               {periods.map((period) => (
                 <PeriodItem
                   key={period.id}
                   isDisabled={isProcessingPayments}
-                  isFailed={period.id in periodsFailed}
                   isSelected={periodsSelectedSet.has(period.id)}
                   item={period}
+                  alerts={periodsAlerts[period.id]}
                   data={periodsData[period.id]}
                   details={periodsDetails[period.id]}
+                  reasonFailed={periodsFailed[period.id]}
                   reasonsDisabled={periodsDisabledMap.get(period.id)}
                 />
               ))}

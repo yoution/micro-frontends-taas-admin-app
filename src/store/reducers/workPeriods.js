@@ -11,6 +11,7 @@ import {
   SORT_ORDER_DEFAULT,
   URL_QUERY_PARAM_MAP,
   REASON_DISABLED,
+  ALERT,
 } from "constants/workPeriods";
 import {
   filterPeriodsByStartDate,
@@ -18,10 +19,11 @@ import {
   updateOptionMap,
 } from "utils/misc";
 import {
-  addReasonDisabled,
+  addValueImmutable,
+  createPeriodAlerts,
   createAssignedBillingAccountOption,
   findReasonsDisabled,
-  removeReasonDisabled,
+  removeValueImmutable,
 } from "utils/workPeriods";
 
 const cancelSourceDummy = { cancel: () => {} };
@@ -49,14 +51,13 @@ const initPeriodData = (period) => {
   return data;
 };
 
-const initPeriodDetails = (period, cancelSource = cancelSourceDummy) => ({
-  periodId: period.id,
-  rbId: period.rbId,
+const initPeriodDetails = (
+  billingAccountId = 0,
+  cancelSource = cancelSourceDummy
+) => ({
   cancelSource,
-  jobId: period.jobId,
-  billingAccountId: period.billingAccountId || 0,
   billingAccounts: [
-    { value: period.billingAccountId || 0, label: BILLING_ACCOUNTS_LOADING },
+    { value: billingAccountId, label: BILLING_ACCOUNTS_LOADING },
   ],
   billingAccountsError: null,
   billingAccountsIsDisabled: true,
@@ -76,6 +77,7 @@ const initialState = updateStateFromQuery(window.location.search, {
   isSelectedPeriodsVisible: false,
   pagination: initPagination(),
   periods: [],
+  periodsAlerts: {},
   periodsById: {},
   periodsData: [{}],
   periodsDetails: {},
@@ -103,6 +105,7 @@ const actionHandlers = {
     isSelectedPeriodsAll: false,
     isSelectedPeriodsVisible: false,
     periods: [],
+    periodsAlerts: {},
     periodsById: {},
     periodsData: [{}],
     periodsDetails: {},
@@ -120,15 +123,21 @@ const actionHandlers = {
       oldPagination.pageCount !== pageCount
         ? { ...oldPagination, totalCount, pageCount }
         : oldPagination;
+    const periodsAlerts = {};
     const periodsById = {};
     const periodsData = {};
     const periodsDisabledMap = new Map();
+    const periodEndDate = state.filters.dateRange[1];
     for (let period of periods) {
       periodsById[period.id] = true;
       periodsData[period.id] = initPeriodData(period);
       let reasonsDisabled = findReasonsDisabled(period);
       if (reasonsDisabled) {
         periodsDisabledMap.set(period.id, reasonsDisabled);
+      }
+      let alerts = createPeriodAlerts(period, periodEndDate);
+      if (alerts) {
+        periodsAlerts[period.id] = alerts;
       }
       delete period.data;
     }
@@ -138,6 +147,7 @@ const actionHandlers = {
       error: null,
       pagination,
       periods,
+      periodsAlerts,
       periodsById,
       periodsData: [periodsData],
       periodsDisabled: [periodsDisabledMap],
@@ -164,12 +174,13 @@ const actionHandlers = {
     if (!periodIds.length) {
       return state;
     }
-    const periodsFailed = { ...state.periodsFailed };
+    const periodsFailed = {};
     const periodsSelectedSet = state.periodsSelected[0];
     const oldPeriodsSelectedCount = periodsSelectedSet.size;
     for (let periodId of periodIds) {
-      if (periods[periodId]) {
-        periodsFailed[periodId] = true;
+      let error = periods[periodId];
+      if (error) {
+        periodsFailed[periodId] = error;
         periodsSelectedSet.add(periodId);
       } else {
         periodsSelectedSet.delete(periodId);
@@ -190,7 +201,10 @@ const actionHandlers = {
     { period, cancelSource }
   ) => {
     const periodsDetails = { ...state.periodsDetails };
-    periodsDetails[period.id] = initPeriodDetails(period, cancelSource);
+    periodsDetails[period.id] = initPeriodDetails(
+      period.billingAccountId,
+      cancelSource
+    );
     return {
       ...state,
       periodsDetails,
@@ -200,7 +214,7 @@ const actionHandlers = {
     state,
     { periodId, details }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
+    const periodsDetails = state.periodsDetails;
     let periodDetails = periodsDetails[periodId];
     // period details object must already be initialized
     if (!periodDetails) {
@@ -231,7 +245,7 @@ const actionHandlers = {
     return {
       ...state,
       periodsData: [periodsData],
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_LOAD_PERIOD_DETAILS_ERROR]: (
@@ -249,16 +263,26 @@ const actionHandlers = {
   },
   [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_SUCCESS]: (
     state,
-    { periodId, accounts }
+    { period, accounts }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
+    const periodsDetails = state.periodsDetails;
+    let periodDetails = periodsDetails[period.id];
     if (!periodDetails) {
       // Period details may be removed at this point so we must handle this case.
       return state;
     }
+    let accountId = period.billingAccountId;
+    let hasAssignedAccount = false;
+    for (let account of accounts) {
+      if (account.value === accountId) {
+        hasAssignedAccount = true;
+        break;
+      }
+    }
+    if (accountId > 0 && !hasAssignedAccount) {
+      accounts.unshift(createAssignedBillingAccountOption(accountId));
+    }
     let billingAccountsIsDisabled = false;
-    let accountId = periodDetails.billingAccountId;
     if (!accounts.length) {
       accounts.push({ value: accountId, label: BILLING_ACCOUNTS_NONE });
       billingAccountsIsDisabled = true;
@@ -273,24 +297,24 @@ const actionHandlers = {
     if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
-    periodsDetails[periodId] = periodDetails;
+    periodsDetails[period.id] = periodDetails;
     return {
       ...state,
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_LOAD_BILLING_ACCOUNTS_ERROR]: (
     state,
-    { periodId, message }
+    { period, message }
   ) => {
-    const periodsDetails = { ...state.periodsDetails };
-    let periodDetails = periodsDetails[periodId];
+    const periodsDetails = state.periodsDetails;
+    let periodDetails = periodsDetails[period.id];
     if (!periodDetails) {
       return state;
     }
     let billingAccounts = [];
     let billingAccountsIsDisabled = true;
-    let accountId = periodDetails.billingAccountId;
+    let accountId = period.billingAccountId;
     if (accountId) {
       billingAccounts.push(createAssignedBillingAccountOption(accountId));
       billingAccountsIsDisabled = false;
@@ -307,30 +331,29 @@ const actionHandlers = {
     if (!periodDetails.periodsIsLoading) {
       periodDetails.cancelSource = null;
     }
-    periodsDetails[periodId] = periodDetails;
+    periodsDetails[period.id] = periodDetails;
     return {
       ...state,
-      periodsDetails,
+      periodsDetails: { ...periodsDetails },
     };
   },
   [ACTION_TYPE.WP_SET_BILLING_ACCOUNT]: (state, { periodId, accountId }) => {
-    let periodsDetails = state.periodsDetails;
-    const periodDetails = periodsDetails[periodId];
-    if (!periodDetails) {
-      return state;
+    const periods = state.periods;
+    for (let i = 0, len = periods.length; i < len; i++) {
+      let period = periods[i];
+      if (period.id === periodId) {
+        periods[i] = { ...period, billingAccountId: accountId };
+        break;
+      }
     }
-    periodsDetails[periodId] = {
-      ...periodDetails,
-      billingAccountId: accountId,
-    };
-    periodsDetails = { ...periodsDetails };
     state = {
       ...state,
-      periodsDetails,
+      periods: [...periods],
     };
+    // updating reasons for which the period's selection may be disabled
     const periodsDisabledMap = state.periodsDisabled[0];
     const oldReasonsDisabled = periodsDisabledMap.get(periodId);
-    const reasonsDisabled = removeReasonDisabled(
+    const reasonsDisabled = removeValueImmutable(
       oldReasonsDisabled,
       REASON_DISABLED.NO_BILLING_ACCOUNT
     );
@@ -342,6 +365,18 @@ const actionHandlers = {
       }
       state.periodsDisabled = [periodsDisabledMap];
       updateSelectedPeriodsFlags(state);
+    }
+    // updating period's alerts
+    const periodsAlerts = state.periodsAlerts;
+    const oldAlerts = periodsAlerts[periodId];
+    const alerts = removeValueImmutable(oldAlerts, ALERT.BA_NOT_ASSIGNED);
+    if (oldAlerts !== alerts) {
+      if (alerts) {
+        periodsAlerts[periodId] = alerts;
+      } else {
+        delete periodsAlerts[periodId];
+      }
+      state.periodsAlerts = { ...periodsAlerts };
     }
     return state;
   },
@@ -519,7 +554,6 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource,
-      daysWorkedIsUpdated: false,
     };
     return {
       ...state,
@@ -532,11 +566,10 @@ const actionHandlers = {
     if (!periodData) {
       return state;
     }
-    periodData = periodsData[periodId] = {
+    periodsData[periodId] = {
       ...periodData,
       ...data,
       cancelSource: null,
-      daysWorkedIsUpdated: true,
     };
     state = {
       ...state,
@@ -546,7 +579,8 @@ const actionHandlers = {
       ? updateStateAfterWorkingDaysChange(periodId, state)
       : state;
   },
-  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId }) => {
+  [ACTION_TYPE.WP_SET_PERIOD_DATA_ERROR]: (state, { periodId, message }) => {
+    console.error(message);
     const periodsData = state.periodsData[0];
     const periodData = periodsData[periodId];
     if (!periodData) {
@@ -555,7 +589,35 @@ const actionHandlers = {
     periodsData[periodId] = {
       ...periodData,
       cancelSource: null,
-      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_PAYMENT_DATA]: (state, paymentData) => {
+    const periodId = paymentData.workPeriodId;
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    const paymentId = paymentData.id;
+    const payments = periodData.payments;
+    let lastFailedPayment = null;
+    for (let i = 0, len = payments.length; i < len; i++) {
+      let payment = payments[i];
+      if (payment.id === paymentId) {
+        payments[i] = paymentData;
+        periodData.payments = [...payments];
+      }
+      if (payment.status === PAYMENT_STATUS.FAILED) {
+        lastFailedPayment = payment;
+      }
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      paymentErrorLast: lastFailedPayment?.statusDetails,
     };
     return {
       ...state,
@@ -577,6 +639,62 @@ const actionHandlers = {
       ...state,
       periodsData: [periodsData],
     });
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_PENDING]: (
+    state,
+    { periodId, cancelSource }
+  ) => {
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource,
+      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_SUCCESS]: (state, { periodId, data }) => {
+    const periodsData = state.periodsData[0];
+    let periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodData = periodsData[periodId] = {
+      ...periodData,
+      ...data,
+      cancelSource: null,
+      daysWorkedIsUpdated: true,
+    };
+    state = {
+      ...state,
+      periodsData: [periodsData],
+    };
+    return periodId in state.periodsById
+      ? updateStateAfterWorkingDaysChange(periodId, state)
+      : state;
+  },
+  [ACTION_TYPE.WP_SET_WORKING_DAYS_ERROR]: (state, { periodId, message }) => {
+    console.error(message);
+    const periodsData = state.periodsData[0];
+    const periodData = periodsData[periodId];
+    if (!periodData) {
+      return state;
+    }
+    periodsData[periodId] = {
+      ...periodData,
+      cancelSource: null,
+      daysWorkedIsUpdated: false,
+    };
+    return {
+      ...state,
+      periodsData: [periodsData],
+    };
   },
   [ACTION_TYPE.WP_TOGGLE_ONLY_FAILED_PAYMENTS]: (state, on) => {
     const filters = state.filters;
@@ -687,11 +805,11 @@ function updateStateAfterWorkingDaysChange(periodId, state) {
   const oldReasonsDisabled = periodsDisabledMap.get(periodId);
   let reasonsDisabled =
     periodData.daysWorked === periodData.daysPaid
-      ? addReasonDisabled(
+      ? addValueImmutable(
           oldReasonsDisabled,
           REASON_DISABLED.NO_DAYS_TO_PAY_FOR
         )
-      : removeReasonDisabled(
+      : removeValueImmutable(
           oldReasonsDisabled,
           REASON_DISABLED.NO_DAYS_TO_PAY_FOR
         );
@@ -719,7 +837,8 @@ function updateSelectedPeriodsFlags(state) {
   const selectedCount = state.periodsSelected[0].size;
   const pageSize = state.pagination.pageSize;
   const totalCount = state.pagination.totalCount;
-  const maxSelectedOnPageCount = pageSize - state.periodsDisabled[0].size;
+  const maxSelectedOnPageCount =
+    Math.min(pageSize, totalCount) - state.periodsDisabled[0].size;
   if (totalCount > pageSize) {
     if (selectedCount === maxSelectedOnPageCount) {
       isSelectedPeriodsVisible = true;

@@ -1,5 +1,6 @@
 import moment from "moment";
 import {
+  ALERT,
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
   DATE_FORMAT_API,
@@ -8,6 +9,24 @@ import {
   REASON_DISABLED,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
+
+/**
+ * Returns an array of working period's alert ids.
+ *
+ * @param {Object} period working period basic data object
+ * @param {Object} periodEndDate Moment object with current period end date
+ * @returns {Array}
+ */
+export function createPeriodAlerts(period, periodEndDate) {
+  const alerts = [];
+  if (!period.billingAccountId) {
+    alerts.push(ALERT.BA_NOT_ASSIGNED);
+  }
+  if (periodEndDate.isSameOrAfter(period.endDate)) {
+    alerts.push(ALERT.LAST_BOOKING_WEEK);
+  }
+  return alerts.length ? alerts : undefined;
+}
 
 /**
  * Checks for reasons the specified working period should be disabled for
@@ -31,27 +50,27 @@ export function findReasonsDisabled(period) {
   return reasons.length ? reasons : undefined;
 }
 
-export function addReasonDisabled(reasons, reason) {
-  if (!reasons) {
-    return [reason];
+export function addValueImmutable(items, value) {
+  if (!items) {
+    return [value];
   }
-  if (reasons.indexOf(reason) < 0) {
-    reasons = [...reasons, reason];
+  if (items.indexOf(value) < 0) {
+    items = [...items, value];
   }
-  return reasons;
+  return items;
 }
 
-export function removeReasonDisabled(reasons, reason) {
-  if (!reasons) {
+export function removeValueImmutable(items, value) {
+  if (!items) {
     return undefined;
   }
-  let index = reasons.indexOf(reason);
+  let index = items.indexOf(value);
   if (index >= 0) {
-    let newReasons = [...reasons];
-    newReasons.splice(index, 1);
-    return newReasons.length ? newReasons : undefined;
+    let newItems = [...items];
+    newItems.splice(index, 1);
+    return newItems.length ? newItems : undefined;
   }
-  return reasons;
+  return items;
 }
 
 /**
@@ -100,9 +119,11 @@ export function normalizePeriodItems(items) {
       billingAccountId: billingAccountId === null ? 0 : billingAccountId,
       teamName: "",
       userHandle: workPeriod.userHandle || "",
+      // resource booking period start date
       startDate: item.startDate
         ? moment(item.startDate).format(DATE_FORMAT_UI)
         : "",
+      // resource booking period end date
       endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
       weeklyRate: item.memberRate,
       data: normalizePeriodData(workPeriod),
@@ -116,7 +137,9 @@ export function normalizeDetailsPeriodItems(items) {
   for (let item of items) {
     periods.push({
       id: item.id,
+      // working period start date
       startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
+      // working period end date
       endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
       weeklyRate: item.memberRate,
       data: normalizePeriodData(item),
@@ -149,9 +172,7 @@ export function normalizePeriodData(period) {
   if (payments) {
     let lastFailedPayment = null;
     for (let payment of payments) {
-      payment.status =
-        API_CHALLENGE_PAYMENT_STATUS_MAP[payment.status] ||
-        PAYMENT_STATUS.UNDEFINED;
+      payment.status = normalizeChallengePaymentStatus(payment.status);
       if (payment.status === PAYMENT_STATUS.FAILED) {
         lastFailedPayment = payment;
       }
@@ -160,6 +181,12 @@ export function normalizePeriodData(period) {
     data.payments = payments;
   }
   return data;
+}
+
+export function normalizeChallengePaymentStatus(paymentStatus) {
+  return (
+    API_CHALLENGE_PAYMENT_STATUS_MAP[paymentStatus] || PAYMENT_STATUS.UNDEFINED
+  );
 }
 
 export function normalizePaymentStatus(paymentStatus) {
@@ -171,15 +198,12 @@ export function normalizePaymentStatus(paymentStatus) {
  * billing account.
  *
  * @param {Array} accounts array of billing accounts received for specific project
- * @param {number} accountId resource booking's billing account id
  * @returns {Array}
  */
-export function normalizeBillingAccounts(accounts, accountId = -1) {
+export function normalizeBillingAccounts(accounts) {
   const accs = [];
-  let hasSelectedAccount = false;
   for (let acc of accounts) {
     const value = +acc.tcBillingAccountId;
-    hasSelectedAccount = hasSelectedAccount || value === accountId;
     const endDate = acc.endDate
       ? moment(acc.endDate).format("DD MMM YYYY")
       : "";
@@ -187,9 +211,6 @@ export function normalizeBillingAccounts(accounts, accountId = -1) {
       value,
       label: `${acc.name} (${value})` + (endDate ? ` - ${endDate}` : ""),
     });
-  }
-  if (!hasSelectedAccount && accountId > 0) {
-    accs.unshift(createAssignedBillingAccountOption(accountId));
   }
   return accs;
 }

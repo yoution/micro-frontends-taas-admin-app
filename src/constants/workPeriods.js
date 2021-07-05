@@ -1,5 +1,6 @@
 // @ts-ignore
 import { API } from "../../config";
+import * as ALERT from "./workPeriods/alerts";
 import * as API_CHALLENGE_PAYMENT_STATUS from "./workPeriods/apiChallengePaymentStatus";
 import * as API_PAYMENT_STATUS from "./workPeriods/apiPaymentStatus";
 import * as API_SORT_BY from "./workPeriods/apiSortBy";
@@ -9,6 +10,7 @@ import * as PAYMENT_STATUS from "./workPeriods/paymentStatus";
 import * as REASON_DISABLED from "./workPeriods/reasonDisabled";
 
 export {
+  ALERT,
   API_CHALLENGE_PAYMENT_STATUS,
   API_PAYMENT_STATUS,
   API_SORT_BY,
@@ -55,6 +57,7 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.payments.memberRate",
   "workPeriods.payments.status",
   "workPeriods.payments.statusDetails",
+  "workPeriods.payments.workPeriodId",
 ];
 
 // Valid parameter names for requests.
@@ -144,4 +147,9 @@ export const REASON_DISABLED_MESSAGE_MAP = {
     "Billing Account is not set for the Resource Booking",
   [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
   [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
+};
+
+export const ALERT_MESSAGE_MAP = {
+  [ALERT.BA_NOT_ASSIGNED]: "BA - Not Assigned",
+  [ALERT.LAST_BOOKING_WEEK]: "Last Booking Week",
 };

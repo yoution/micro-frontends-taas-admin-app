@@ -75,6 +75,7 @@ const HEAD_CELLS = [
   { label: "Team Name", id: SORT_BY.TEAM_NAME, disableSort: true },
   { label: "Start Date", id: SORT_BY.START_DATE, className: "startDate" },
   { label: "End Date", id: SORT_BY.END_DATE, className: "endDate" },
+  { label: "Alert", id: SORT_BY.ALERT, disableSort: true, className: "alert" },
   { label: "Weekly Rate", id: SORT_BY.WEEKLY_RATE, className: "weeklyRate" },
   { label: "Total Paid", id: SORT_BY.PAYMENT_TOTAL, className: "totalPaid" },
   { label: "Status", id: SORT_BY.PAYMENT_STATUS },

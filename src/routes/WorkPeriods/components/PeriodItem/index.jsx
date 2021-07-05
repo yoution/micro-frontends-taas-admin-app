@@ -12,6 +12,7 @@ import PaymentStatus from "../PaymentStatus";
 import PaymentTotal from "../PaymentTotal";
 import PeriodWorkingDays from "../PeriodWorkingDays";
 import PeriodDetails from "../PeriodDetails";
+import ProcessingError from "../ProcessingError";
 import {
   PAYMENT_STATUS,
   REASON_DISABLED_MESSAGE_MAP,
@@ -29,27 +30,30 @@ import { useUpdateEffect } from "utils/hooks";
 import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
+import PeriodAlerts from "../PeriodAlerts";
 
 /**
  * Displays the working period data row to be used in PeriodList component.
  *
  * @param {Object} props component properties
  * @param {boolean} [props.isDisabled] whether the item is disabled
- * @param {boolean} [props.isFailed] whether the item should be highlighted as failed
  * @param {boolean} props.isSelected whether the item is selected
  * @param {Object} props.item object describing a working period
+ * @param {Array} [props.alerts] array with alert ids
  * @param {Object} props.data changeable working period data such as working days
  * @param {Object} [props.details] object with working period details
+ * @param {Object} [props.reasonFailed] error object denoting payment processing failure
  * @param {Array} [props.reasonsDisabled] array of REASON_DISABLED values.
  * @returns {JSX.Element}
  */
 const PeriodItem = ({
   isDisabled = false,
-  isFailed = false,
   isSelected,
   item,
+  alerts,
   data,
   details,
+  reasonFailed,
   reasonsDisabled,
 }) => {
   const dispatch = useDispatch();
@@ -114,9 +118,9 @@ const PeriodItem = ({
 
   const reasonsDisabledElement = useMemo(
     () => (
-      <span className={styles.tooltipContent}>
+      <div className={styles.tooltipContent}>
         {formatReasonsDisabled(reasonsDisabled)}
-      </span>
+      </div>
     ),
     [reasonsDisabled]
   );
@@ -126,7 +130,7 @@ const PeriodItem = ({
       <tr
         className={cn(styles.container, {
           [styles.hasDetails]: !!details,
-          [styles.isFailed]: isFailed,
+          [styles.isFailed]: !!reasonFailed,
         })}
         onClick={onToggleItemDetails}
       >
@@ -138,6 +142,7 @@ const PeriodItem = ({
             targetClassName={styles.checkboxContainer}
           >
             <Checkbox
+              className={styles.selectionCheckbox}
               size="small"
               isDisabled={isDisabled || !!reasonsDisabled}
               checked={isSelected}
@@ -147,6 +152,11 @@ const PeriodItem = ({
               stopClickPropagation={true}
             />
           </Tooltip>
+          <span className={styles.processingError}>
+            {reasonFailed && (
+              <ProcessingError error={reasonFailed} popupStrategy="fixed" />
+            )}
+          </span>
         </td>
         <td className={styles.userHandle}>
           <Tooltip
@@ -170,6 +180,9 @@ const PeriodItem = ({
         </td>
         <td className={styles.startDate}>{item.startDate}</td>
         <td className={styles.endDate}>{item.endDate}</td>
+        <td className={styles.alert}>
+          <PeriodAlerts alerts={alerts} />
+        </td>
         <td className={styles.weeklyRate}>
           <span>{formatWeeklyRate(item.weeklyRate)}</span>
         </td>
@@ -207,24 +220,49 @@ const PeriodItem = ({
       {details && (
         <PeriodDetails
           className={styles.periodDetails}
+          period={item}
           details={details}
           isDisabled={isDisabled}
-          isFailed={isFailed}
+          isFailed={!!reasonFailed}
         />
       )}
     </>
   );
 };
 
+/**
+ * Returns a string produced by concatenation of all provided reasons some
+ * working period is disabled.
+ *
+ * @param {Array} reasonIds array of REASON_DISABLED values
+ * @returns {any}
+ */
+function formatReasonsDisabled(reasonIds) {
+  if (!reasonIds) {
+    return null;
+  }
+  if (reasonIds.length === 1) {
+    return REASON_DISABLED_MESSAGE_MAP[reasonIds[0]];
+  }
+  const reasons = [];
+  for (let i = 0, len = reasonIds.length; i < len; i++) {
+    let reasonId = reasonIds[i];
+    reasons.push(
+      <li key={reasonId}>{REASON_DISABLED_MESSAGE_MAP[reasonId]}</li>
+    );
+  }
+  return <ul>{reasons}</ul>;
+}
+
 PeriodItem.propTypes = {
   className: PT.string,
   isDisabled: PT.bool,
-  isFailed: PT.bool,
   isSelected: PT.bool.isRequired,
   item: PT.shape({
     id: PT.oneOfType([PT.number, PT.string]).isRequired,
-    jobId: PT.string.isRequired,
+    jobId: PT.string,
     rbId: PT.string.isRequired,
+    billingAccountId: PT.number.isRequired,
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
@@ -232,6 +270,7 @@ PeriodItem.propTypes = {
     endDate: PT.string.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
+  alerts: PT.arrayOf(PT.string),
   data: PT.shape({
     daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
@@ -241,11 +280,6 @@ PeriodItem.propTypes = {
     paymentTotal: PT.number.isRequired,
   }).isRequired,
   details: PT.shape({
-    periodId: PT.string.isRequired,
-    rbId: PT.string.isRequired,
-    jobName: PT.string.isRequired,
-    jobNameIsLoading: PT.bool.isRequired,
-    billingAccountId: PT.number.isRequired,
     billingAccounts: PT.arrayOf(
       PT.shape({
         label: PT.string.isRequired,
@@ -256,27 +290,8 @@ PeriodItem.propTypes = {
     periods: PT.array.isRequired,
     periodsIsLoading: PT.bool.isRequired,
   }),
+  reasonFailed: PT.object,
   reasonsDisabled: PT.arrayOf(PT.string),
 };
 
 export default memo(PeriodItem);
-
-/**
- * Returns a string produced by concatenation of all provided reasons some
- * working period is disabled.
- *
- * @param {Array} reasonIds array of REASON_DISABLED values
- * @returns {?Array}
- */
-function formatReasonsDisabled(reasonIds) {
-  if (!reasonIds) {
-    return null;
-  }
-  const reasons = [];
-  reasons.push('– ' + REASON_DISABLED_MESSAGE_MAP[reasonIds[0]]);
-  for (let i = 1, len = reasonIds.length; i < len; i++) {
-    reasons.push(<br />);
-    reasons.push('– ' + REASON_DISABLED_MESSAGE_MAP[reasonIds[i]]);
-  }
-  return reasons;
-}
