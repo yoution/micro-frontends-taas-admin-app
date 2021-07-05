@@ -141,7 +141,7 @@ export const BILLING_ACCOUNTS_ERROR = "<Error loading accounts>";
 
 export const REASON_DISABLED_MESSAGE_MAP = {
   [REASON_DISABLED.NO_BILLING_ACCOUNT]:
-    "Billing Account is not set for the Resorce Booking",
+    "Billing Account is not set for the Resource Booking",
   [REASON_DISABLED.NO_DAYS_TO_PAY_FOR]: "There are no days to pay for",
   [REASON_DISABLED.NO_MEMBER_RATE]: "Member Rate should be greater than 0",
 };
