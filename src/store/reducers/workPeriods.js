@@ -20,6 +20,7 @@ import {
 } from "utils/misc";
 import {
   addValueImmutable,
+  computeDaysWorkedMax,
   createPeriodAlerts,
   createAssignedBillingAccountOption,
   findReasonsDisabled,
@@ -127,15 +128,24 @@ const actionHandlers = {
     const periodsById = {};
     const periodsData = {};
     const periodsDisabledMap = new Map();
-    const periodEndDate = state.filters.dateRange[1];
+    const dateRange = state.filters.dateRange;
+    const periodStart = dateRange[0];
+    const periodEnd = dateRange[1];
     for (let period of periods) {
       periodsById[period.id] = true;
-      periodsData[period.id] = initPeriodData(period);
+      let periodData = initPeriodData(period);
+      periodData.daysWorkedMax = computeDaysWorkedMax(
+        period.bookingStart,
+        period.bookingEnd,
+        periodStart,
+        periodEnd
+      );
+      periodsData[period.id] = periodData;
       let reasonsDisabled = findReasonsDisabled(period);
       if (reasonsDisabled) {
         periodsDisabledMap.set(period.id, reasonsDisabled);
       }
-      let alerts = createPeriodAlerts(period, periodEndDate);
+      let alerts = createPeriodAlerts(period, periodEnd);
       if (alerts) {
         periodsAlerts[period.id] = alerts;
       }
@@ -221,9 +231,26 @@ const actionHandlers = {
       // This branch should not be reachable but just in case.
       return state;
     }
+    const periods = state.periods;
+    let period = null;
+    for (let i = 0, len = periods.length; i < len; i++) {
+      period = periods[i];
+      if (period.id === periodId) {
+        break;
+      }
+    }
+    const { bookingStart, bookingEnd } = period;
     const periodsData = state.periodsData[0];
     for (let period of details.periods) {
-      periodsData[period.id] = initPeriodData(period);
+      let periodData = initPeriodData(period);
+      periodData.daysWorkedMax = computeDaysWorkedMax(
+        bookingStart,
+        bookingEnd,
+        period.start,
+        period.end
+      );
+      periodsData[period.id] = periodData;
+      delete period.data;
     }
     periodDetails = {
       ...periodDetails,
@@ -413,7 +440,10 @@ const actionHandlers = {
     if (!periodData) {
       return state;
     }
-    daysWorked = Math.min(Math.max(daysWorked, periodData.daysPaid), 5);
+    daysWorked = Math.min(
+      Math.max(daysWorked, periodData.daysPaid),
+      periodData.daysWorkedMax
+    );
     if (daysWorked === periodData.daysWorked) {
       return state;
     }
@@ -630,7 +660,10 @@ const actionHandlers = {
     if (!periodData) {
       return state;
     }
-    daysWorked = Math.min(Math.max(daysWorked, periodData.daysPaid), 5);
+    daysWorked = Math.min(
+      Math.max(daysWorked, periodData.daysPaid),
+      periodData.daysWorkedMax
+    );
     if (daysWorked === periodData.daysWorked) {
       return state;
     }

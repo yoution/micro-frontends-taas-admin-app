@@ -143,6 +143,8 @@ const PeriodDetails = ({
                 </span>
               </div>
               <PeriodsHistory
+                bookingStart={period.bookingStart}
+                bookingEnd={period.bookingEnd}
                 isDisabled={isDisabled}
                 periods={periodsVisible}
               />
@@ -177,6 +179,8 @@ PeriodDetails.propTypes = {
     rbId: PT.string.isRequired,
     jobId: PT.string.isRequired,
     billingAccountId: PT.number.isRequired,
+    bookingStart: PT.string.isRequired,
+    bookingEnd: PT.string.isRequired,
   }).isRequired,
 };
 

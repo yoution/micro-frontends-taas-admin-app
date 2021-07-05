@@ -29,6 +29,7 @@ export const WORK_PERIODS_API_URL = `${API.V5}/work-periods`;
 export const TAAS_TEAM_API_URL = `${API.V5}/taas-teams`;
 
 export const DATE_FORMAT_API = "YYYY-MM-DD";
+export const DATE_FORMAT_ISO = "YYYY-MM-DD";
 export const DATE_FORMAT_UI = "MMM DD, YYYY";
 
 // Field names that are required to be retrieved for display, filtering and sorting.
@@ -52,6 +53,7 @@ export const API_REQUIRED_FIELDS = [
   "workPeriods.daysPaid",
   "workPeriods.payments.amount",
   "workPeriods.payments.challengeId",
+  "workPeriods.payments.createdAt",
   "workPeriods.payments.days",
   "workPeriods.payments.id",
   "workPeriods.payments.memberRate",
