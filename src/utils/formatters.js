@@ -84,6 +84,16 @@ export function formatPlural(count, baseWord) {
 }
 
 /**
+ * Returns "is" or "are" for singular/plural phrases.
+ *
+ * @param {number} count
+ * @returns {string} "is" or "are"
+ */
+export function formatIsAre(count) {
+  return count > 1 ? "are" : "is";
+}
+
+/**
  * Formats user handle link.
  *
  * @param {number|string} rbProjectId ResourceBooking project id

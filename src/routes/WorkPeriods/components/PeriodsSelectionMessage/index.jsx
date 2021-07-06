@@ -11,7 +11,7 @@ import {
 } from "store/selectors/workPeriods";
 import { toggleWorkingPeriodsAll } from "store/actions/workPeriods";
 import styles from "./styles.module.scss";
-import { formatPlural } from "utils/formatters";
+import { formatIsAre, formatPlural } from "utils/formatters";
 
 /**
  * Displays messages about the number of selected periods and selection controls.
@@ -37,11 +37,13 @@ const PeriodsSelectionMessage = ({ className }) => {
       {isSelectedVisible && totalCount > pageSize && (
         <span className={styles.message}>
           {isSelectedAll
-            ? `All ${formatPlural(totalCount, "record")} are selected. `
+            ? `All ${formatPlural(totalCount, "record")} ${formatIsAre(
+                totalCount
+              )} selected. `
             : `${selectedCount < pageSize ? "" : "All"} ${formatPlural(
                 selectedCount,
                 "record"
-              )} on this page are selected. `}
+              )} on this page ${formatIsAre(selectedCount)} selected. `}
           <span
             className={styles.button}
             onClick={onBtnClick}
