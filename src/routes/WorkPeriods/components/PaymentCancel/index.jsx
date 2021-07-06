@@ -88,7 +88,7 @@ const PaymentCancel = ({ className, item, timeout = 3000 }) => {
       <Button
         isDisabled={
           item.status === PAYMENT_STATUS.CANCELLED ||
-          item.status === PAYMENT_STATUS.SCHEDULED
+          item.status === PAYMENT_STATUS.IN_PROGRESS
         }
         size="small"
         color="error"
