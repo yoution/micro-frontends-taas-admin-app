@@ -36,7 +36,8 @@ const PeriodWorkingDays = ({
   onWorkingDaysUpdateHintTimeout,
   updateHintTimeout = 2000,
 }) => {
-  const isBtnMinusDisabled = daysWorked > 0 && daysWorked <= daysPaid;
+  const isBtnMinusDisabled =
+    daysWorked === 0 || (daysWorked > 0 && daysWorked <= daysPaid);
   const isBtnPlusDisabled = daysWorked < 5 && daysWorked >= daysWorkedMax;
   const decreaseDaysWorkedMessage = useMemo(
     () => `Cannot decrease "Working Days" below the number of days already
@@ -80,7 +81,7 @@ const PeriodWorkingDays = ({
           })}
           tooltipClassName={styles.tooltip}
           content={decreaseDaysWorkedMessage}
-          isDisabled={!isBtnMinusDisabled || isDisabled}
+          isDisabled={!isBtnMinusDisabled || isDisabled || daysWorked === 0}
           strategy="fixed"
         >
           <button
