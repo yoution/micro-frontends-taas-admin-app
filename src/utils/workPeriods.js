@@ -4,25 +4,55 @@ import {
   API_CHALLENGE_PAYMENT_STATUS_MAP,
   API_PAYMENT_STATUS_MAP,
   DATE_FORMAT_API,
-  DATE_FORMAT_UI,
+  DATE_FORMAT_ISO,
   PAYMENT_STATUS,
   REASON_DISABLED,
   URL_QUERY_PARAM_MAP,
 } from "constants/workPeriods";
 
 /**
+ * Computes maximum allowed working days based on resource booking start and end
+ * dates and working period start and end dates.
+ *
+ * @param {string} bookingStart resource booking start date
+ * @param {string} bookingEnd resource booking end date
+ * @param {Object} periodStart working period start date
+ * @param {Object} periodEnd working period end date
+ * @returns {number}
+ */
+export function computeDaysWorkedMax(
+  bookingStart,
+  bookingEnd,
+  periodStart,
+  periodEnd
+) {
+  let start = periodStart.day() + 1; // Monday
+  let end = periodEnd.day() - 1; // Friday
+  if (periodStart.isBefore(bookingStart, "date")) {
+    // booking starts from Monday, Tuesday and so on
+    start = moment(bookingStart).day();
+  }
+  if (periodEnd.isAfter(bookingEnd, "date")) {
+    // booking ends at Friday, Thursday and so on
+    end = moment(bookingEnd).day();
+  }
+  return end - start + 1;
+}
+
+/**
  * Returns an array of working period's alert ids.
  *
- * @param {Object} period working period basic data object
- * @param {Object} periodEndDate Moment object with current period end date
+ * @param {Object} period working period basic data object containing
+ * resource booking end date
+ * @param {Object} periodEnd Moment object with working period end
  * @returns {Array}
  */
-export function createPeriodAlerts(period, periodEndDate) {
+export function createPeriodAlerts(period, periodEnd) {
   const alerts = [];
   if (!period.billingAccountId) {
     alerts.push(ALERT.BA_NOT_ASSIGNED);
   }
-  if (periodEndDate.isSameOrAfter(period.endDate)) {
+  if (periodEnd.isSameOrAfter(period.bookingEnd, "date")) {
     alerts.push(ALERT.LAST_BOOKING_WEEK);
   }
   return alerts.length ? alerts : undefined;
@@ -120,11 +150,13 @@ export function normalizePeriodItems(items) {
       teamName: "",
       userHandle: workPeriod.userHandle || "",
       // resource booking period start date
-      startDate: item.startDate
-        ? moment(item.startDate).format(DATE_FORMAT_UI)
+      bookingStart: item.startDate
+        ? moment(item.startDate).format(DATE_FORMAT_ISO)
         : "",
       // resource booking period end date
-      endDate: item.endDate ? moment(item.endDate).format(DATE_FORMAT_UI) : "",
+      bookingEnd: item.endDate
+        ? moment(item.endDate).format(DATE_FORMAT_ISO)
+        : "",
       weeklyRate: item.memberRate,
       data: normalizePeriodData(workPeriod),
     });
@@ -138,14 +170,16 @@ export function normalizeDetailsPeriodItems(items) {
     periods.push({
       id: item.id,
       // working period start date
-      startDate: item.startDate ? moment(item.startDate).valueOf() : 0,
+      start: moment(item.startDate || undefined),
       // working period end date
-      endDate: item.endDate ? moment(item.endDate).valueOf() : 0,
+      end: moment(item.endDate || undefined),
       weeklyRate: item.memberRate,
       data: normalizePeriodData(item),
     });
   }
-  periods.sort(sortByStartDate);
+  periods.sort(
+    (periodA, periodB) => periodA.start.valueOf() - periodB.start.valueOf()
+  );
   return periods;
 }
 
@@ -163,8 +197,8 @@ export function normalizeDetailsPeriodItems(items) {
  */
 export function normalizePeriodData(period) {
   const data = {
-    daysWorked: period.daysWorked === null ? 5 : +period.daysWorked || 0,
     daysPaid: +period.daysPaid || 0,
+    daysWorked: period.daysWorked === null ? 5 : +period.daysWorked || 0,
     paymentStatus: normalizePaymentStatus(period.paymentStatus),
     paymentTotal: +period.paymentTotal || 0,
   };
@@ -172,13 +206,16 @@ export function normalizePeriodData(period) {
   if (payments) {
     let lastFailedPayment = null;
     for (let payment of payments) {
+      payment.createdAt = moment(payment.createdAt).valueOf();
       payment.status = normalizeChallengePaymentStatus(payment.status);
       if (payment.status === PAYMENT_STATUS.FAILED) {
         lastFailedPayment = payment;
       }
     }
     data.paymentErrorLast = lastFailedPayment?.statusDetails;
-    data.payments = payments;
+    data.payments = payments.sort(
+      (paymentA, paymentB) => paymentA.createdAt - paymentB.createdAt
+    );
   }
   return data;
 }
@@ -217,8 +254,4 @@ export function normalizeBillingAccounts(accounts) {
 
 export function createAssignedBillingAccountOption(accountId) {
   return { value: accountId, label: `<Assigned Account> (${accountId})` };
-}
-
-export function sortByStartDate(itemA, itemB) {
-  return itemA.startDate - itemB.startDate;
 }

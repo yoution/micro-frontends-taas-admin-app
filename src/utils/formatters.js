@@ -1,6 +1,6 @@
 import moment from "moment";
 import isNumber from "lodash/isNumber";
-import { PAYMENT_STATUS_LABELS } from "constants/workPeriods";
+import { DATE_FORMAT_UI, PAYMENT_STATUS_LABELS } from "constants/workPeriods";
 import {
   PLATFORM_WEBSITE_URL,
   TAAS_BASE_PATH,
@@ -17,6 +17,16 @@ const rxWhitespace = /\s+/;
  */
 export function formatChallengeUrl(challengeId) {
   return `${TOPCODER_WEBSITE_URL}/challenges/${challengeId}`;
+}
+
+/**
+ * Returns formatted date for working period rows.
+ *
+ * @param {any} date any value accepted by MomentJS
+ * @returns {string}
+ */
+export function formatDate(date) {
+  return date ? moment(date).format(DATE_FORMAT_UI) : "-";
 }
 
 /**

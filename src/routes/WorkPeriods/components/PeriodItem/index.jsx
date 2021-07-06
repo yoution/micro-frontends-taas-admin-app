@@ -27,7 +27,11 @@ import {
   updateWorkPeriodWorkingDays,
 } from "store/thunks/workPeriods";
 import { useUpdateEffect } from "utils/hooks";
-import { formatUserHandleLink, formatWeeklyRate } from "utils/formatters";
+import {
+  formatDate,
+  formatUserHandleLink,
+  formatWeeklyRate,
+} from "utils/formatters";
 import { stopPropagation } from "utils/misc";
 import styles from "./styles.module.scss";
 import PeriodAlerts from "../PeriodAlerts";
@@ -178,8 +182,8 @@ const PeriodItem = ({
             <ProjectName projectId={item.projectId} />
           </Tooltip>
         </td>
-        <td className={styles.startDate}>{item.startDate}</td>
-        <td className={styles.endDate}>{item.endDate}</td>
+        <td className={styles.startDate}>{formatDate(item.bookingStart)}</td>
+        <td className={styles.endDate}>{formatDate(item.bookingEnd)}</td>
         <td className={styles.alert}>
           <PeriodAlerts alerts={alerts} />
         </td>
@@ -208,12 +212,14 @@ const PeriodItem = ({
         </td>
         <td className={styles.daysWorked}>
           <PeriodWorkingDays
-            updateHintTimeout={2000}
+            bookingStart={item.bookingStart}
+            bookingEnd={item.bookingEnd}
             controlName={`wp_wrk_days_${item.id}`}
             data={data}
             isDisabled={isDisabled}
             onWorkingDaysChange={onWorkingDaysChange}
             onWorkingDaysUpdateHintTimeout={onWorkingDaysUpdateHintTimeout}
+            updateHintTimeout={2000}
           />
         </td>
       </tr>
@@ -266,14 +272,14 @@ PeriodItem.propTypes = {
     projectId: PT.oneOfType([PT.number, PT.string]).isRequired,
     userHandle: PT.string.isRequired,
     teamName: PT.oneOfType([PT.number, PT.string]).isRequired,
-    startDate: PT.string.isRequired,
-    endDate: PT.string.isRequired,
+    bookingStart: PT.string.isRequired,
+    bookingEnd: PT.string.isRequired,
     weeklyRate: PT.number,
   }).isRequired,
   alerts: PT.arrayOf(PT.string),
   data: PT.shape({
-    daysWorked: PT.number.isRequired,
     daysPaid: PT.number.isRequired,
+    daysWorked: PT.number.isRequired,
     paymentErrorLast: PT.object,
     payments: PT.array,
     paymentStatus: PT.string.isRequired,

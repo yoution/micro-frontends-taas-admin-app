@@ -15,7 +15,7 @@ export function filterPeriodsByStartDate(periods, startDate) {
   const items = [];
   startDate = moment(startDate);
   for (let period of periods) {
-    if (moment(period.startDate).isSameOrAfter(startDate, "date")) {
+    if (period.start.isSameOrAfter(startDate, "date")) {
       items.push(period);
     }
   }
