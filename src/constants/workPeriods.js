@@ -45,8 +45,6 @@ export const API_REQUIRED_FIELDS = [
   "billingAccountId",
   "workPeriods.id",
   "workPeriods.projectId",
-  "workPeriods.isLastWeek",
-  "workPeriods.isFirstWeek",
   "workPeriods.userHandle",
   "workPeriods.startDate",
   "workPeriods.endDate",
